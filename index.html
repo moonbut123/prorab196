@@ -72,20 +72,6 @@
   .header-contacts{display:flex;align-items:center;gap:14px;}
   .header-phone{font-weight:700;font-size:16px;white-space:nowrap;text-align:right}
   .header-phone small{display:block;font-weight:400;font-size:12px;color:#b9c0cf}
-
-  /* HEADER MESSENGERS */
-  .header-social{display:flex;align-items:center;gap:8px}
-  .hs-btn{
-    width:38px;height:38px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    transition:.2s;flex-shrink:0;
-  }
-  .hs-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
-  .hs-btn.wa{background:var(--wa)}
-  .hs-btn.tg{background:var(--tg)}
-  .hs-btn.max{background:var(--max)}
-  .hs-btn svg{width:20px;height:20px;fill:#fff}
-  .hs-btn img{width:22px;height:22px;object-fit:contain}
   
   /* BURGER */
   .burger{
@@ -209,7 +195,7 @@
   .mobile-socials .ms-btn img{width:24px;height:24px;object-fit:contain}
   
   @media(max-width:960px){
-    .nav-links, .header-social, .header-contacts .btn, .header-phone{display:none;}
+    .nav-links, .header-contacts .btn, .header-phone{display:none;}
     .burger{display:flex;}
     .mobile-menu{display:flex;}
     .header-right{gap: 0;}
@@ -609,6 +595,72 @@
     .lightbox-nav.next{right:10px;}
   }
 
+  /* ===== REVIEWS ===== */
+  .reviews{background:var(--bg-warm)}
+
+  .reviews-track{
+    display:flex;
+    align-items:flex-start;
+    gap:20px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    padding:4px 4px 16px;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .reviews-track::-webkit-scrollbar{display:none}
+
+  .review-card{
+    flex:0 0 auto;
+    width:auto;
+    max-width:320px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 4px 20px rgba(0,0,0,.06);
+    scroll-snap-align:start;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .review-card img{
+    display:block;
+    width:auto;
+    height:auto;
+    max-width:100%;
+    max-height:460px;
+    object-fit:contain;
+  }
+
+  @media(max-width:768px){
+    .reviews-track{
+      gap:16px;
+      padding:4px 4px 12px;
+    }
+    .review-card{
+      max-width:78vw;
+    }
+    .review-card img{
+      max-height:70vh;
+    }
+  }
+
+  .reviews-hint{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:12px;
+  }
+  .reviews-hint span{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--border);
+    transition:background .3s;
+    cursor:pointer;
+  }
+  .reviews-hint span.active{background:var(--accent)}
+
   /* SHOPS */
   .shops{
     background:
@@ -928,23 +980,12 @@
       <a href="#about">Обо мне</a>
       <a href="#how">Как работаю</a>
       <a href="#portfolio">Примеры работ</a>
-      <a href="#shops">Материалы</a>
+      <a href="#reviews">Отзывы</a>
       <a href="#guarantee">Гарантия</a>
     </nav>
 
     <div class="header-right">
       <div class="header-contacts">
-        <div class="header-social">
-          <a href="https://wa.me/79221230234" class="hs-btn wa" target="_blank" rel="noopener" aria-label="WhatsApp">
-            <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.93 1.35-.53.05-1.02.24-3.45-.72-2.93-1.15-4.8-4.15-4.95-4.34-.15-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.82 2 .89 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.14.17-.3.37-.43.5-.14.14-.29.29-.12.57.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.45.29.14.46.12.63-.07.17-.19.73-.85.93-1.14.19-.29.39-.24.66-.14.27.1 1.69.8 1.98.94.29.14.48.22.55.34.07.12.07.68-.17 1.36z"/></svg>
-          </a>
-          <a href="https://t.me/The_fabo" class="hs-btn tg" target="_blank" rel="noopener" aria-label="Telegram">
-            <svg viewBox="0 0 24 24"><path d="M9.04 15.47l-.38 5.34c.54 0 .78-.23 1.06-.5l2.55-2.45 5.28 3.87c.97.53 1.66.25 1.92-.9l3.48-16.32.01-.01c.31-1.43-.52-1.99-1.47-1.63L1.6 9.9C.2 10.45.22 11.25 1.36 11.6l5.11 1.59L18.3 6.1c.56-.37 1.07-.16.65.21L9.04 15.47z"/></svg>
-          </a>
-          <a href="https://max.ru/u/f9LHodD0cOIla8fwUzY-qb4nxfN2PkkKd1sPPFidHCv_dgxbCTTdMzdyMBU" class="hs-btn max" target="_blank" rel="noopener" aria-label="MAX">
-            <img src="images/max-icon.png" alt="MAX">
-          </a>
-        </div>
         <a href="#form" class="btn">Вызвать на замер</a>
         <a href="tel:+79221230234" class="header-phone">+7 (922) 123-02-34<small>Ежедневно 9:00–21:00</small></a>
       </div>
@@ -971,7 +1012,7 @@
   <a href="#about" class="mobile-link">Обо мне</a>
   <a href="#how" class="mobile-link">Как работаю</a>
   <a href="#portfolio" class="mobile-link">Примеры работ</a>
-  <a href="#shops" class="mobile-link">Материалы</a>
+  <a href="#reviews" class="mobile-link">Отзывы</a>
   <a href="#guarantee" class="mobile-link">Гарантия</a>
 
   <div class="mobile-socials">
@@ -1145,6 +1186,8 @@
   <button class="lightbox-nav next" onclick="navLightbox(1, event)">›</button>
 </div>
 
+
+
 <!-- ===== SHOPS ===== -->
 <section class="section shops" id="shops">
   <div class="wrap">
@@ -1295,6 +1338,38 @@
   </div>
 </section>
 
+<!-- ===== REVIEWS ===== -->
+<section class="section reviews" id="reviews">
+  <div class="wrap">
+    <h2 class="section-title">Отзывы клиентов</h2>
+    <p class="section-sub">Реальные отзывы после сдачи объектов. Листайте вбок, чтобы посмотреть все.</p>
+
+    <div class="reviews-track" id="reviewsSlider">
+      <div class="review-card">
+        <img src="images/review-1.webp" alt="Отзыв клиента 1" loading="lazy">
+      </div>
+      <div class="review-card">
+        <img src="images/review-2.webp" alt="Отзыв клиента 2" loading="lazy">
+      </div>
+      <div class="review-card">
+        <img src="images/review-3.webp" alt="Отзыв клиента 3" loading="lazy">
+      </div>
+      <div class="review-card">
+        <img src="images/review-4.webp" alt="Отзыв клиента 4" loading="lazy">
+      </div>
+    </div>
+
+    <div class="reviews-hint" id="reviewsHint">
+      <span class="active"></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</section>
+
 <!-- ===== FAQ ===== -->
 <section class="section faq-section">
   <div class="wrap">
@@ -1367,6 +1442,7 @@
         <h4>Разделы</h4>
         <p>
           <a href="#portfolio">Примеры работ</a><br>
+          <a href="#reviews">Отзывы</a><br>
           <a href="#form">Замер и смета</a><br>
           <a href="#form">Задать вопрос</a>
         </p>
@@ -1425,7 +1501,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var MY_WHATSAPP = '79221230234';
   var MY_TELEGRAM_USERNAME = 'The_fabo';
-  var MY_MAX_LINK = 'https://max.ru/u/f9LHodD0cOIla8fwUzY-qb4nxfN2PkkKd1sPPFidHCv_dgxbCTTdMzdyMBU';
 
   function getFormData() {
     var name    = document.getElementById('name').value.trim();
@@ -1543,6 +1618,52 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<!-- ===== SCRIPT: Отзывы (слайдер) ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const slider = document.getElementById('reviewsSlider');
+  const hint = document.getElementById('reviewsHint');
+  if (!slider || !hint) return;
+
+  const cards = slider.querySelectorAll('.review-card');
+  const dots = hint.querySelectorAll('span');
+
+  function updateHintVisibility() {
+    if (!cards.length) return;
+    const gap = parseInt(getComputedStyle(slider).gap) || 16;
+    const cardWidth = cards[0].offsetWidth;
+    const visible = Math.floor((slider.clientWidth + gap) / (cardWidth + gap));
+    const needDots = cards.length > visible;
+    hint.style.display = needDots ? 'flex' : 'none';
+  }
+
+  let currentIndex = 0;
+
+  slider.addEventListener('scroll', function() {
+    if (!cards.length) return;
+    const gap = parseInt(getComputedStyle(slider).gap) || 16;
+    const cardWidth = cards[0].offsetWidth + gap;
+    const newIndex = Math.round(slider.scrollLeft / cardWidth);
+    if (newIndex !== currentIndex && newIndex < dots.length) {
+      currentIndex = newIndex;
+      dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+    }
+  });
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', function() {
+      if (!cards.length) return;
+      const gap = parseInt(getComputedStyle(slider).gap) || 16;
+      const cardWidth = cards[0].offsetWidth + gap;
+      slider.scrollTo({ left: i * cardWidth, behavior: 'smooth' });
+    });
+  });
+
+  updateHintVisibility();
+  window.addEventListener('resize', updateHintVisibility);
+});
+</script>
+
 <!-- ===== SCRIPT: Сетка галереи и лайтбокс ===== -->
 <script>
 const projectsData = [
@@ -1585,18 +1706,14 @@ const projectsData = [
     ]
   },
   {
-    title: "ЖК «Никольский»",
-    area: "42 м²",
-    time: "68 дней",
+    title: "ЖК «Форум»",
+    area: "62 м²",
+    time: "72 дня",
     type: "Ремонт новостройки",
     images: [
-      "images/diz-1.webp",
-      "images/diz-2.webp",
-      "images/diz-3.webp",
-      "images/diz-4.webp",
-      "images/diz-5.webp",
-      "images/diz-6.webp",
-      "images/diz-7.webp",
+      "images/1 (2).webp",
+      "images/3 (1).webp",
+      "images/4 (2).webp"
     ]
   }
 ];
@@ -1874,7 +1991,6 @@ if (burgerBtn && mobileMenu && mobileMenuOverlay) {
     link.addEventListener('click', closeMobileMenu);
   });
 
-  // === ЗАКРЫТИЕ СВАЙПОМ В ЛЮБУЮ СТОРОНУ ===
   let touchStartX = 0;
   let touchStartY = 0;
   let isSwiping = false;
