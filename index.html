@@ -445,11 +445,23 @@
   .card-btn:hover{background:var(--accent-dark); transform:translateY(-1px);}
   .card-btn small{font-size:10px; font-weight:500; opacity:0.8;}
 
+  /* ===== МОБИЛЬНАЯ ВЕРСИЯ ГАЛЕРЕИ ===== */
   @media(max-width:550px){
     .portfolio-grid{grid-template-columns:1fr;}
-    .card-top{padding:10px;}
-    .card-thumbs{width:50px; max-height:220px; gap:6px;}
-    .card-thumb{width:50px; height:50px;}
+    .card-top{padding:10px; flex-direction: column;} /* Миниатюры над фото */
+    .card-thumbs{
+      width: 100%; 
+      flex-direction: row; 
+      overflow-x: auto; 
+      overflow-y: hidden;
+      max-height: 60px; 
+      padding-bottom: 5px;
+      gap: 6px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .card-thumbs::-webkit-scrollbar { display: none; }
+    .card-thumb{width:50px; height:50px; flex-shrink: 0;}
     .card-bottom{flex-direction:column; align-items:stretch; padding:15px;}
     .card-btn{width:100%;}
   }
@@ -698,7 +710,7 @@
   .footer-bottom a{color:#b9c0cf}
   .footer-bottom a:hover{color:var(--accent)}
 
-  /* FLOATING CONTACTS */
+  /* ===== FLOATING CONTACTS (для всех устройств) ===== */
   .float-contacts{
     position:fixed;right:16px;bottom:16px;z-index:100;
     display:flex;flex-direction:column;align-items:flex-end;gap:10px;
@@ -742,8 +754,26 @@
   .float-contacts .call{background:#333;color:#fff}
   .float-contacts .call svg{fill:#fff}
 
+  /* Убираем скрытие на больших экранах, которое было раньше */
+  /* @media(min-width:961px){ .float-contacts{display:none} } */
+
+  /* УВЕЛИЧИВАЕМ кнопки на ПК */
   @media(min-width:961px){
-    .float-contacts{display:none}
+    .float-contacts { right: 24px; bottom: 24px; gap: 12px; }
+    .float-contacts .main-btn { 
+      width: 70px; 
+      height: 70px; 
+      box-shadow: 0 10px 30px rgba(245,166,35,.5);
+    }
+    .float-contacts .main-btn svg { width: 32px; height: 32px; }
+    .float-contacts .sub-menu { gap: 12px; }
+    .float-contacts .sub-menu a { 
+      width: 56px; 
+      height: 56px; 
+      box-shadow: 0 6px 16px rgba(0,0,0,.25);
+    }
+    .float-contacts .sub-menu a svg { width: 24px; height: 24px; }
+    .float-contacts .sub-menu a img { width: 30px; height: 30px; }
   }
 
   /* МОДАЛЬНОЕ ОКНО MAX */
@@ -1006,7 +1036,7 @@
 <section class="section portfolio" id="portfolio">
   <div class="wrap">
     <h2 class="section-title">Примеры работ</h2>
-    <p class="section-sub">Нажмите на большое фото, чтобы рассмотреть детали и пролистать галерею. Слева можно выбрать нужный ракурс.</p>
+    <p class="section-sub">Нажмите на большое фото, чтобы рассмотреть детали и пролистать галерею. Слева (или сверху на телефоне) можно выбрать нужный ракурс.</p>
 
     <div class="portfolio-grid" id="portfolioGrid">
       <!-- Карточки будут генерироваться скриптом -->
@@ -1264,7 +1294,7 @@
   </div>
 </footer>
 
-<!-- ===== FLOATING CONTACTS (mobile) ===== -->
+<!-- ===== FLOATING CONTACTS (для всех устройств) ===== -->
 <div class="float-contacts">
   <div class="sub-menu" id="subMenu">
     <a href="https://wa.me/79221230234" class="wa" target="_blank" rel="noopener" aria-label="WhatsApp">
@@ -1538,6 +1568,7 @@ function switchImage(projectIdx, imageIdx, thumbElement, event) {
   }
 }
 
+// Функция для свайпа в карточках (работает для мобильных и ПК)
 function initSwipe(projectIdx) {
   const wrap = document.getElementById(`main-img-wrap-${projectIdx}`);
   if (!wrap) return;
@@ -1554,7 +1585,14 @@ function initSwipe(projectIdx) {
 
   wrap.addEventListener('touchmove', (e) => {
     if (!isSwiping) return;
-  }, { passive: true });
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    
+    // Если движение по горизонтали больше, чем по вертикали, предотвращаем скролл страницы
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+      e.preventDefault();
+    }
+  }, { passive: false });
 
   wrap.addEventListener('touchend', (e) => {
     if (!isSwiping) return;
@@ -1565,9 +1603,13 @@ function initSwipe(projectIdx) {
     const dx = endX - startX;
     const dy = endY - startY;
 
+    // Если свайп горизонтальный и достаточно длинный
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      // Находим текущий индекс картинки
       const imgElement = wrap.querySelector('img');
       const currentSrc = imgElement.src;
+      
+      // Ищем индекс текущей картинки в массиве
       const projectImages = projectsData[projectIdx].images;
       let currentIndex = 0;
       projectImages.forEach((img, idx) => {
