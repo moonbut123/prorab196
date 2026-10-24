@@ -1,1 +1,11 @@
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#1c2331"/>
+  <text x="32" y="30" text-anchor="middle"
+        font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="26" fill="#ffffff">
+    П<tspan fill="#f5a623">.</tspan>
+  </text>
+  <text x="32" y="52" text-anchor="middle"
+        font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="16" fill="#f5a623">
+    ЕКБ
+  </text>
+</svg>
