@@ -400,10 +400,13 @@
     position:relative; border-radius:10px; overflow:hidden;
     aspect-ratio: 4/3; background:#eee; cursor:zoom-in;
     touch-action: pan-y;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .card-main-img img{
     width:100%; height:100%; object-fit:cover; transition:transform 0.3s;
     user-select:none; -webkit-user-drag:none;
+    pointer-events: none; /* важно для Safari — клики ловит контейнер */
   }
   .card-main-img:hover img{transform:scale(1.02);}
 
@@ -878,12 +881,10 @@
     <p class="section-sub">Коротко — кто я и почему мне можно доверить ремонт.</p>
     
     <div class="about-flex">
-      <!-- Фото (слева) -->
       <div class="about-photo">
         <img src="images/about-me.jpg" alt="Александр, прораб">
       </div>
       
-      <!-- Текст (обтекает фото) -->
       <div class="about-text">
         <p>
           Меня зовут <b>Александр</b>. Более <b>3 лет</b> я занимаюсь ремонтом квартир в Екатеринбурге
@@ -1030,13 +1031,10 @@
 <section class="section" id="guarantee">
   <div class="wrap">
     <div class="guarantee-flex">
-      
-      <!-- Левая часть: Картинка договора -->
       <div class="guarantee-img">
         <img src="images/contract.png" alt="Официальный договор с гарантией">
       </div>
 
-      <!-- Правая часть: Пункты гарантии -->
       <div class="guarantee-text">
         <h2 class="section-title">Договор и гарантия</h2>
         <p class="section-sub">Всё, о чём договариваемся, — на бумаге. Это моя репутация, и я её не сливаю.</p>
@@ -1086,7 +1084,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -1133,7 +1130,6 @@
       <label for="comment">Комментарий (необязательно)</label>
       <textarea id="comment" rows="2" placeholder="Район, сроки, пожелания"></textarea>
 
-      <!-- Кнопки отправки -->
       <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
         <button type="button" class="btn wa-btn" style="background: var(--wa);">
           Отправить в WhatsApp
@@ -1279,7 +1275,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('leadForm');
   if (!form) return;
 
-  // ВАШИ ДАННЫЕ
   var MY_WHATSAPP = '79221230234';
   var MY_TELEGRAM_USERNAME = 'The_fabo';
   var MY_MAX_LINK = 'https://max.ru/u/f9LHodD0cOIla8fwUzY-qb4nxfN2PkkKd1sPPFidHCv_dgxbCTTdMzdyMBU';
@@ -1311,7 +1306,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return lines.join('\n');
   }
 
-  // Кнопка WhatsApp
   document.querySelector('.wa-btn').addEventListener('click', function() {
     var text = getFormData();
     if (!text) return;
@@ -1319,7 +1313,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.open(url, '_blank');
   });
 
-  // Кнопка Telegram
   document.querySelector('.tg-btn').addEventListener('click', function() {
     var text = getFormData();
     if (!text) return;
@@ -1327,7 +1320,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.open(url, '_blank');
   });
 
-  // Кнопка MAX
   document.querySelector('.max-btn').addEventListener('click', function() {
     var text = getFormData();
     if (!text) return;
@@ -1339,7 +1331,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.overflow = 'hidden';
   });
 
-  // Логика модального окна MAX
   var maxModal = document.getElementById('maxModalOverlay');
   var maxTextarea = document.getElementById('maxTextarea');
   var copyMaxBtn = document.getElementById('copyMaxBtn');
@@ -1458,8 +1449,8 @@ function renderPortfolio() {
 
     card.innerHTML = `
       <div class="card-top">
-        <div class="card-main-img" id="main-img-wrap-${pIndex}">
-          <img id="main-img-${pIndex}" src="${project.images[0]}" alt="${project.title}" onclick="openLightbox(${pIndex}, 0)">
+        <div class="card-main-img" id="main-img-wrap-${pIndex}" data-index="0" data-project="${pIndex}">
+          <img id="main-img-${pIndex}" src="${project.images[0]}" alt="${project.title}">
           <div class="card-dots">
             ${dotsHtml}
           </div>
@@ -1495,10 +1486,11 @@ function switchImage(projectIdx, imageIdx, thumbElement, event) {
   if(event) event.stopPropagation();
 
   const card = document.querySelectorAll('.project-card')[projectIdx];
-  const imgElement = card.querySelector('.card-main-img img');
+  const wrap = card.querySelector('.card-main-img');
+  const imgElement = wrap.querySelector('img');
   
   imgElement.src = projectsData[projectIdx].images[imageIdx];
-  imgElement.onclick = () => openLightbox(projectIdx, imageIdx);
+  wrap.setAttribute('data-index', imageIdx);
 
   const thumbs = card.querySelectorAll('.card-thumb');
   thumbs.forEach((t, i) => t.classList.toggle('active', i === imageIdx));
@@ -1512,7 +1504,6 @@ function switchImage(projectIdx, imageIdx, thumbElement, event) {
   }
 }
 
-// Свайп по большому фото
 function initSwipe(projectIdx) {
   const wrap = document.getElementById(`main-img-wrap-${projectIdx}`);
   if (!wrap) return;
@@ -1538,7 +1529,7 @@ function initSwipe(projectIdx) {
       isHorizontal = true;
     }
     
-    if (isHorizontal) {
+    if (isHorizontal && e.cancelable) {
       e.preventDefault();
     }
   }, { passive: false });
@@ -1553,23 +1544,27 @@ function initSwipe(projectIdx) {
     const dy = endY - startY;
 
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-      const imgElement = wrap.querySelector('img');
-      const currentSrc = imgElement.src;
-      const projectImages = projectsData[projectIdx].images;
-      let currentIndex = 0;
-      projectImages.forEach((img, idx) => {
-        if (currentSrc.endsWith(img)) currentIndex = idx;
-      });
+      let currentIndex = parseInt(wrap.getAttribute('data-index') || '0', 10);
+      const totalImages = projectsData[projectIdx].images.length;
+      let newIndex;
 
-      let newIndex = currentIndex;
       if (dx < 0) {
-        newIndex = (currentIndex + 1) % projectImages.length;
+        newIndex = (currentIndex + 1) % totalImages;
       } else {
-        newIndex = (currentIndex - 1 + projectImages.length) % projectImages.length;
+        newIndex = (currentIndex - 1 + totalImages) % totalImages;
       }
 
       switchImage(projectIdx, newIndex, null, null);
     }
+  });
+
+  wrap.addEventListener('click', function(e) {
+    if (isHorizontal) {
+      isHorizontal = false;
+      return;
+    }
+    const currentIndex = parseInt(wrap.getAttribute('data-index') || '0', 10);
+    openLightbox(projectIdx, currentIndex);
   });
 }
 
