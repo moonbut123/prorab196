@@ -407,7 +407,7 @@
   }
   .card-main-img:hover img{transform:scale(1.02);}
 
-  /* Точки на большом фото (опционально оставим, но они не мешают) */
+  /* Точки на большом фото */
   .card-dots{
     position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
     display:flex; gap:5px; background:rgba(0,0,0,0.4); padding:4px 10px; border-radius:10px;
@@ -1327,7 +1327,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.open(url, '_blank');
   });
 
-  // Кнопка MAX (новая логика с модальным окном)
+  // Кнопка MAX
   document.querySelector('.max-btn').addEventListener('click', function() {
     var text = getFormData();
     if (!text) return;
@@ -1346,7 +1346,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var closeMaxBtn = document.getElementById('closeMaxModal');
 
   if (maxModal) {
-    // Копирование текста
     copyMaxBtn.addEventListener('click', function() {
       maxTextarea.select();
       maxTextarea.setSelectionRange(0, 99999);
@@ -1361,7 +1360,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Закрытие
     closeMaxBtn.addEventListener('click', function() {
       maxModal.classList.remove('show');
       document.body.style.overflow = '';
@@ -1460,8 +1458,8 @@ function renderPortfolio() {
 
     card.innerHTML = `
       <div class="card-top">
-        <div class="card-main-img" id="main-img-wrap-${pIndex}" onclick="openLightbox(${pIndex}, 0)">
-          <img id="main-img-${pIndex}" src="${project.images[0]}" alt="${project.title}">
+        <div class="card-main-img" id="main-img-wrap-${pIndex}">
+          <img id="main-img-${pIndex}" src="${project.images[0]}" alt="${project.title}" onclick="openLightbox(${pIndex}, 0)">
           <div class="card-dots">
             ${dotsHtml}
           </div>
@@ -1500,7 +1498,7 @@ function switchImage(projectIdx, imageIdx, thumbElement, event) {
   const imgElement = card.querySelector('.card-main-img img');
   
   imgElement.src = projectsData[projectIdx].images[imageIdx];
-  card.querySelector('.card-main-img').onclick = () => openLightbox(projectIdx, imageIdx);
+  imgElement.onclick = () => openLightbox(projectIdx, imageIdx);
 
   const thumbs = card.querySelectorAll('.card-thumb');
   thumbs.forEach((t, i) => t.classList.toggle('active', i === imageIdx));
@@ -1522,11 +1520,13 @@ function initSwipe(projectIdx) {
   let startX = 0;
   let startY = 0;
   let isSwiping = false;
+  let isHorizontal = false;
 
   wrap.addEventListener('touchstart', (e) => {
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     isSwiping = true;
+    isHorizontal = false;
   }, { passive: true });
 
   wrap.addEventListener('touchmove', (e) => {
@@ -1534,7 +1534,11 @@ function initSwipe(projectIdx) {
     const dx = e.touches[0].clientX - startX;
     const dy = e.touches[0].clientY - startY;
     
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+    if (!isHorizontal && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+      isHorizontal = true;
+    }
+    
+    if (isHorizontal) {
       e.preventDefault();
     }
   }, { passive: false });
@@ -1569,6 +1573,7 @@ function initSwipe(projectIdx) {
   });
 }
 
+// Лайтбокс
 function openLightbox(projectIdx, imageIdx) {
   lightboxProjectIdx = projectIdx;
   lightboxImageIdx = imageIdx;
