@@ -1258,9 +1258,15 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('.tg-btn').addEventListener('click', function() {
     var text = getFormData();
     if (!text) return;
-    // Telegram не поддерживает прямую отправку по номеру, только через share или выбор чата.
-    // Мы используем share-url, который откроет окно выбора чата и вставит текст.
-    var url = 'https://t.me/share/url?url=' + encodeURIComponent('https://prorab196.ru') + '&text=' + encodeURIComponent(text);
+    
+    // ВАШ НИК В TELEGRAM (БЕЗ @)
+    var MY_TELEGRAM = 'The_fabo'; 
+    
+    // Формируем ссылку: открываем чат с вами и подставляем текст
+    // url: ссылка на ваш профиль (чтобы Telegram знал, кому писать)
+    // text: сам текст заявки
+    var url = 'https://t.me/' + MY_TELEGRAM + '?text=' + encodeURIComponent(text);
+    
     window.open(url, '_blank');
   });
 
