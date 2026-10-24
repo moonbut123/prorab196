@@ -82,7 +82,7 @@
   .burger.active span:nth-child(2){opacity: 0;}
   .burger.active span:nth-child(3){transform: translateY(-7px) rotate(-45deg);}
 
-  /* MOBILE MENU */
+  /* MOBILE MENU (компактная выпадающая панель) */
   .mobile-menu-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -99,29 +99,53 @@
 
   .mobile-menu {
     position: fixed;
-    top: 0; left: 0; width: 100%;
+    top: 0; /* Начинается от самого верха */
+    right: 0;
+    width: 85%;
+    max-width: 320px;
+    height: 100vh;
     background: var(--dark);
     z-index: 101;
     display: flex;
     flex-direction: column;
-    padding: 80px 20px 30px;
-    gap: 15px;
-    transform: translateY(-100%);
+    padding: 20px;
+    gap: 10px;
+    transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    max-height: 85vh;
+    box-shadow: -5px 0 30px rgba(0,0,0,0.5);
     overflow-y: auto;
   }
   .mobile-menu.active {
-    transform: translateY(0);
+    transform: translateX(0);
+  }
+  
+  /* Кнопка закрытия (крестик) в меню */
+  .mobile-menu-close {
+    align-self: flex-end;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 5px;
+    border: none;
+  }
+  .mobile-menu-close:hover {
+    background: var(--accent);
+    color: var(--dark);
   }
   
   .mobile-menu a {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: #fff;
-    padding: 12px 15px;
+    padding: 10px 12px;
     border-radius: 8px;
     transition: background 0.2s;
   }
@@ -133,12 +157,13 @@
     margin-top: 10px;
     color: var(--dark);
     text-align: center;
-    font-size: 16px;
+    font-size: 15px;
+    padding: 12px 20px;
   }
   .mobile-menu .phone-link {
     text-align: center;
-    margin-top: 10px;
-    font-size: 18px;
+    margin-top: 5px;
+    font-size: 16px;
     font-weight: 700;
     color: #fff;
   }
@@ -354,20 +379,29 @@
     padding:3px 8px;border-radius:20px;
   }
 
-  /* HOW */
+  /* ===== HOW (С ФОНОМ) ===== */
   .how-section {
     background:
       linear-gradient(rgba(28,35,49,.85),rgba(28,35,49,.92)),
       url("images/how-bg.jpg") center/cover no-repeat;
     color: #fff;
     padding: 70px 0;
+    overflow: hidden;
   }
 
   .how-section .section-title { color: #fff; }
   .how-section .section-sub { color: #cfd6e3; }
 
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
-  .step{position:relative}
+  .steps-wrapper {
+    position: relative;
+  }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+  }
+
+  .step{position:relative; background: rgba(255,255,255,0.04); padding: 20px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);}
   .step .num{
     width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--dark);
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;
@@ -375,6 +409,44 @@
   }
   .step h3{font-size:17px;margin-bottom:8px; color: #fff;}
   .step p{font-size:14.5px;color:#cfd6e3;}
+
+  @media(max-width: 768px){
+    .steps {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 16px;
+      padding: 4px 4px 20px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .steps::-webkit-scrollbar { display: none; }
+
+    .step {
+      flex: 0 0 85%;
+      scroll-snap-align: start;
+    }
+    
+    .slider-hint {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .slider-hint span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: background 0.3s;
+    }
+    .slider-hint span.active {
+      background: var(--accent);
+    }
+  }
+  @media(min-width: 769px){
+    .slider-hint { display: none; }
+  }
 
   /* ===== PORTFOLIO ===== */
   .portfolio{background:var(--bg-alt)}
@@ -391,7 +463,6 @@
     display:flex; flex-direction:column;
   }
 
-  /* ВЕРХНЯЯ ЧАСТЬ: ТОЛЬКО БОЛЬШОЕ ФОТО */
   .card-top{
     padding:12px 12px 0 12px; background:#fff;
   }
@@ -406,11 +477,10 @@
   .card-main-img img{
     width:100%; height:100%; object-fit:cover; transition:transform 0.3s;
     user-select:none; -webkit-user-drag:none;
-    pointer-events: none; /* важно для Safari — клики ловит контейнер */
+    pointer-events: none;
   }
   .card-main-img:hover img{transform:scale(1.02);}
 
-  /* Точки на большом фото */
   .card-dots{
     position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
     display:flex; gap:5px; background:rgba(0,0,0,0.4); padding:4px 10px; border-radius:10px;
@@ -421,12 +491,10 @@
   }
   .card-dots span.active{background:#fff;}
 
-  /* НИЖНЯЯ ЧАСТЬ: МИНИАТЮРЫ + ТЕКСТ */
   .card-bottom{
     padding:12px 20px 20px; display:flex; flex-direction:column; gap:15px;
   }
   
-  /* Миниатюры */
   .card-thumbs{
     display:flex; flex-direction:row; gap:8px; 
     overflow-x:auto; width:100%; padding-bottom: 4px;
@@ -441,7 +509,6 @@
   .card-thumb img{width:100%; height:100%; object-fit:cover;}
   .card-thumb.active, .card-thumb:hover{opacity:1; border-color:var(--accent);}
 
-  /* Текст и кнопка */
   .card-info-wrapper{
     display:flex; justify-content:space-between; align-items:flex-end; gap:15px; width:100%;
   }
@@ -843,6 +910,7 @@
 
 <!-- Mobile Menu -->
 <div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Закрыть меню">&times;</button>
   <a href="#about" class="mobile-link">Обо мне</a>
   <a href="#how" class="mobile-link">Как работаю</a>
   <a href="#portfolio" class="mobile-link">Примеры работ</a>
@@ -947,31 +1015,41 @@
   </div>
 </section>
 
-<!-- ===== HOW (С ФОНОМ) ===== -->
+<!-- ===== HOW (СЛАЙДЕР НА МОБИЛЬНЫХ) ===== -->
 <section class="how-section" id="how">
   <div class="wrap">
     <h2 class="section-title">Как я работаю</h2>
     <p class="section-sub">Четыре шага от звонка до сдачи объекта.</p>
-    <div class="steps">
-      <div class="step">
-        <div class="num">1</div>
-        <h3>Замер и смета</h3>
-        <p>Приезжаю бесплатно, обмеряю, обсуждаю ваши задачи. Через 1–2 дня — подробная смета с фиксированной ценой.</p>
+    
+    <div class="steps-wrapper">
+      <div class="steps" id="stepsSlider">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Замер и смета</h3>
+          <p>Приезжаю бесплатно, обмеряю, обсуждаю ваши задачи. Через 1–2 дня — подробная смета с фиксированной ценой.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Подбор мастеров</h3>
+          <p>Ставлю на объект только тех, кого знаю лично. Электрик, плиточник, маляр — каждый под свою задачу.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Контроль и закупка</h3>
+          <p>Ежедневно на связи с мастерами, лично проверяю скрытые работы. Материалы берём по моим скидкам.</p>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <h3>Сдача и гарантия</h3>
+          <p>Принимаем объект вместе. Подписываем акт, даю гарантию до 2 лет и остаюсь на связи после ремонта.</p>
+        </div>
       </div>
-      <div class="step">
-        <div class="num">2</div>
-        <h3>Подбор мастеров</h3>
-        <p>Ставлю на объект только тех, кого знаю лично. Электрик, плиточник, маляр — каждый под свою задачу.</p>
-      </div>
-      <div class="step">
-        <div class="num">3</div>
-        <h3>Контроль и закупка</h3>
-        <p>Ежедневно на связи с мастерами, лично проверяю скрытые работы. Материалы берём по моим скидкам.</p>
-      </div>
-      <div class="step">
-        <div class="num">4</div>
-        <h3>Сдача и гарантия</h3>
-        <p>Принимаем объект вместе. Подписываем акт, даю гарантию до 2 лет и остаюсь на связи после ремонта.</p>
+      
+      <div class="slider-hint" id="stepsHint">
+        <span class="active"></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
     </div>
   </div>
@@ -1366,6 +1444,35 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<!-- ===== SCRIPT: Слайдер этапов (мобильный) ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const slider = document.getElementById('stepsSlider');
+  const hint = document.getElementById('stepsHint');
+  if (!slider || !hint) return;
+
+  const dots = hint.querySelectorAll('span');
+  let currentIndex = 0;
+
+  slider.addEventListener('scroll', function() {
+    const stepWidth = slider.querySelector('.step').offsetWidth + 16;
+    const newIndex = Math.round(slider.scrollLeft / stepWidth);
+    
+    if (newIndex !== currentIndex && newIndex < dots.length) {
+      currentIndex = newIndex;
+      dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+    }
+  });
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', function() {
+      const stepWidth = slider.querySelector('.step').offsetWidth + 16;
+      slider.scrollTo({ left: i * stepWidth, behavior: 'smooth' });
+    });
+  });
+});
+</script>
+
 <!-- ===== SCRIPT: Сетка галереи и лайтбокс ===== -->
 <script>
 const projectsData = [
@@ -1658,6 +1765,7 @@ const burgerBtn = document.getElementById('burgerBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
 const mobileLinks = document.querySelectorAll('.mobile-link');
+const mobileMenuClose = document.getElementById('mobileMenuClose');
 
 let touchStartY = 0;
 
@@ -1683,6 +1791,10 @@ if (burgerBtn && mobileMenu && mobileMenuOverlay) {
       openMobileMenu();
     }
   });
+
+  if (mobileMenuClose) {
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
+  }
 
   mobileMenuOverlay.addEventListener('click', closeMobileMenu);
 
