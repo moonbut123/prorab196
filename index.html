@@ -1319,16 +1319,27 @@
 </head>
 <body>
 
-<!-- Навигационная цепочка (Хлебные крошки) -->
-<nav aria-label="breadcrumb" class="breadcrumbs">
-  <div class="wrap">
-    <ol>
-      <li><a href="/">Главная</a></li>
-      <li><a href="#services">Услуги</a></li>
-      <li aria-current="page">Ремонт квартир под ключ</li>
-    </ol>
-  </div>
-</nav>  
+<!-- Скрытые хлебные крошки для поисковых роботов (Schema.org) -->
+<div style="display: none;" aria-hidden="true">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://prorab196.ru/">
+        <span itemprop="name">Главная</span>
+      </a>
+      <meta itemprop="position" content="1" />
+    </li>
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://prorab196.ru/#services">
+        <span itemprop="name">Услуги</span>
+      </a>
+      <meta itemprop="position" content="2" />
+    </li>
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <span itemprop="name">Ремонт квартир под ключ</span>
+      <meta itemprop="position" content="3" />
+    </li>
+  </ol>
+</div>
   
 <!-- ===== HEADER ===== -->
 <header>
