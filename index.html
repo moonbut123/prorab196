@@ -1292,6 +1292,39 @@
     padding: 12px 16px;
     font-size: 14px;
   }
+
+/* Хлебные крошки */
+.breadcrumbs {
+  padding: 15px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.breadcrumbs ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+}
+.breadcrumbs li:not(:last-child)::after {
+  content: "/";
+  margin-left: 8px;
+  color: #ccc;
+}
+.breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.breadcrumbs a:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}  
 </style>
 </head>
 <body>
