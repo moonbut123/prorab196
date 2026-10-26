@@ -827,6 +827,53 @@
     }
   }
 
+  /* ===== VPN-подсказки для кнопок мессенджеров ===== */
+  .vpn-tip-wrap{
+    position: relative;
+    width: 100%;
+  }
+  .vpn-tip-wrap .btn{
+    width: 100%;
+  }
+  .vpn-tip{
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%) translateY(4px);
+    background: #1c2331;
+    color: #fff;
+    font-size: 12.5px;
+    line-height: 1.35;
+    padding: 8px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+    z-index: 5;
+  }
+  .vpn-tip::after{
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1c2331;
+  }
+  /* Показываем только на устройствах с hover (ПК/ноутбуки с мышью) */
+  @media (hover: hover) and (pointer: fine){
+    .vpn-tip-wrap:hover .vpn-tip{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+  /* На тач-устройствах подсказку не показываем вообще */
+  @media (hover: none), (pointer: coarse){
+    .vpn-tip{ display: none; }
+  }
+
   /* FORM */
   .form-section{
     background:
@@ -843,6 +890,8 @@
   .form-left .contact-line{color:#cfd6e3;margin-top:20px;font-size:14px}
   .form-left .phone-big{color:#fff;font-size:22px;font-weight:800;margin-top:10px;display:inline-block}
 
+
+  
   .form-box{
     background:#fff;color:var(--text);border-radius:18px;padding:36px;
     max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);
@@ -1028,6 +1077,52 @@
   .max-modal-close {
     display: block; margin: 16px auto 0; background: none; border: none;
     color: var(--muted); font-size: 14px; cursor: pointer; text-decoration: underline;
+  }
+
+  /* ===== VPN-баннер для мобильных ===== */
+  #vpnBanner{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 2100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+    animation: vpnFade .2s ease;
+  }
+  @keyframes vpnFade{ from{ opacity: 0; } to{ opacity: 1; } }
+  .vpn-banner-content{
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 460px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    transform: translateY(10px);
+    animation: vpnUp .25s ease forwards;
+  }
+  @keyframes vpnUp{ to{ transform: translateY(0); } }
+  .vpn-banner-title{
+    font-size: 16px;
+    font-weight: 800;
+    color: #1c2331;
+    margin-bottom: 8px;
+  }
+  .vpn-banner-text{
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .vpn-banner-actions{
+    display: flex;
+    gap: 10px;
+  }
+  .vpn-banner-actions .btn{
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 14px;
   }
 </style>
 </head>
@@ -1358,20 +1453,19 @@
       <a href="tel:+79221230234" class="phone-big">+7 (922) 123-02-34</a>
     </div>
 
-    <form class="form-box" id="leadForm">
+     <form class="form-box" id="leadForm">
       <h3>Оставьте заявку</h3>
       <p>Выберите мессенджер, в который отправить заявку.</p>
 
-      <label for="name">Ваше имя</label>
-      <input id="name" type="text" placeholder="Как к вам обращаться" required>
+      <input id="name" type="text" placeholder="Ваше имя" aria-label="Ваше имя" required>
 
-      <label for="phone">Телефон</label>
-      <input id="phone" type="tel" placeholder="+7 (___) ___-__-__" required>
+      <input id="phone" type="tel" placeholder="Телефон" aria-label="Телефон" required>
+
+      <input id="area" type="number" min="10" placeholder="Площадь, м²" aria-label="Площадь, м²">
 
       <div class="form-grid-2">
         <div>
-          <label for="type">Тип ремонта</label>
-          <select id="type">
+          <select id="type" aria-label="Тип ремонта">
             <option>Косметический</option>
             <option>Капитальный</option>
             <option>Дизайнерский</option>
@@ -1379,26 +1473,45 @@
           </select>
         </div>
         <div>
-          <label for="area">Площадь, м²</label>
-          <input id="area" type="number" min="10" placeholder="Например, 54">
+          <select id="district" aria-label="Район Екатеринбурга">
+            <option value="" selected disabled>Район</option>
+            <option>Академический</option>
+            <option>Верх-Исетский</option>
+            <option>Железнодорожный</option>
+            <option>Кировский</option>
+            <option>Ленинский</option>
+            <option>Октябрьский</option>
+            <option>Орджоникидзевский</option>
+            <option>Чкаловский</option>
+          </select>
         </div>
       </div>
 
-      <label for="comment">Комментарий (необязательно)</label>
-      <textarea id="comment" rows="2" placeholder="Район, сроки, пожелания"></textarea>
+      <textarea id="comment" rows="2" placeholder="Опишите виды работ (необязательно)" aria-label="Комментарий"></textarea>
 
       <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-        <button type="button" class="btn wa-btn" style="background: var(--wa);">
-          Отправить в WhatsApp
-        </button>
-        <button type="button" class="btn tg-btn" style="background: var(--tg);">
-          Отправить в Telegram
-        </button>
+        <div class="vpn-tip-wrap">
+          <button type="button" class="btn wa-btn" style="background: var(--wa);">
+            Отправить в WhatsApp
+          </button>
+          <div class="vpn-tip">Может потребоваться включённый VPN</div>
+        </div>
+
+        <div class="vpn-tip-wrap">
+          <button type="button" class="btn tg-btn" style="background: var(--tg);">
+            Отправить в Telegram
+          </button>
+          <div class="vpn-tip">Может потребоваться включённый VPN</div>
+        </div>
+
         <button type="button" class="btn max-btn" style="background: var(--max);">
           Отправить в MAX
         </button>
       </div>
 
+      <div class="form-note" style="margin-top:4px; color:#b45309;">
+        * Для отправки в WhatsApp и Telegram может потребоваться включённый VPN
+      </div>
       <div class="form-note">Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных</div>
     </form>
   </div>
@@ -1559,7 +1672,7 @@
   </div>
 </div>
 
-<!-- ===== SCRIPT: отправка заявки ===== -->
+<!-- ===== SCRIPT: отправка заявки + VPN-предупреждение ===== -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('leadForm');
@@ -1573,6 +1686,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var phone   = document.getElementById('phone').value.trim();
     var type    = document.getElementById('type').value;
     var area    = document.getElementById('area').value.trim();
+    var district = document.getElementById('district').value;
     var comment = document.getElementById('comment').value.trim();
 
     if (!name || !phone) {
@@ -1587,26 +1701,80 @@ document.addEventListener('DOMContentLoaded', function() {
       'Телефон: ' + phone,
       'Тип ремонта: ' + type
     ];
-    if (area)    lines.push('Площадь: ' + area + ' м²');
-    if (comment) lines.push('Комментарий: ' + comment);
+    if (district) lines.push('Район: ' + district);
+    if (area)     lines.push('Площадь: ' + area + ' м²');
+    if (comment)  lines.push('Комментарий: ' + comment);
     lines.push('— — — — — — — — — —');
     lines.push('Отправлено: ' + new Date().toLocaleString('ru-RU'));
 
     return lines.join('\n');
   }
 
+  // ===== VPN-предупреждение перед переходом в мессенджер (только тач) =====
+  var isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+  function showVpnBanner(messenger, onConfirm) {
+    var existing = document.getElementById('vpnBanner');
+    if (existing) existing.remove();
+
+    var banner = document.createElement('div');
+    banner.id = 'vpnBanner';
+    banner.innerHTML =
+      '<div class="vpn-banner-content">' +
+        '<div class="vpn-banner-title">Перед отправкой в ' + messenger + '</div>' +
+        '<div class="vpn-banner-text">Может потребоваться включённый VPN. Если ' + messenger + ' не открывается — включите VPN и попробуйте снова.</div>' +
+        '<div class="vpn-banner-actions">' +
+          '<button type="button" class="btn vpn-banner-cancel" style="background:#e5e7eb;color:#2b2f38;">Отмена</button>' +
+          '<button type="button" class="btn vpn-banner-ok">Продолжить</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(banner);
+    document.body.style.overflow = 'hidden';
+
+    function close() {
+      banner.remove();
+      document.body.style.overflow = '';
+    }
+
+    banner.querySelector('.vpn-banner-cancel').addEventListener('click', close);
+    banner.querySelector('.vpn-banner-ok').addEventListener('click', function() {
+      close();
+      if (typeof onConfirm === 'function') onConfirm();
+    });
+    banner.addEventListener('click', function(e) {
+      if (e.target === banner) close();
+    });
+  }
+
   document.querySelector('.wa-btn').addEventListener('click', function() {
     var text = getFormData();
     if (!text) return;
+
     var url = 'https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
+
+    if (isTouchDevice) {
+      showVpnBanner('WhatsApp', function() {
+        window.open(url, '_blank');
+      });
+    } else {
+      window.open(url, '_blank');
+    }
   });
 
   document.querySelector('.tg-btn').addEventListener('click', function() {
     var text = getFormData();
     if (!text) return;
+
     var url = 'https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
+
+    if (isTouchDevice) {
+      showVpnBanner('Telegram', function() {
+        window.open(url, '_blank');
+      });
+    } else {
+      window.open(url, '_blank');
+    }
   });
 
   document.querySelector('.max-btn').addEventListener('click', function() {
