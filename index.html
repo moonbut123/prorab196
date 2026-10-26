@@ -662,8 +662,19 @@
     padding:4px 4px 16px;
     scrollbar-width:none;
     -ms-overflow-style:none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .reviews-track::-webkit-scrollbar{display:none}
+  .reviews-track.dragging{
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+  .reviews-track.dragging .review-card img{
+    pointer-events: none;
+  }
 
   .review-card{
     flex:0 0 auto;
@@ -687,6 +698,8 @@
     max-width:100%;
     max-height:460px;
     object-fit:contain;
+    user-select: none;
+    -webkit-user-drag: none;
   }
 
   @media(max-width:768px){
@@ -1671,7 +1684,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- ===== SCRIPT: Отзывы (слайдер) ===== -->
+<!-- ===== SCRIPT: Отзывы (слайдер + drag-to-scroll ЛКМ) ===== -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const slider = document.getElementById('reviewsSlider');
@@ -1690,19 +1703,22 @@ document.addEventListener('DOMContentLoaded', function() {
     hint.style.display = needDots ? 'flex' : 'none';
   }
 
-  let currentIndex = 0;
-
+  // ===== Подсветка точек при обычном скролле (тач, колесо, Shift+колесо) =====
+  let scrollTimer = null;
   slider.addEventListener('scroll', function() {
     if (!cards.length) return;
-    const gap = parseInt(getComputedStyle(slider).gap) || 16;
-    const cardWidth = cards[0].offsetWidth + gap;
-    const newIndex = Math.round(slider.scrollLeft / cardWidth);
-    if (newIndex !== currentIndex && newIndex < dots.length) {
-      currentIndex = newIndex;
-      dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
-    }
+    if (slider.classList.contains('dragging')) return; // во время drag не считаем
+
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function() {
+      const gap = parseInt(getComputedStyle(slider).gap) || 16;
+      const cardWidth = cards[0].offsetWidth + gap;
+      const newIndex = Math.round(slider.scrollLeft / cardWidth);
+      dots.forEach((d, i) => d.classList.toggle('active', i === Math.min(newIndex, dots.length - 1)));
+    }, 60);
   });
 
+  // ===== Клик по точкам =====
   dots.forEach((dot, i) => {
     dot.addEventListener('click', function() {
       if (!cards.length) return;
@@ -1710,6 +1726,59 @@ document.addEventListener('DOMContentLoaded', function() {
       const cardWidth = cards[0].offsetWidth + gap;
       slider.scrollTo({ left: i * cardWidth, behavior: 'smooth' });
     });
+  });
+
+  // ===== Drag-to-scroll (ЛКМ) =====
+  let isDown = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+  let hasDragged = false;
+  const dragThreshold = 5; // px, чтобы отличить клик от перетаскивания
+
+  slider.addEventListener('mousedown', function(e) {
+    // не перехватываем среднюю/правую кнопку
+    if (e.button !== 0) return;
+
+    isDown = true;
+    hasDragged = false;
+    startX = e.pageX;
+    startScrollLeft = slider.scrollLeft;
+    slider.classList.add('dragging');
+  });
+
+  // Слушаем движение на document, чтобы не терять drag, если курсор вышел за слайдер
+  document.addEventListener('mousemove', function(e) {
+    if (!isDown) return;
+
+    const dx = e.pageX - startX;
+
+    if (!hasDragged && Math.abs(dx) > dragThreshold) {
+      hasDragged = true;
+    }
+
+    if (hasDragged) {
+      e.preventDefault();
+      slider.scrollLeft = startScrollLeft - dx;
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (!isDown) return;
+    isDown = false;
+    slider.classList.remove('dragging');
+
+    // Если перетащили — обновим активную точку вручную
+    if (hasDragged && cards.length) {
+      const gap = parseInt(getComputedStyle(slider).gap) || 16;
+      const cardWidth = cards[0].offsetWidth + gap;
+      const newIndex = Math.round(slider.scrollLeft / cardWidth);
+      dots.forEach((d, i) => d.classList.toggle('active', i === Math.min(newIndex, dots.length - 1)));
+    }
+  });
+
+  // Запрет на "нативный" drag картинок внутри слайдера
+  slider.addEventListener('dragstart', function(e) {
+    e.preventDefault();
   });
 
   updateHintVisibility();
