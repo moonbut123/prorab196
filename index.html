@@ -1576,13 +1576,148 @@
 </section>
 
 <!-- ===== PORTFOLIO ===== -->
+<!-- ===== PORTFOLIO ===== -->
 <section class="section portfolio" id="portfolio">
   <div class="wrap">
     <h2 class="section-title">Примеры работ</h2>
     <p class="section-sub">Свайпните большое фото, чтобы пролистать галерею. Клик по нему откроет фото на весь экран. Миниатюры — снизу.</p>
 
     <div class="portfolio-grid" id="portfolioGrid">
-      <!-- Карточки будут генерироваться скриптом -->
+
+      <!-- Карточка 1: ЖК «Панорама» -->
+      <div class="project-card" data-project="0">
+        <div class="card-top">
+          <div class="card-main-img" id="main-img-wrap-0" data-index="0" data-project="0">
+            <img id="main-img-0" src="images/1 (2).webp" alt="ЖК Панорама — капитальный ремонт квартиры 70 м² в Екатеринбурге" loading="lazy">
+            <div class="card-dots">
+              <span class="active" onclick="switchImage(0, 0, null, event)"></span>
+              <span onclick="switchImage(0, 1, null, event)"></span>
+              <span onclick="switchImage(0, 2, null, event)"></span>
+              <span onclick="switchImage(0, 3, null, event)"></span>
+            </div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="card-thumbs">
+            <div class="card-thumb active" onclick="switchImage(0, 0, this)"><img src="images/1 (2).webp" alt="ЖК Панорама — фото 1" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(0, 1, this)"><img src="images/3 (1).webp" alt="ЖК Панорама — фото 2" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(0, 2, this)"><img src="images/4 (2).webp" alt="ЖК Панорама — фото 3" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(0, 3, this)"><img src="images/5 (2).webp" alt="ЖК Панорама — фото 4" loading="lazy"></div>
+          </div>
+          <div class="card-info-wrapper">
+            <div class="card-info">
+              <h3>ЖК «Панорама»</h3>
+              <div class="meta"><span>📐 70 м²</span><span>⏱ 88 дней</span></div>
+              <div class="type">Капитальный ремонт</div>
+            </div>
+            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Карточка 2: ЖК «Светлый» -->
+      <div class="project-card" data-project="1">
+        <div class="card-top">
+          <div class="card-main-img" id="main-img-wrap-1" data-index="0" data-project="1">
+            <img id="main-img-1" src="images/1 (4).webp" alt="ЖК Светлый — косметический ремонт квартиры 43 м² в Екатеринбурге" loading="lazy">
+            <div class="card-dots">
+              <span class="active" onclick="switchImage(1, 0, null, event)"></span>
+              <span onclick="switchImage(1, 1, null, event)"></span>
+              <span onclick="switchImage(1, 2, null, event)"></span>
+              <span onclick="switchImage(1, 3, null, event)"></span>
+              <span onclick="switchImage(1, 4, null, event)"></span>
+              <span onclick="switchImage(1, 5, null, event)"></span>
+            </div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="card-thumbs">
+            <div class="card-thumb active" onclick="switchImage(1, 0, this)"><img src="images/1 (4).webp" alt="ЖК Светлый — фото 1" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(1, 1, this)"><img src="images/2 (2).webp" alt="ЖК Светлый — фото 2" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(1, 2, this)"><img src="images/3 (3).webp" alt="ЖК Светлый — фото 3" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(1, 3, this)"><img src="images/4 (4).webp" alt="ЖК Светлый — фото 4" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(1, 4, this)"><img src="images/5 (4).webp" alt="ЖК Светлый — фото 5" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(1, 5, this)"><img src="images/6 (1).webp" alt="ЖК Светлый — фото 6" loading="lazy"></div>
+          </div>
+          <div class="card-info-wrapper">
+            <div class="card-info">
+              <h3>ЖК «Светлый»</h3>
+              <div class="meta"><span>📐 43 м²</span><span>⏱ 58 дней</span></div>
+              <div class="type">Косметический ремонт</div>
+            </div>
+            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Карточка 3: ЖК «Ривьера» -->
+      <div class="project-card" data-project="2">
+        <div class="card-top">
+          <div class="card-main-img" id="main-img-wrap-2" data-index="0" data-project="2">
+            <img id="main-img-2" src="images/1 (3).webp" alt="ЖК Ривьера — дизайнерский ремонт квартиры 38 м² в Екатеринбурге" loading="lazy">
+            <div class="card-dots">
+              <span class="active" onclick="switchImage(2, 0, null, event)"></span>
+              <span onclick="switchImage(2, 1, null, event)"></span>
+              <span onclick="switchImage(2, 2, null, event)"></span>
+              <span onclick="switchImage(2, 3, null, event)"></span>
+            </div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="card-thumbs">
+            <div class="card-thumb active" onclick="switchImage(2, 0, this)"><img src="images/1 (3).webp" alt="ЖК Ривьера — фото 1" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(2, 1, this)"><img src="images/2 (1).webp" alt="ЖК Ривьера — фото 2" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(2, 2, this)"><img src="images/4 (3).webp" alt="ЖК Ривьера — фото 3" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(2, 3, this)"><img src="images/5 (3).webp" alt="ЖК Ривьера — фото 4" loading="lazy"></div>
+          </div>
+          <div class="card-info-wrapper">
+            <div class="card-info">
+              <h3>ЖК «Ривьера»</h3>
+              <div class="meta"><span>📐 38 м²</span><span>⏱ 3,5 мес.</span></div>
+              <div class="type">Дизайнерский ремонт</div>
+            </div>
+            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Карточка 4: ЖК «Современник» -->
+      <div class="project-card" data-project="3">
+        <div class="card-top">
+          <div class="card-main-img" id="main-img-wrap-3" data-index="0" data-project="3">
+            <img id="main-img-3" src="images/diz-1.webp" alt="ЖК Современник — ремонт новостройки 54 м² в Екатеринбурге" loading="lazy">
+            <div class="card-dots">
+              <span class="active" onclick="switchImage(3, 0, null, event)"></span>
+              <span onclick="switchImage(3, 1, null, event)"></span>
+              <span onclick="switchImage(3, 2, null, event)"></span>
+              <span onclick="switchImage(3, 3, null, event)"></span>
+              <span onclick="switchImage(3, 4, null, event)"></span>
+              <span onclick="switchImage(3, 5, null, event)"></span>
+              <span onclick="switchImage(3, 6, null, event)"></span>
+            </div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="card-thumbs">
+            <div class="card-thumb active" onclick="switchImage(3, 0, this)"><img src="images/diz-1.webp" alt="ЖК Современник — фото 1" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(3, 1, this)"><img src="images/diz-2.webp" alt="ЖК Современник — фото 2" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(3, 2, this)"><img src="images/diz-3.webp" alt="ЖК Современник — фото 3" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(3, 3, this)"><img src="images/diz-4.webp" alt="ЖК Современник — фото 4" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(3, 4, this)"><img src="images/diz-5.webp" alt="ЖК Современник — фото 5" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(3, 5, this)"><img src="images/diz-6.webp" alt="ЖК Современник — фото 6" loading="lazy"></div>
+            <div class="card-thumb" onclick="switchImage(3, 6, this)"><img src="images/diz-7.webp" alt="ЖК Современник — фото 7" loading="lazy"></div>
+          </div>
+          <div class="card-info-wrapper">
+            <div class="card-info">
+              <h3>ЖК «Современник»</h3>
+              <div class="meta"><span>📐 54 м²</span><span>⏱ 68 дней</span></div>
+              <div class="type">Ремонт новостройки</div>
+            </div>
+            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -2210,124 +2345,30 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- ===== SCRIPT: Сетка галереи и лайтбокс ===== -->
+<!-- ===== SCRIPT: Интерактив портфолио (без генерации HTML) ===== -->
 <script>
+// Данные для сопоставления индексов и путей к картинкам (нужны для переключения)
 const projectsData = [
   {
     title: "ЖК «Панорама»",
-    area: "70  м²",
-    time: "88 дней.",
-    type: "Капитальный ремонт",
-    images: [
-      "images/1 (2).webp",
-      "images/3 (1).webp",
-      "images/4 (2).webp",
-      "images/5 (2).webp"
-    ]
+    images: ["images/1 (2).webp","images/3 (1).webp","images/4 (2).webp","images/5 (2).webp"]
   },
   {
     title: "ЖК «Светлый»",
-    area: "43 м²",
-    time: "58 дней.",
-    type: "Косметический ремонт",
-    images: [
-      "images/1 (4).webp",
-      "images/2 (2).webp",
-      "images/3 (3).webp",
-      "images/4 (4).webp",
-      "images/5 (4).webp",
-      "images/6 (1).webp"
-    ]
+    images: ["images/1 (4).webp","images/2 (2).webp","images/3 (3).webp","images/4 (4).webp","images/5 (4).webp","images/6 (1).webp"]
   },
   {
     title: "ЖК «Ривьера»",
-    area: "38 м²",
-    time: "3,5 мес.",
-    type: "Дизайнерский ремонт",
-    images: [
-      "images/1 (3).webp",
-      "images/2 (1).webp",
-      "images/4 (3).webp",
-      "images/5 (3).webp"
-    ]
+    images: ["images/1 (3).webp","images/2 (1).webp","images/4 (3).webp","images/5 (3).webp"]
   },
   {
     title: "ЖК «Современник»",
-    area: "54 м²",
-    time: "68 дней",
-    type: "Ремонт новостройки",
-    images: [
-      "images/diz-1.webp",
-      "images/diz-2.webp",
-      "images/diz-3.webp",
-      "images/diz-4.webp",
-      "images/diz-5.webp",
-      "images/diz-6.webp",
-      "images/diz-7.webp"
-    ]
+    images: ["images/diz-1.webp","images/diz-2.webp","images/diz-3.webp","images/diz-4.webp","images/diz-5.webp","images/diz-6.webp","images/diz-7.webp"]
   }
 ];
 
 let lightboxProjectIdx = 0;
 let lightboxImageIdx = 0;
-
-function renderPortfolio() {
-  const grid = document.getElementById('portfolioGrid');
-  grid.innerHTML = '';
-
-  projectsData.forEach((project, pIndex) => {
-    const card = document.createElement('div');
-    card.className = 'project-card';
-
-    let thumbsHtml = '';
-    project.images.forEach((img, iIndex) => {
-      const activeClass = iIndex === 0 ? 'active' : '';
-      thumbsHtml += `
-        <div class="card-thumb ${activeClass}" onclick="switchImage(${pIndex}, ${iIndex}, this)">
-          <img src="${img}" alt="${project.title} — фото ${iIndex + 1}" loading="lazy">
-        </div>
-      `;
-    });
-
-    let dotsHtml = '';
-    project.images.forEach((img, iIndex) => {
-      const activeClass = iIndex === 0 ? 'active' : '';
-      dotsHtml += `<span class="${activeClass}" onclick="switchImage(${pIndex}, ${iIndex}, null, event)"></span>`;
-    });
-
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="card-main-img" id="main-img-wrap-${pIndex}" data-index="0" data-project="${pIndex}">
-          <img id="main-img-${pIndex}" src="${project.images[0]}" alt="${project.title} — пример ремонта" loading="lazy">
-          <div class="card-dots">
-            ${dotsHtml}
-          </div>
-        </div>
-      </div>
-      <div class="card-bottom">
-        <div class="card-thumbs">
-          ${thumbsHtml}
-        </div>
-        <div class="card-info-wrapper">
-          <div class="card-info">
-            <h3>${project.title}</h3>
-            <div class="meta">
-              <span>📐 ${project.area}</span>
-              <span>⏱ ${project.time}</span>
-            </div>
-            <div class="type">${project.type}</div>
-          </div>
-          <a href="#form" class="card-btn">
-            Рассчитать по своим параметрам
-            <small>Расчет онлайн за 1 мин</small>
-          </a>
-        </div>
-      </div>
-    `;
-
-    grid.appendChild(card);
-    initSwipe(pIndex);
-  });
-}
 
 function switchImage(projectIdx, imageIdx, thumbElement, event) {
   if(event) event.stopPropagation();
@@ -2350,10 +2391,7 @@ function initSwipe(projectIdx) {
   const wrap = document.getElementById(`main-img-wrap-${projectIdx}`);
   if (!wrap) return;
 
-  let startX = 0;
-  let startY = 0;
-  let isSwiping = false;
-  let isHorizontal = false;
+  let startX = 0, startY = 0, isSwiping = false, isHorizontal = false;
 
   wrap.addEventListener('touchstart', (e) => {
     startX = e.touches[0].clientX;
@@ -2432,22 +2470,22 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'ArrowRight') navLightbox(1);
 });
 
-let touchStartX = 0;
-const lightbox = document.getElementById('lightbox');
-
-lightbox.addEventListener('touchstart', (e) => {
-  touchStartX = e.touches[0].clientX;
-}, { passive: true });
-
-lightbox.addEventListener('touchend', (e) => {
-  const touchEndX = e.changedTouches[0].clientX;
-  const diff = touchEndX - touchStartX;
-  if (Math.abs(diff) > 50) navLightbox(diff > 0 ? -1 : 1);
-});
-
 document.addEventListener('DOMContentLoaded', () => {
-  renderPortfolio();
+  // Инициализируем свайп для каждой карточки, которая уже есть в HTML
+  document.querySelectorAll('.project-card').forEach((card, idx) => initSwipe(idx));
 });
+
+// Свайп в лайтбоксе (для мобильных)
+let touchStartX = 0;
+const lightboxEl = document.getElementById('lightbox');
+if (lightboxEl) {
+  lightboxEl.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  lightboxEl.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchEndX - touchStartX;
+    if (Math.abs(diff) > 50) navLightbox(diff > 0 ? -1 : 1);
+  });
+}
 </script>
 
 <!-- ===== SCRIPT: Мобильное меню ===== -->
