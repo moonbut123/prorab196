@@ -266,7 +266,7 @@
   .burger.active span:nth-child(2){opacity: 0;}
   .burger.active span:nth-child(3){transform: translateY(-7px) rotate(-45deg);}
 
-  /* MOBILE MENU (ОПТИМИЗИРОВАНО ПО ВЫСОТЕ ДЛЯ IPHONE) */
+  /* MOBILE MENU (Оптимальный размер и 2 ряда для районов) */
   .mobile-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index: 99;
@@ -275,31 +275,31 @@
   .mobile-menu-overlay.active { opacity: 1; pointer-events: auto; }
 
   .mobile-menu {
-    position: fixed; top: 0; right: 0; width: 85%; max-width: 320px; height: 100vh;
+    position: fixed; top: 0; right: 0; width: 88%; max-width: 350px; height: 100vh;
     height: 100dvh;
     background: var(--dark); z-index: 101; display: flex; flex-direction: column;
-    padding: 16px 16px 20px; gap: 4px; transform: translateX(100%);
+    padding: 18px 18px 22px; gap: 6px; transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: -5px 0 30px rgba(0,0,0,0.5); overflow-y: auto;
   }
   .mobile-menu.active { transform: translateX(0); }
   
   .mobile-menu-close {
-    align-self: flex-end; width: 30px; height: 30px; border-radius: 50%;
+    align-self: flex-end; width: 34px; height: 34px; border-radius: 50%;
     background: rgba(255,255,255,0.08); color: #fff; display: flex;
-    align-items: center; justify-content: center; font-size: 20px; cursor: pointer;
+    align-items: center; justify-content: center; font-size: 22px; cursor: pointer;
     transition: 0.2s; border: none; margin-bottom: 0px; flex-shrink: 0;
   }
   .mobile-menu-close:hover { background: var(--accent); color: var(--dark); }
 
   .mobile-menu .mobile-logo{
-    font-size:18px; font-weight:800; color:#fff; padding-bottom:8px;
+    font-size:19px; font-weight:800; color:#fff; padding-bottom:10px;
     border-bottom:1px solid rgba(255,255,255,.1); margin-bottom:4px; flex-shrink: 0;
   }
   .mobile-menu .mobile-logo .logo-dot, .mobile-menu .mobile-logo .logo-ekb{color:var(--accent)}
   
   .mobile-menu a {
-    font-size: 14.5px; font-weight: 600; color: #fff; padding: 7px 10px;
+    font-size: 16px; font-weight: 600; color: #fff; padding: 9px 12px;
     border-radius: 8px; transition: background 0.2s;
   }
   .mobile-menu a:hover, .mobile-menu a:active {
@@ -307,27 +307,29 @@
   }
   
   .mobile-dropdown details summary {
-    font-size: 14.5px; font-weight: 600; color: #fff; padding: 7px 10px;
+    font-size: 16px; font-weight: 600; color: #fff; padding: 9px 12px;
     border-radius: 8px; cursor: pointer; list-style: none; display: flex;
     justify-content: space-between; align-items: center;
   }
   .mobile-dropdown details summary::-webkit-details-marker { display: none; }
-  .mobile-dropdown details summary::after { content: "▾"; font-size: 12px; color: var(--accent); }
+  .mobile-dropdown details summary::after { content: "▾"; font-size: 13px; color: var(--accent); }
   .mobile-dropdown details[open] summary::after { content: "▴"; }
+  
+  /* РАЙОНЫ В 2 РЯДА */
   .mobile-dropdown-list {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 4px 0 6px 6px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 6px 0 8px 8px;
   }
-  .mobile-dropdown-list a { font-size: 11.5px; font-weight: 400; color: #cfd6e3; padding: 4px; text-align: center; }
+  .mobile-dropdown-list a { font-size: 13px; font-weight: 400; color: #cfd6e3; padding: 7px 8px; background: rgba(255,255,255,0.03); border-radius: 6px; }
 
-  .mobile-socials{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:8px 0 4px; flex-shrink: 0; }
+  .mobile-socials{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:10px 0 6px; flex-shrink: 0; }
   .mobile-socials .ms-btn{
-    height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:.2s;
+    height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; transition:.2s;
   }
   .mobile-socials .ms-btn.wa{background:var(--wa)}
   .mobile-socials .ms-btn.tg{background:var(--tg)}
   .mobile-socials .ms-btn.max{background:var(--max)}
-  .mobile-socials .ms-btn svg{width:18px;height:18px;fill:#fff}
-  .mobile-socials .ms-btn img{width:20px;height:20px;object-fit:contain}
+  .mobile-socials .ms-btn svg{width:20px;height:20px;fill:#fff}
+  .mobile-socials .ms-btn img{width:22px;height:22px;object-fit:contain}
   
   @media(max-width:1080px){
     .nav-links, .header-phone{display:none;}
@@ -788,11 +790,11 @@
   margin-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   flex-shrink: 0;
 }
 .mobile-phone-status-wrap .phone-link {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   color: #fff;
   text-align: center;
@@ -806,7 +808,7 @@
   justify-content: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.06);
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -817,18 +819,18 @@
 }
 .status-text b {
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 .status-text span {
   color: #b9c0cf;
-  font-size: 10.5px;
+  font-size: 11px;
 }
 
 /* Пульсирующий зелёный кружок онлайн */
 .status-dot-pulse {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   background-color: #25D366;
   border-radius: 50%;
   box-shadow: 0 0 0 rgba(37, 211, 102, 0.4);
@@ -959,7 +961,7 @@
     </a>
   </div>
 
-  <a href="#form" class="btn mobile-link" style="color:var(--dark); padding: 10px 14px; font-size: 14px; flex-shrink: 0;">Вызвать на замер</a>
+  <a href="#form" class="btn mobile-link" style="color:var(--dark); padding: 11px 16px; font-size: 15px; flex-shrink: 0;">Вызвать на замер</a>
   
   <div class="mobile-phone-status-wrap">
     <a href="tel:+79221230234" class="phone-link mobile-link">+7 (922) 123-02-34</a>
