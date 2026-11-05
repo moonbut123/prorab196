@@ -745,6 +745,14 @@
     pointer-events: none;
     transition: opacity 0.2s ease, visibility 0.2s ease;
   }
+/* Скрываем плавающие кнопки, когда открыто мобильное меню */
+  .mobile-menu.active ~ .float-contacts,
+  body:has(.mobile-menu.active) .float-contacts {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
 
 
   /* MODAL */
@@ -977,7 +985,7 @@
       <div class="status-dot-pulse"></div>
       <div class="status-text">
         <b>Александр · Прораб</b>
-        <span> · Ежедневно 9:00–21:00</span>
+        <span>ㅤЕжедневно 9:00–21:00</span>
       </div>
     </div>
   </div>
