@@ -475,7 +475,7 @@
 
   /* HOW */
   .how-section {
-    background: linear-gradient(rgba(28,35,49,.85),rgba(28,35,49,.92)), url("images/fon-site.jpg") center/cover no-repeat;
+    background: linear-gradient(rgba(28,35,49,.85),rgba(28,35,49,.92)), url("images/how-bg.jpg") center/cover no-repeat;
     color: #fff;padding: 70px 0;overflow: hidden;
   }
   .how-section .section-title { color: #fff; }
@@ -755,7 +755,7 @@
   /* QUIZ */
   .quiz-section{
     background-color: #1c2331 !important;
-    background-image: linear-gradient(rgba(28, 35, 49, 0.88), rgba(28, 35, 49, 0.94)), url("images/how-bg.jpg") !important;
+    background-image: linear-gradient(rgba(28, 35, 49, 0.88), rgba(28, 35, 49, 0.94)), url("images/fon-site.jpg") !important;
     background-size: cover !important;background-position: center !important;background-repeat: no-repeat !important;background-attachment: fixed !important;
     position: relative;
   }
@@ -1345,6 +1345,17 @@
     /* Отзывы */
     .review-card {
       max-width: 85vw !important; /* Чуть шире на мобилке */
+    }
+  }
+
+ /* ===== ВОЗВРАЩАЕМ ПОДПИСЬ ПОД ЛОГО В ШАПКЕ НА МОБИЛЬНЫХ ===== */
+  @media (max-width: 1080px) {
+    header .logo small {
+      display: block !important;
+      font-size: 10px; /* Чуть меньше, чтобы влезло в узкую шапку */
+      color: #b9c0cf;
+      margin-top: 2px;
+      line-height: 1.2;
     }
   }
 
