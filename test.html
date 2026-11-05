@@ -745,14 +745,6 @@
     pointer-events: none;
     transition: opacity 0.2s ease, visibility 0.2s ease;
   }
-/* Скрываем плавающие кнопки, когда открыто мобильное меню */
-  .mobile-menu.active ~ .float-contacts,
-  body:has(.mobile-menu.active) .float-contacts {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-  }
 
 
   /* MODAL */
@@ -1682,72 +1674,70 @@ document.getElementById('copyMaxBtn').addEventListener('click', () => {
   document.execCommand('copy');
   alert('Текст заявки скопирован!');
 });
+// Мобильное меню: открытие, закрытие и свайпы
+document.addEventListener('DOMContentLoaded', function() {
+  const burgerBtn = document.getElementById('burgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+  const mobileMenuClose = document.getElementById('mobileMenuClose');
 
-const burgerBtn = document.getElementById('burgerBtn');
-const mobileMenu = document.getElementById('mobileMenu');
-const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-const mobileMenuClose = document.getElementById('mobileMenuClose');
+  function openMobileMenu(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (burgerBtn) burgerBtn.classList.add('active');
+    if (mobileMenu) mobileMenu.classList.add('active');
+    if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
 
-function closeMobileMenu() {
-  burgerBtn.classList.remove('active');
-  mobileMenu.classList.remove('active');
-  mobileMenuOverlay.classList.remove('active');
-  document.body.style.overflow = '';
-}
+  function closeMobileMenu() {
+    if (burgerBtn) burgerBtn.classList.remove('active');
+    if (mobileMenu) mobileMenu.classList.remove('active');
+    if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 
-if (burgerBtn) {
-  burgerBtn.addEventListener('click', function() {
-    burgerBtn.classList.toggle('active');
-    mobileMenu.classList.toggle('active');
-    mobileMenuOverlay.classList.toggle('active');
-  });
-  mobileMenuClose.addEventListener('click', closeMobileMenu);
-  mobileMenuOverlay.addEventListener('click', closeMobileMenu);
-  document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMobileMenu));
-}
-
-function scrollReviews(direction) {
-  const slider = document.getElementById('reviewsSlider');
-  if (slider) {
-    const scrollAmount = 340;
-    slider.scrollBy({
-      left: direction * scrollAmount,
-      behavior: 'smooth'
+  // Клик по бургеру
+  if (burgerBtn) {
+    burgerBtn.addEventListener('click', function(e) {
+      if (mobileMenu && mobileMenu.classList.contains('active')) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu(e);
+      }
     });
   }
-}
 
-const slider = document.getElementById('reviewsSlider');
-let isDown = false;
-let startX;
-let scrollLeft;
+  // Кнопка закрытия и оверлей
+  if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
+  if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
 
-if (slider) {
-  slider.addEventListener('mousedown', (e) => {
-    isDown = true;
-    slider.classList.add('active');
-    startX = e.pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
-  });
+  // Закрытие по клику на ссылки внутри меню
+  if (mobileMenu) {
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+  }
 
-  slider.addEventListener('mouseleave', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
+  // Поддержка свайпа вправо для закрытия меню
+  let touchStartX = 0;
+  let touchEndX = 0;
 
-  slider.addEventListener('mouseup', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
+  if (mobileMenu) {
+    mobileMenu.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
 
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    slider.scrollLeft = scrollLeft - walk;
-  });
-}
+    mobileMenu.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].clientX;
+      if (touchEndX - touchStartX > 60) {
+        closeMobileMenu();
+      }
+    }, { passive: true });
+  }
+});
 
 const projectsData = [
   { images: ["images/1 (2).webp","images/3 (1).webp","images/4 (2).webp","images/5 (2).webp"] },
@@ -1924,7 +1914,8 @@ function handleMenuSwipe() {
     closeMobileMenu();
   }
 }
-    
+
 </script>
+
 </body>
 </html>
