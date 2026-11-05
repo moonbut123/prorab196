@@ -1901,7 +1901,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-</script>
 
+// Логика свайпа для закрытия мобильного меню
+const mobileMenu = document.getElementById('mobileMenu');
+let touchStartX = 0;
+let touchEndX = 0;
+
+if (mobileMenu) {
+  mobileMenu.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  mobileMenu.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].clientX;
+    handleMenuSwipe();
+  }, { passive: true });
+}
+
+function handleMenuSwipe() {
+  // Если свайп вправо (конечная точка правее начальной более чем на 50px)
+  if (touchEndX - touchStartX > 50) {
+    closeMobileMenu();
+  }
+}
+    
+</script>
 </body>
 </html>
