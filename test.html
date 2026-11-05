@@ -1674,7 +1674,7 @@ document.getElementById('copyMaxBtn').addEventListener('click', () => {
   document.execCommand('copy');
   alert('Текст заявки скопирован!');
 });
-// Мобильное меню: открытие, закрытие и корректный свайп
+// Мобильное меню: идеальная синхронизация открытия, закрытия и свайпа
 document.addEventListener('DOMContentLoaded', function() {
   const burgerBtn = document.getElementById('burgerBtn');
   const mobileMenu = document.getElementById('mobileMenu');
@@ -1695,7 +1695,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.overflow = '';
   }
 
-  // Клик по бургеру
+  // Клик по бургеру: надежное переключение
   if (burgerBtn) {
     burgerBtn.addEventListener('click', function(e) {
       e.preventDefault();
@@ -1708,18 +1708,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Закрытие по крестику и фону
+  // Закрытие по крестику и фону-оверлею
   if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMenu);
   if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMenu);
 
-  // Закрытие по клику на любую ссылку в меню
+  // Закрытие по клику на любую ссылку внутри мобильного меню
   if (mobileMenu) {
     mobileMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', closeMenu);
     });
   }
 
-  // Свайп вправо для закрытия
+  // Свайп вправо для закрытия (порог 110px) с обязательным сбросом класса с бургера
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -1730,8 +1730,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     mobileMenu.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].clientX;
+      // Если провели пальцем вправо больше чем на 110px
       if (touchEndX - touchStartX > 110) {
-        closeMenu();
+        closeMenu(); // Закрываем меню И гарантированно снимаем active с бургера
       }
     }, { passive: true });
   }
