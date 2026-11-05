@@ -266,7 +266,7 @@
   .burger.active span:nth-child(2){opacity: 0;}
   .burger.active span:nth-child(3){transform: translateY(-7px) rotate(-45deg);}
 
-  /* MOBILE MENU (Оптимальный размер и 2 ряда для районов) */
+  /* MOBILE MENU */
   .mobile-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index: 99;
@@ -315,7 +315,6 @@
   .mobile-dropdown details summary::after { content: "▾"; font-size: 13px; color: var(--accent); }
   .mobile-dropdown details[open] summary::after { content: "▴"; }
   
-  /* РАЙОНЫ В 2 РЯДА */
   .mobile-dropdown-list {
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 6px 0 8px 8px;
   }
@@ -357,13 +356,12 @@
   .trust-item{font-size:14px;color:#cfd6e3;display:flex;align-items:center;gap:12px}
   .trust-item b{color:#fff;font-size:24px;font-weight:800;line-height:1}
 
-  /* ABOUT & DIVIDER FIX */
+  /* ABOUT */
   .about{
     background:var(--bg-warm);
     position: relative;
   }
   
-  /* Разделительная линия строго по ширине контейнера .wrap */
   .section.about::after {
     content: "";
     position: absolute;
@@ -453,7 +451,6 @@
   .step h3{ font-size:18px; margin-bottom:8px; color: #fff; }
   .step p{ font-size:14.5px; color:#cfd6e3; }
 
-  /* Слайдер шагов для мобильной версии */
   @media(max-width: 768px) {
     .steps {
       display: flex;
@@ -690,51 +687,65 @@
   .footer-socials .icon-btn img{ width:20px; height:20px; object-fit:contain; }
   .footer-bottom{ border-top:1px solid rgba(255,255,255,.08); padding-top:20px; font-size:13px; color:#8b93a3 }
 
-  /* FLOATING CONTACTS (С максимальным z-index поверх всего) */
+  /* FLOATING CONTACTS */
   .float-contacts{ 
     position:fixed; 
     right:20px; 
     bottom:20px; 
-    z-index:100; 
+    z-index:10000; 
     display:flex; 
     flex-direction:column; 
     align-items:flex-end; 
     gap:12px; 
-    pointer-events: auto !important;
+    pointer-events: none; /* Сам контейнер не мешает кликам на сайте */
+  }
+  .float-contacts > * {
+    pointer-events: auto; /* А сами кнопки внутри кликабельны */
   }
   .float-contacts .main-btn{
     width:56px; height:56px; border-radius:50%; background:var(--accent); color:var(--dark);
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 10px 25px rgba(245,166,35,.45); transition:.3s; cursor:pointer; border: none;
-    pointer-events: auto !important;
     position: relative;
-    z-index: 100000;
+    z-index: 10001;
   }
-  .float-contacts .main-btn svg{ width:26px; height:26px; fill:var(--dark); }
-  .float-contacts .main-btn.open{ transform:rotate(45deg); }
+  .float-contacts .main-btn svg{ width:26px; height:26px; fill:var(--dark); transition: transform 0.3s ease; }
+  .float-contacts .main-btn.open svg{ transform:rotate(45deg); }
   
   .float-contacts .sub-menu{ 
     display:flex; 
     flex-direction:column; 
     gap:10px; 
-    opacity:0; 
-    pointer-events:none; 
-    transform:translateY(10px); 
-    transition:.3s; 
+    opacity: 0; 
+    visibility: hidden; /* Главное исправление: скрываем элемент полностью, чтобы не было фантомных нажатий */
+    pointer-events: none; 
+    transform: translateY(10px); 
+    transition: all 0.3s ease; 
   }
   .float-contacts .sub-menu.active{ 
-    opacity:1; 
-    pointer-events:all; 
-    transform:translateY(0); 
+    opacity: 1; 
+    visibility: visible; 
+    pointer-events: auto; 
+    transform: translateY(0); 
   }
   .float-contacts .sub-menu a{
     width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
     box-shadow:0 6px 16px rgba(0,0,0,.25); transition:.2s;
-    pointer-events: auto !important;
   }
-  .float-contacts .wa{background:var(--wa)} .float-contacts .tg{background:var(--tg)} .float-contacts .max{background:var(--max)}
+  .float-contacts .wa{background:var(--wa)} 
+  .float-contacts .tg{background:var(--tg)} 
+  .float-contacts .max{background:var(--max)}
   .float-contacts .max img { width: 24px; height: 24px; object-fit: contain; }
   .float-contacts .call{background:#333;color:#fff}
+/* Скрываем плавающие кнопки, когда открыто мобильное меню */
+  .mobile-menu.active ~ .float-contacts,
+  body:has(.mobile-menu.active) .float-contacts {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
 
   /* MODAL */
   .max-modal-overlay {
@@ -778,14 +789,12 @@
     .card-btn { width: 100%; }
   }
 
-/* Скрываем кнопку замера в шапке на мобильных устройствах */
 @media(max-width: 1080px) {
   .header-contacts .btn {
     display: none !important;
   }
 }
 
-/* Обёртка для телефона и статуса в мобильном меню */
 .mobile-phone-status-wrap {
   margin-top: 4px;
   display: flex;
@@ -801,7 +810,6 @@
   padding: 2px 0;
 }
 
-/* Блок статуса мастера */
 .mobile-master-status {
   display: flex;
   align-items: center;
@@ -827,7 +835,6 @@
   font-size: 11px;
 }
 
-/* Пульсирующий зелёный кружок онлайн */
 .status-dot-pulse {
   width: 9px;
   height: 9px;
@@ -1563,7 +1570,7 @@
   </div>
 </footer>
 
-<!-- ===== FLOATING CONTACTS (С фиксом z-index) ===== -->
+<!-- ===== FLOATING CONTACTS (ИСПРАВЛЕНО) ===== -->
 <div class="float-contacts">
   <div class="sub-menu" id="subMenu">
     <a href="https://wa.me/79221230234" class="wa" target="_blank" aria-label="WhatsApp">
@@ -1600,7 +1607,6 @@
 
 <!-- ===== SCRIPTS ===== -->
 <script>
-// Выбор района из меню
 function selectDistrict(name) {
   var select = document.getElementById('district');
   if (select) {
@@ -1613,7 +1619,6 @@ function selectDistrict(name) {
   }
 }
 
-// Калькулятор ориентировочной стоимости
 function calculateEstimatedPrice() {
   var area = parseFloat(document.getElementById('area').value) || 0;
   var typeSelect = document.getElementById('type').value;
@@ -1633,7 +1638,6 @@ function calculateEstimatedPrice() {
   }
 }
 
-// Отправка формы в мессенджеры с текстом
 function submitToMessenger(messenger) {
   const name = document.getElementById('name').value.trim();
   const phone = document.getElementById('phone').value.trim();
@@ -1661,7 +1665,6 @@ function submitToMessenger(messenger) {
   }
 }
 
-// Модальное окно MAX
 document.getElementById('closeMaxModal').addEventListener('click', () => {
   document.getElementById('maxModalOverlay').classList.remove('show');
 });
@@ -1672,7 +1675,6 @@ document.getElementById('copyMaxBtn').addEventListener('click', () => {
   alert('Текст заявки скопирован!');
 });
 
-// Мобильное меню
 const burgerBtn = document.getElementById('burgerBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
@@ -1696,7 +1698,6 @@ if (burgerBtn) {
   document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMobileMenu));
 }
 
-// Прокрутка отзывов кнопками
 function scrollReviews(direction) {
   const slider = document.getElementById('reviewsSlider');
   if (slider) {
@@ -1708,7 +1709,6 @@ function scrollReviews(direction) {
   }
 }
 
-// Прокрутка отзывов зажатой мышкой (Drag to scroll)
 const slider = document.getElementById('reviewsSlider');
 let isDown = false;
 let startX;
@@ -1741,7 +1741,6 @@ if (slider) {
   });
 }
 
-// Портфолио и интерактив с пролистыванием в карточках и лайтбоксе
 const projectsData = [
   { images: ["images/1 (2).webp","images/3 (1).webp","images/4 (2).webp","images/5 (2).webp"] },
   { images: ["images/1 (4).webp","images/2 (2).webp","images/3 (3).webp","images/4 (4).webp","images/5 (4).webp","images/6 (1).webp"] },
@@ -1798,7 +1797,6 @@ function navLightbox(direction, event) {
   switchImage(lightboxProjectIdx, lightboxImageIdx, null, null);
 }
 
-// Управление клавиатурой (стрелочки в лайтбоксе)
 document.addEventListener('keydown', (e) => {
   const lightbox = document.getElementById('lightbox');
   if (lightbox && lightbox.classList.contains('show')) {
@@ -1808,7 +1806,6 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Универсальная функция для свайпов и перетаскивания мышкой (Drag)
 function enableSwipeAndDrag(elementSelector, onSwipeLeft, onSwipeRight) {
   const elements = document.querySelectorAll(elementSelector);
   
@@ -1861,7 +1858,6 @@ function enableSwipeAndDrag(elementSelector, onSwipeLeft, onSwipeRight) {
   });
 }
 
-// Применяем свайп/перетаскивание для карточек
 document.querySelectorAll('.project-card').forEach((card, idx) => {
   enableSwipeAndDrag(
     `#main-img-wrap-${idx}`, 
@@ -1870,14 +1866,12 @@ document.querySelectorAll('.project-card').forEach((card, idx) => {
   );
 });
 
-// Применяем свайп/перетаскивание для лайтбокса
 enableSwipeAndDrag(
   '#lightboxImg',
   () => navLightbox(1),
   () => navLightbox(-1)
 );
 
-// Безопасное открытие/закрытие плавающей кнопки связи
 document.addEventListener('DOMContentLoaded', function() {
   const mainBtn = document.getElementById('mainContactBtn');
   const subMenu = document.getElementById('subMenu');
@@ -1890,6 +1884,7 @@ document.addEventListener('DOMContentLoaded', function() {
       subMenu.classList.toggle('active');
     });
 
+    // Закрытие при клике в любое другое место страницы
     document.addEventListener('click', function(e) {
       if (!mainBtn.contains(e.target) && !subMenu.contains(e.target)) {
         mainBtn.classList.remove('open');
