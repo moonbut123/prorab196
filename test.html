@@ -266,7 +266,7 @@
   .burger.active span:nth-child(2){opacity: 0;}
   .burger.active span:nth-child(3){transform: translateY(-7px) rotate(-45deg);}
 
-  /* MOBILE MENU (Оптимальный размер и 2 ряда для районов) */
+  /* MOBILE MENU */
   .mobile-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index: 99;
@@ -315,7 +315,6 @@
   .mobile-dropdown details summary::after { content: "▾"; font-size: 13px; color: var(--accent); }
   .mobile-dropdown details[open] summary::after { content: "▴"; }
   
-  /* РАЙОНЫ В 2 РЯДА */
   .mobile-dropdown-list {
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 6px 0 8px 8px;
   }
@@ -363,7 +362,6 @@
     position: relative;
   }
   
-  /* Разделительная линия строго по ширине контейнера .wrap */
   .section.about::after {
     content: "";
     position: absolute;
@@ -486,7 +484,7 @@
   .card-top{ padding:12px 12px 0 12px; background:#fff; }
   .card-main-img{
     position:relative; border-radius:12px; overflow:hidden; aspect-ratio: 4/3; background:#eee; cursor:pointer;
-    touch-action: pan-y;
+    touch-action: manipulation;
   }
   .card-main-img img{ width:100%; height:100%; object-fit:cover; transition:transform 0.4s ease; user-select: none; }
   
@@ -690,7 +688,7 @@
   .footer-socials .icon-btn img{ width:20px; height:20px; object-fit:contain; }
   .footer-bottom{ border-top:1px solid rgba(255,255,255,.08); padding-top:20px; font-size:13px; color:#8b93a3 }
 
-  /* FLOATING CONTACTS (С максимальным z-index поверх всего) */
+  /* FLOATING CONTACTS */
   .float-contacts{ 
     position:fixed; 
     right:20px; 
@@ -778,14 +776,12 @@
     .card-btn { width: 100%; }
   }
 
-/* Скрываем кнопку замера в шапке на мобильных устройствах */
 @media(max-width: 1080px) {
   .header-contacts .btn {
     display: none !important;
   }
 }
 
-/* Обёртка для телефона и статуса в мобильном меню */
 .mobile-phone-status-wrap {
   margin-top: 4px;
   display: flex;
@@ -801,7 +797,6 @@
   padding: 2px 0;
 }
 
-/* Блок статуса мастера */
 .mobile-master-status {
   display: flex;
   align-items: center;
@@ -827,7 +822,6 @@
   font-size: 11px;
 }
 
-/* Пульсирующий зелёный кружок онлайн */
 .status-dot-pulse {
   width: 9px;
   height: 9px;
@@ -871,7 +865,6 @@
       <a href="#how">Как работаю</a>
       <a href="#portfolio">Примеры работ</a>
       
-      <!-- ВЫПАДАЮЩИЙ СПИСОК РАЙОНОВ -->
       <div class="nav-item dropdown">
         <a href="#form">Районы</a>
         <div class="dropdown-menu">
@@ -1139,7 +1132,7 @@
 <section class="section portfolio" id="portfolio">
   <div class="wrap">
     <h2 class="section-title">Примеры выполненных работ</h2>
-    <p class="section-sub">Листайте фото стрелочками, свайпами или перетаскиванием мыши. Нажмите на фото для увеличения.</p>
+    <p class="section-sub">Листайте фото стрелочками, свайпами или перетаскиванием мыши. Нажмите или сделайте двойной тап по фото для увеличения.</p>
 
     <div class="portfolio-grid" id="portfolioGrid">
 
@@ -1563,7 +1556,7 @@
   </div>
 </footer>
 
-<!-- ===== FLOATING CONTACTS (С фиксом z-index) ===== -->
+<!-- ===== FLOATING CONTACTS ===== -->
 <div class="float-contacts">
   <div class="sub-menu" id="subMenu">
     <a href="https://wa.me/79221230234" class="wa" target="_blank" aria-label="WhatsApp">
@@ -1806,6 +1799,26 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') navLightbox(1);
     if (e.key === 'Escape') lightbox.classList.remove('show');
   }
+});
+
+// Добавление поддержки двойного тапа для открытия фото в лайтбоксе на мобильных
+document.addEventListener('DOMContentLoaded', function() {
+  const mainImages = document.querySelectorAll('.card-main-img');
+  
+  mainImages.forEach((wrap, projectIdx) => {
+    let lastTapTime = 0;
+    
+    wrap.addEventListener('touchend', function(e) {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTapTime;
+      
+      if (tapLength < 300 && tapLength > 0) {
+        e.preventDefault();
+        openLightbox(projectIdx, e);
+      }
+      lastTapTime = currentTime;
+    });
+  });
 });
 
 // Универсальная функция для свайпов и перетаскивания мышкой (Drag)
