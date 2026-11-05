@@ -531,7 +531,7 @@
   .card-btn:hover{ background:var(--accent-dark); transform:translateY(-1px); }
   .card-btn small{ font-size:10.5px; font-weight:500; opacity:0.85; }
 
-  /* LIGHTBOX */
+  /* LIGHTBOX (исправлен touch-action для iOS) */
   .lightbox{
     position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); backdrop-filter:blur(5px);
     z-index:2000; display:none; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s;
@@ -540,12 +540,12 @@
   .lightbox.show{ display:flex; opacity:1; }
   .lightbox-content-wrap {
     width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-    touch-action: none;
+    touch-action: pan-x pan-y;
   }
   .lightbox img{ 
     max-width:90%; max-height:90%; object-fit:contain; border-radius:8px; 
     box-shadow:0 0 40px rgba(0,0,0,0.8); user-select: none; cursor: grab; 
-    transform-origin: center center; touch-action: none;
+    transform-origin: center center; touch-action: none; -webkit-user-drag: none;
   }
   .lightbox img:active { cursor: grabbing; }
   .lightbox-close{ position:absolute; top:20px; right:25px; color:#fff; font-size:38px; cursor:pointer; z-index: 2002; }
@@ -698,7 +698,7 @@
   .footer-socials .icon-btn img{ width:20px; height:20px; object-fit:contain; }
   .footer-bottom{ border-top:1px solid rgba(255,255,255,.08); padding-top:20px; font-size:13px; color:#8b93a3 }
 
-  /* FLOATING CONTACTS */
+  /* FLOATING CONTACTS (ИСПРАВЛЕНО ДЛЯ СИНХРОНИЗАЦИИ КЛИКАБЕЛЬНОСТИ И ВИДИМОСТИ) */
   .float-contacts{ 
     position:fixed; 
     right:20px; 
@@ -707,14 +707,12 @@
     display:flex; 
     flex-direction:column; 
     align-items:flex-end; 
-    gap:12px; 
-    pointer-events: auto !important;
+    gap:12px;
   }
   .float-contacts .main-btn{
     width:56px; height:56px; border-radius:50%; background:var(--accent); color:var(--dark);
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 10px 25px rgba(245,166,35,.45); transition:.3s; cursor:pointer; border: none;
-    pointer-events: auto !important;
     position: relative;
     z-index: 100000;
   }
@@ -726,19 +724,21 @@
     flex-direction:column; 
     gap:10px; 
     opacity:0; 
-    pointer-events:none; 
+    visibility: hidden;
+    pointer-events: none !important; 
     transform:translateY(10px); 
-    transition:.3s; 
+    transition: opacity .3s, transform .3s, visibility .3s; 
   }
   .float-contacts .sub-menu.active{ 
     opacity:1; 
-    pointer-events:all; 
+    visibility: visible;
+    pointer-events: auto !important; 
     transform:translateY(0); 
   }
   .float-contacts .sub-menu a{
     width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
     box-shadow:0 6px 16px rgba(0,0,0,.25); transition:.2s;
-    pointer-events: auto !important;
+    pointer-events: inherit;
   }
   .float-contacts .wa{background:var(--wa)} .float-contacts .tg{background:var(--tg)} .float-contacts .max{background:var(--max)}
   .float-contacts .max img { width: 24px; height: 24px; object-fit: contain; }
@@ -1760,18 +1760,23 @@ let panzoomInstance = null;
 document.addEventListener('DOMContentLoaded', function() {
   const lightboxImg = document.getElementById('lightboxImg');
   
-  // Инициализируем Panzoom
+  // Инициализируем Panzoom с совместимостью iOS Safari
   panzoomInstance = Panzoom(lightboxImg, {
     maxScale: 5,
     minScale: 1,
     contain: 'outside',
     startScale: 1,
-    cursor: 'grab'
+    cursor: 'grab',
+    touchAction: 'none'
   });
+
+  // Связываем зум колесиком мыши / тачпада
+  lightboxImg.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
 
   // Двойной тап / двойной клик для приближения или сброса в исходный размер
   let lastTapTime = 0;
   lightboxImg.addEventListener('touchend', function(e) {
+    if (e.touches.length > 0) return;
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTapTime;
     if (tapLength < 300 && tapLength > 0) {
@@ -1796,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Отслеживаем масштаб: скрываем или показываем стрелки навигации
+  // Отслеживаем масштаб: при зуме прячем стрелки, на исходном 1.0 возвращаем их
   lightboxImg.addEventListener('panzoomchange', (e) => {
     const scale = e.detail.scale;
     const prevBtn = document.getElementById('lightboxPrevBtn');
@@ -1927,7 +1932,7 @@ document.querySelectorAll('.project-card').forEach((card, idx) => {
   );
 });
 
-// Свайпы для галереи в лайтбоксе (блокируются, если картинка увеличена)
+// Свайпы для галереи в лайтбоксе (блокируются на iOS и других устройствах при масштабе > 1.05)
 const lightboxContentWrap = document.querySelector('.lightbox-content-wrap');
 if (lightboxContentWrap) {
   let lbStartX = 0;
@@ -1958,7 +1963,7 @@ if (lightboxContentWrap) {
   }, {passive: true});
 }
 
-// Открытие/закрытие плавающей кнопки связи
+// Управление плавающей кнопкой вызова (исправлены клики на невидимые элементы)
 document.addEventListener('DOMContentLoaded', function() {
   const mainBtn = document.getElementById('mainContactBtn');
   const subMenu = document.getElementById('subMenu');
