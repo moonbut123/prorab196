@@ -149,6 +149,9 @@
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c2331'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial,Helvetica,sans-serif' font-size='38' font-weight='800' fill='%23f5a623' text-anchor='middle' dominant-baseline='middle'%3EП%3C/text%3E%3C/svg%3E">
 
+<!-- Подключаем библиотеку Panzoom для продвинутого зума и перетаскивания картинок -->
+<script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+
 <style>
   :root{
     --dark:#1c2331;
@@ -532,13 +535,17 @@
   .lightbox{
     position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); backdrop-filter:blur(5px);
     z-index:2000; display:none; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s;
-    touch-action: pan-y;
+    overflow: hidden;
   }
   .lightbox.show{ display:flex; opacity:1; }
+  .lightbox-content-wrap {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    touch-action: none;
+  }
   .lightbox img{ 
-    max-width:92%; max-height:92%; object-fit:contain; border-radius:8px; 
+    max-width:90%; max-height:90%; object-fit:contain; border-radius:8px; 
     box-shadow:0 0 40px rgba(0,0,0,0.8); user-select: none; cursor: grab; 
-    transition: transform 0.3s ease; transform-origin: center center;
+    transform-origin: center center; touch-action: none;
   }
   .lightbox img:active { cursor: grabbing; }
   .lightbox-close{ position:absolute; top:20px; right:25px; color:#fff; font-size:38px; cursor:pointer; z-index: 2002; }
@@ -1135,7 +1142,7 @@
 <section class="section portfolio" id="portfolio">
   <div class="wrap">
     <h2 class="section-title">Примеры выполненных работ</h2>
-    <p class="section-sub">Листайте фото стрелочками или свайпами. Двойной тап по картинке открывает увеличение.</p>
+    <p class="section-sub">Листайте фото стрелочками или свайпами. Двойной тап или зум двумя пальцами открывает детальный просмотр.</p>
 
     <div class="portfolio-grid" id="portfolioGrid">
 
@@ -1288,9 +1295,11 @@
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
-  <button class="lightbox-nav prev" onclick="navLightbox(-1, event)">‹</button>
-  <img id="lightboxImg" src="" alt="Увеличенное фото">
-  <button class="lightbox-nav next" onclick="navLightbox(1, event)">›</button>
+  <button class="lightbox-nav prev" id="lightboxPrevBtn" onclick="navLightbox(-1, event)">‹</button>
+  <div class="lightbox-content-wrap">
+    <img id="lightboxImg" src="" alt="Увеличенное фото">
+  </div>
+  <button class="lightbox-nav next" id="lightboxNextBtn" onclick="navLightbox(1, event)">›</button>
 </div>
 
 <!-- ===== SHOPS ===== -->
@@ -1746,7 +1755,61 @@ const projectsData = [
 ];
 
 let lightboxProjectIdx = 0, lightboxImageIdx = 0;
-let isZoomed = false;
+let panzoomInstance = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+  const lightboxImg = document.getElementById('lightboxImg');
+  
+  // Инициализируем Panzoom для зума пальцами/мышкой и перетаскивания
+  panzoomInstance = Panzoom(lightboxImg, {
+    maxScale: 5,
+    minScale: 1,
+    contain: 'outside',
+    startScale: 1,
+    cursor: 'grab'
+  });
+
+  // Обработка двойного тапа или клика для быстрого приближения/возврата
+  let lastTapTime = 0;
+  lightboxImg.addEventListener('touchend', function(e) {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTapTime;
+    if (tapLength < 300 && tapLength > 0) {
+      e.preventDefault();
+      const currentScale = panzoomInstance.getScale();
+      if (currentScale > 1) {
+        panzoomInstance.reset({ animate: true });
+      } else {
+        panzoomInstance.zoom(2.5, { animate: true });
+      }
+    }
+    lastTapTime = currentTime;
+  });
+
+  lightboxImg.addEventListener('dblclick', function(e) {
+    e.preventDefault();
+    const currentScale = panzoomInstance.getScale();
+    if (currentScale > 1) {
+      panzoomInstance.reset({ animate: true });
+    } else {
+      panzoomInstance.zoom(2.5, { animate: true });
+    }
+  });
+
+  // Отслеживаем изменение зума: если картинка увеличена, скрываем стрелки перелистывания фото, чтобы не мешать просмотру
+  lightboxImg.addEventListener('panzoomchange', (e) => {
+    const scale = e.detail.scale;
+    const prevBtn = document.getElementById('lightboxPrevBtn');
+    const nextBtn = document.getElementById('lightboxNextBtn');
+    if (scale > 1.05) {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+    } else {
+      if (prevBtn) prevBtn.style.display = 'flex';
+      if (nextBtn) nextBtn.style.display = 'flex';
+    }
+  });
+});
 
 function switchImage(projectIdx, imageIdx, thumbElement, event) {
   if(event) event.stopPropagation();
@@ -1778,29 +1841,37 @@ function openLightbox(projectIdx, event) {
   lightboxImageIdx = activeWrapIdx;
   
   const lightboxImg = document.getElementById('lightboxImg');
-  isZoomed = false;
-  lightboxImg.style.transform = "scale(1)";
   lightboxImg.src = projectsData[projectIdx].images[lightboxImageIdx];
+  
+  if (panzoomInstance) {
+    panzoomInstance.reset({ animate: false });
+  }
+  
   document.getElementById('lightbox').classList.add('show');
 }
 
 function closeLightbox(e) {
   if (e.target.id === 'lightbox' || e.target.className === 'lightbox-close') {
     document.getElementById('lightbox').classList.remove('show');
-    isZoomed = false;
-    document.getElementById('lightboxImg').style.transform = "scale(1)";
+    if (panzoomInstance) {
+      panzoomInstance.reset({ animate: false });
+    }
   }
 }
 
 function navLightbox(direction, event) {
   if(event) event.stopPropagation();
+  // Если картинка увеличена, запрещаем листать галерею
+  if (panzoomInstance && panzoomInstance.getScale() > 1.05) return;
+
   const images = projectsData[lightboxProjectIdx].images;
   lightboxImageIdx = (lightboxImageIdx + direction + images.length) % images.length;
   
   const lightboxImg = document.getElementById('lightboxImg');
-  isZoomed = false;
-  lightboxImg.style.transform = "scale(1)";
   lightboxImg.src = images[lightboxImageIdx];
+  if (panzoomInstance) {
+    panzoomInstance.reset({ animate: false });
+  }
   switchImage(lightboxProjectIdx, lightboxImageIdx, null, null);
 }
 
@@ -1812,55 +1883,18 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') navLightbox(1);
     if (e.key === 'Escape') {
       lightbox.classList.remove('show');
-      isZoomed = false;
-      document.getElementById('lightboxImg').style.transform = "scale(1)";
+      if (panzoomInstance) panzoomInstance.reset({ animate: false });
     }
   }
 });
 
-// Двойной тап для увеличения картинки в лайтбоксе на телефоне
-document.addEventListener('DOMContentLoaded', function() {
-  const lightboxImg = document.getElementById('lightboxImg');
-  let lastLightboxTap = 0;
-
-  if (lightboxImg) {
-    lightboxImg.addEventListener('touchend', function(e) {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastLightboxTap;
-      
-      if (tapLength < 300 && tapLength > 0) {
-        e.preventDefault();
-        isZoomed = !isZoomed;
-        if (isZoomed) {
-          lightboxImg.style.transform = "scale(2.2)";
-        } else {
-          lightboxImg.style.transform = "scale(1)";
-        }
-      }
-      lastLightboxTap = currentTime;
-    });
-
-    // Дублируем и для двойного клика мышкой (на случай ПК)
-    lightboxImg.addEventListener('dblclick', function(e) {
-      e.preventDefault();
-      isZoomed = !isZoomed;
-      if (isZoomed) {
-        lightboxImg.style.transform = "scale(2.2)";
-      } else {
-        lightboxImg.style.transform = "scale(1)";
-      }
-    });
-  }
-});
-
-// Универсальная функция для свайпов и перетаскивания мышкой (Drag)
+// Универсальная функция для свайпов и перетаскивания карточек на сайте
 function enableSwipeAndDrag(elementSelector, onSwipeLeft, onSwipeRight) {
   const elements = document.querySelectorAll(elementSelector);
   
   elements.forEach(el => {
     let startX = 0;
     let startY = 0;
-    let isDragging = false;
 
     el.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;
@@ -1881,32 +1915,10 @@ function enableSwipeAndDrag(elementSelector, onSwipeLeft, onSwipeRight) {
         }
       }
     }, {passive: true});
-
-    el.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      isDragging = true;
-      startX = e.clientX;
-      e.preventDefault();
-    });
-
-    window.addEventListener('mouseup', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      let endX = e.clientX;
-      let diffX = startX - endX;
-
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          onSwipeLeft();
-        } else {
-          onSwipeRight();
-        }
-      }
-    });
   });
 }
 
-// Применяем свайп/перетаскивание для карточек
+// Применяем свайп для карточек портфолио
 document.querySelectorAll('.project-card').forEach((card, idx) => {
   enableSwipeAndDrag(
     `#main-img-wrap-${idx}`, 
@@ -1915,12 +1927,36 @@ document.querySelectorAll('.project-card').forEach((card, idx) => {
   );
 });
 
-// Применяем свайп/перетаскивание для лайтбокса
-enableSwipeAndDrag(
-  '#lightboxImg',
-  () => navLightbox(1),
-  () => navLightbox(-1)
-);
+// Свайпы для переключения картинок в лайтбоксе (работают только если масштаб равен 1)
+const lightboxContentWrap = document.querySelector('.lightbox-content-wrap');
+if (lightboxContentWrap) {
+  let lbStartX = 0;
+  let lbStartY = 0;
+  lightboxContentWrap.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      lbStartX = e.touches[0].clientX;
+      lbStartY = e.touches[0].clientY;
+    }
+  }, {passive: true});
+
+  lightboxContentWrap.addEventListener('touchend', (e) => {
+    if (panzoomInstance && panzoomInstance.getScale() > 1.05) return; // Защита: не свайпать галерею при зуме
+    if (e.changedTouches.length === 1) {
+      let endX = e.changedTouches[0].clientX;
+      let endY = e.changedTouches[0].clientY;
+      let diffX = lbStartX - endX;
+      let diffY = lbStartY - endY;
+
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          navLightbox(1);
+        } else {
+          navLightbox(-1);
+        }
+      }
+    }
+  }, {passive: true});
+}
 
 // Безопасное открытие/закрытие плавающей кнопки связи
 document.addEventListener('DOMContentLoaded', function() {
