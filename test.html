@@ -1773,7 +1773,13 @@ document.addEventListener('DOMContentLoaded', function() {
   // Связываем зум колесиком мыши / тачпада
   lightboxImg.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
 
-  // Двойной тап / двойной клик для приближения или сброса в исходный размер
+  // Универсальная функция точного возврата в исходное положение
+  function resetZoomAndPan() {
+    panzoomInstance.zoom(1, { animate: true });
+    panzoomInstance.pan(0, 0, { animate: true });
+  }
+
+  // Двойной тап для мобильных
   let lastTapTime = 0;
   lightboxImg.addEventListener('touchend', function(e) {
     if (e.touches.length > 0) return;
@@ -1783,7 +1789,7 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const currentScale = panzoomInstance.getScale();
       if (currentScale > 1.05) {
-        panzoomInstance.reset({ animate: true });
+        resetZoomAndPan();
       } else {
         panzoomInstance.zoom(2.5, { animate: true });
       }
@@ -1791,11 +1797,12 @@ document.addEventListener('DOMContentLoaded', function() {
     lastTapTime = currentTime;
   });
 
+  // Двойной клик для ПК
   lightboxImg.addEventListener('dblclick', function(e) {
     e.preventDefault();
     const currentScale = panzoomInstance.getScale();
     if (currentScale > 1.05) {
-      panzoomInstance.reset({ animate: true });
+      resetZoomAndPan();
     } else {
       panzoomInstance.zoom(2.5, { animate: true });
     }
@@ -1849,7 +1856,8 @@ function openLightbox(projectIdx, event) {
   lightboxImg.src = projectsData[projectIdx].images[lightboxImageIdx];
   
   if (panzoomInstance) {
-    panzoomInstance.reset({ animate: false });
+    panzoomInstance.zoom(1, { animate: false });
+    panzoomInstance.pan(0, 0, { animate: false });
   }
   
   document.getElementById('lightbox').classList.add('show');
@@ -1859,7 +1867,8 @@ function closeLightbox(e) {
   if (e.target.id === 'lightbox' || e.target.className === 'lightbox-close') {
     document.getElementById('lightbox').classList.remove('show');
     if (panzoomInstance) {
-      panzoomInstance.reset({ animate: false });
+      panzoomInstance.zoom(1, { animate: false });
+      panzoomInstance.pan(0, 0, { animate: false });
     }
   }
 }
@@ -1875,7 +1884,8 @@ function navLightbox(direction, event) {
   const lightboxImg = document.getElementById('lightboxImg');
   lightboxImg.src = images[lightboxImageIdx];
   if (panzoomInstance) {
-    panzoomInstance.reset({ animate: false });
+    panzoomInstance.zoom(1, { animate: false });
+    panzoomInstance.pan(0, 0, { animate: false });
   }
   switchImage(lightboxProjectIdx, lightboxImageIdx, null, null);
 }
@@ -1888,7 +1898,10 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') navLightbox(1);
     if (e.key === 'Escape') {
       lightbox.classList.remove('show');
-      if (panzoomInstance) panzoomInstance.reset({ animate: false });
+      if (panzoomInstance) {
+        panzoomInstance.zoom(1, { animate: false });
+        panzoomInstance.pan(0, 0, { animate: false });
+      }
     }
   }
 });
@@ -1932,7 +1945,7 @@ document.querySelectorAll('.project-card').forEach((card, idx) => {
   );
 });
 
-// Свайпы для галереи в лайтбоксе (блокируются на iOS и других устройствах при масштабе > 1.05)
+// Свайпы для галереи в лайтбоксе (блокируются на ПК и мобилках при масштабе > 1.05)
 const lightboxContentWrap = document.querySelector('.lightbox-content-wrap');
 if (lightboxContentWrap) {
   let lbStartX = 0;
@@ -1963,7 +1976,7 @@ if (lightboxContentWrap) {
   }, {passive: true});
 }
 
-// Управление плавающей кнопкой вызова (исправлены клики на невидимые элементы)
+// Открытие/закрытие плавающей кнопки связи
 document.addEventListener('DOMContentLoaded', function() {
   const mainBtn = document.getElementById('mainContactBtn');
   const subMenu = document.getElementById('subMenu');
