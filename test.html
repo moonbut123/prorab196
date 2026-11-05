@@ -1081,19 +1081,15 @@
 }
 
 /* ===== ФОН И РАЗДЕЛИТЕЛЬ: "ОБО МНЕ" + "ЧЕГО БОЯТСЯ" ===== */
-
-/* Оба блока — один тёплый фон */
 .about,
 .section.pains-section{
   background: var(--bg-warm);
 }
 
-/* Второй блок (Чего боятся) — убираем лишний верхний отступ, чтобы стык был плотным */
 .section.pains-section{
   padding-top: 60px;
 }
 
-/* Разделитель — тонкая полоса по ширине .wrap, а не на весь экран */
 .about{
   position: relative;
 }
@@ -1103,13 +1099,12 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 40px);       /* отступы 20px слева/справа */
-  max-width: var(--maxw);          /* не шире контента */
+  width: calc(100% - 40px);
+  max-width: var(--maxw);
   height: 1px;
-  background: rgba(0, 0, 0, 0.12); /* тонкая тёмная линия */
+  background: rgba(0, 0, 0, 0.12);
 }
 
-/* На мобильных — разделитель чуть короче, чтобы не лип к краям */
 @media (max-width: 600px){
   .about::after{
     width: calc(100% - 32px);
@@ -1123,9 +1118,9 @@
 /* ===== "МОЯ ЛИЧНАЯ ОТВЕТСТВЕННОСТЬ" — РАМКА, БЕЛЫЙ ФОН, СЕРЫЙ ТЕКСТ ===== */
 .about-details .about-text-content{
   background: #ffffff;
-  color: var(--muted);                 /* сероватый текст (#6b7280) */
-  border: 1px solid var(--border);     /* тонкая рамка */
-  border-left: 3px solid var(--accent);/* акцентная полоса слева */
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
   border-radius: 10px;
   padding: 14px 16px;
   margin-top: 12px;
@@ -1196,7 +1191,6 @@
   border-radius: 12px;
 }
 
-/* Мигающий зелёный кружок */
 .status-dot-pulse{
   width: 10px;
   height: 10px;
@@ -1214,7 +1208,6 @@
   100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
 }
 
-/* Текст статуса */
 .status-text{
   display: flex;
   flex-direction: column;
@@ -1356,17 +1349,16 @@
 
   <a href="#form" class="btn mobile-link" style="color:var(--dark);">Вызвать на замер</a>
   <div class="mobile-phone-status-wrap">
-  <a href="tel:+79221230234" class="phone-link mobile-link">+7 (922) 123-02-34</a>
+    <a href="tel:+79221230234" class="phone-link mobile-link">+7 (922) 123-02-34</a>
 
-  <div class="mobile-master-status">
-    <span class="status-dot-pulse" aria-hidden="true"></span>
-    <div class="status-text">
-      <b>Александр · прораб</b>
-      <span>Ежедневно с 9:00 до 21:00 </span>
+    <div class="mobile-master-status">
+      <span class="status-dot-pulse" aria-hidden="true"></span>
+      <div class="status-text">
+        <b>Александр · прораб</b>
+        <span>Ежедневно с 9:00 до 21:00</span>
+      </div>
     </div>
   </div>
-</div>
-
 </div>
 
 <!-- ===== HERO ===== -->
@@ -1761,21 +1753,21 @@
 
       <input id="name" type="text" placeholder="Ваше имя" aria-label="Ваше имя" required>
       <input id="phone" type="tel" placeholder="+7 (___) ___-__-__" aria-label="Телефон" autocomplete="tel" inputmode="tel" required>
-<input id="area" type="number" min="10" placeholder="Площадь, м²" aria-label="Площадь, м²">
+      <input id="area" type="number" min="10" placeholder="Площадь, м²" aria-label="Площадь, м²">
 
-<div class="calc-price-box" id="calcPriceBox">
-  <span>Ориентировочно:</span>
-  <b id="calcPriceResult">от 0 ₽</b>
-</div>
+      <div class="calc-price-box" id="calcPriceBox">
+        <span>Ориентировочно:</span>
+        <b id="calcPriceResult">от 0 ₽</b>
+      </div>
 
       <div class="form-grid-2">
         <div>
-<select id="type" aria-label="Тип ремонта">
-  <option value="cosmetic">Косметический</option>
-  <option value="capital" selected>Капитальный</option>
-  <option value="design">Дизайнерский</option>
-  <option value="unknown">Пока не знаю</option>
-</select>
+          <select id="type" aria-label="Тип ремонта">
+            <option value="cosmetic">Косметический</option>
+            <option value="capital" selected>Капитальный</option>
+            <option value="design">Дизайнерский</option>
+            <option value="unknown">Пока не знаю</option>
+          </select>
         </div>
         <div>
           <select id="district" aria-label="Район Екатеринбурга">
@@ -2350,7 +2342,7 @@ if (lightboxEl) {
 }
 </script>
 
-<!-- ===== SCRIPT: Мобильное меню + Районы + Форма ===== -->
+<!-- ===== SCRIPT: Мобильное меню + Районы + Форма + Калькулятор + Свайп ===== -->
 <script>
 function selectDistrict(name) {
   var select = document.getElementById('district');
@@ -2386,7 +2378,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Мобильное меню
+  // Мобильное меню (только открытие/закрытие — свайп отдельно)
   var burgerBtn = document.getElementById('burgerBtn');
   var mobileMenu = document.getElementById('mobileMenu');
   var mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
@@ -2398,6 +2390,8 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileMenu.classList.remove('active');
     mobileMenuOverlay.classList.remove('active');
     document.body.style.overflow = '';
+    mobileMenu.style.transform = '';
+    mobileMenu.style.transition = '';
   }
 
   if (burgerBtn && mobileMenu && mobileMenuOverlay) {
@@ -2458,12 +2452,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* ===== КАЛЬКУЛЯТОР ОРИЕНТИРОВОЧНОЙ СТОИМОСТИ ===== */
 (function(){
-  // Средние цены по Екатеринбургу за м² (работа + черновые материалы, без чистовых)
   var PRICES = {
-    cosmetic: 5500,   // косметический
-    capital:  8500,   // капитальный
-    design:   13000,  // дизайнерский
-    unknown:  0       // пока не знаю — не считаем
+    cosmetic: 5500,
+    capital:  8500,
+    design:   13000,
+    unknown:  0
   };
 
   var typeSelect = document.getElementById('type');
@@ -2481,14 +2474,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var type = typeSelect.value;
     var area = parseFloat(areaInput.value);
 
-    // Если тип "Пока не знаю" — показываем подсказку
     if (type === 'unknown' || !PRICES[type]) {
       resultEl.textContent = 'выберите тип ремонта';
       boxEl.classList.remove('has-value');
       return;
     }
 
-    // Если площадь не указана или меньше 10 — подсказка
     if (!area || area < 10) {
       resultEl.textContent = 'от 0 ₽';
       boxEl.classList.remove('has-value');
@@ -2500,11 +2491,9 @@ document.addEventListener('DOMContentLoaded', function() {
     boxEl.classList.add('has-value');
   }
 
-  // Пересчёт при любом изменении
   typeSelect.addEventListener('change', recalc);
   areaInput.addEventListener('input', recalc);
 
-  // Первый расчёт при загрузке (если поля уже заполнены)
   recalc();
 })();
 
@@ -2526,7 +2515,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.overflow = '';
     mobileMenu.style.transform = '';
     mobileMenu.style.transition = '';
-    mobileMenu.style.opacity = '';
+    if (mobileMenuOverlay) mobileMenuOverlay.style.opacity = '';
   }
 
   mobileMenu.addEventListener('touchstart', function(e){
@@ -2540,7 +2529,6 @@ document.addEventListener('DOMContentLoaded', function() {
     isHorizontal = false;
     MENU_WIDTH = mobileMenu.offsetWidth;
 
-    // Отключаем transition на время свайпа, чтобы движение было «живым»
     mobileMenu.style.transition = 'none';
   }, { passive: true });
 
@@ -2551,22 +2539,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var dx = currentX - startX;
     var dy = e.touches[0].clientY - startY;
 
-    // Определяем направление: если по горизонтали больше, чем по вертикали — это свайп
     if (!isHorizontal && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
       isHorizontal = true;
     }
 
-    // Свайп вправо (закрытие) — двигаем меню за пальцем
     if (isHorizontal && dx > 0) {
       if (e.cancelable) e.preventDefault();
       mobileMenu.style.transform = 'translateX(' + dx + 'px)';
-      // Затемняем фон пропорционально сдвигу
       if (mobileMenuOverlay) {
         var progress = Math.min(dx / MENU_WIDTH, 1);
         mobileMenuOverlay.style.opacity = String(1 - progress * 0.5);
       }
     }
-    // Свайп влево — не даём утащить меню дальше нуля
     else if (isHorizontal && dx < 0) {
       if (e.cancelable) e.preventDefault();
       mobileMenu.style.transform = 'translateX(0)';
@@ -2579,11 +2563,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var dx = currentX - startX;
 
-    // Возвращаем transition
     mobileMenu.style.transition = '';
     if (mobileMenuOverlay) mobileMenuOverlay.style.opacity = '';
 
-    // Если свайпнули больше 30% ширины меню — закрываем, иначе возвращаем на место
     if (isHorizontal && dx > MENU_WIDTH * 0.3) {
       closeMenu();
     } else {
@@ -2601,7 +2583,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (mobileMenuOverlay) mobileMenuOverlay.style.opacity = '';
   });
 })();
-
 </script>
 
 </body>
