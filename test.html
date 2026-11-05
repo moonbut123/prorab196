@@ -1674,7 +1674,7 @@ document.getElementById('copyMaxBtn').addEventListener('click', () => {
   document.execCommand('copy');
   alert('Текст заявки скопирован!');
 });
-// Мобильное меню: открытие, закрытие и свайпы
+// Мобильное меню: открытие, закрытие и надежный свайп
 document.addEventListener('DOMContentLoaded', function() {
   const burgerBtn = document.getElementById('burgerBtn');
   const mobileMenu = document.getElementById('mobileMenu');
@@ -1686,23 +1686,25 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       e.stopPropagation();
     }
-    if (burgerBtn) burgerBtn.classList.add('active');
-    if (mobileMenu) mobileMenu.classList.add('active');
-    if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+    burgerBtn.classList.add('active');
+    mobileMenu.classList.add('active');
+    mobileMenuOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
   function closeMobileMenu() {
-    if (burgerBtn) burgerBtn.classList.remove('active');
-    if (mobileMenu) mobileMenu.classList.remove('active');
-    if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+    burgerBtn.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    mobileMenuOverlay.classList.remove('active');
     document.body.style.overflow = '';
   }
 
-  // Клик по бургеру
+  // Клик по бургеру (теперь состояние переключается железобетонно)
   if (burgerBtn) {
     burgerBtn.addEventListener('click', function(e) {
-      if (mobileMenu && mobileMenu.classList.contains('active')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (mobileMenu.classList.contains('active')) {
         closeMobileMenu();
       } else {
         openMobileMenu(e);
@@ -1721,7 +1723,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Поддержка свайпа вправо для закрытия меню
+  // Поддержка свайпа вправо (порог увеличен до 110px для комфорта)
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -1732,7 +1734,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     mobileMenu.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].clientX;
-      if (touchEndX - touchStartX > 60) {
+      // Увеличенный порог проведения пальцем (110 пикселей)
+      if (touchEndX - touchStartX > 110) {
         closeMobileMenu();
       }
     }, { passive: true });
