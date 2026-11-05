@@ -1360,6 +1360,31 @@
     }
   }
 
+  /* ===== ФИКС БЕЛОЙ ПОЛОСЫ НАД ШАПКОЙ НА IPHONE ===== */
+  :root {
+    /* Задаем цвет верхней панели браузера (Chrome/Safari на Android/iOS) */
+    background-color: #1c2331; 
+  }
+
+  body {
+    /* Красим фон body в цвет меню, чтобы при overscroll (оттягивании страницы вниз) 
+       тоже не было белого */
+    background-color: var(--bg-main);
+  }
+
+  header {
+    /* Добавляем отступ сверху для «челки» и красим его в цвет шапки */
+    padding-top: calc(12px + env(safe-area-inset-top));
+  }
+
+  /* На всякий случай фиксим для мобильных */
+  @media (max-width: 1080px) {
+    header {
+      /* Принудительно растягиваем фон на безопасную зону */
+      background-color: #1c2331;
+    }
+  }
+    
 </style>
 </head>
 <body>
