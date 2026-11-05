@@ -1305,6 +1305,136 @@
   .preloader-bar-fill{ animation: none; width: 100%; }
 }
 
+/* ===== ОТЗЫВЫ: НОВЫЙ ВИД С РЕЙТИНГОМ ПРОФИ.РУ ===== */
+
+.reviews-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.reviews-header-left{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.reviews-header-left .section-title{
+  margin-bottom: 8px;
+}
+.reviews-header-left .section-sub{
+  margin-bottom: 0;
+}
+
+/* Карточка рейтинга */
+.reviews-rating-card{
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: inherit;
+}
+.reviews-rating-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+  border-color: var(--accent);
+}
+.reviews-rating-stars{
+  font-size: 18px;
+  color: #f5a623;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.reviews-rating-info{
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.reviews-rating-info b{
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--dark);
+}
+.reviews-rating-info span{
+  font-size: 12px;
+  color: var(--muted);
+}
+.reviews-rating-arrow{
+  font-size: 18px;
+  color: var(--accent);
+  margin-left: 4px;
+  transition: transform .2s;
+}
+.reviews-rating-card:hover .reviews-rating-arrow{
+  transform: translateX(3px);
+}
+
+/* Плашка «Читать все отзывы» под слайдером */
+.reviews-all-link-wrap{
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.reviews-all-link{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+  text-decoration: none;
+  transition: all .2s;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+.reviews-all-link span{
+  color: var(--accent);
+  font-size: 16px;
+  transition: transform .2s;
+}
+.reviews-all-link:hover{
+  background: var(--accent);
+  color: var(--dark);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(245,166,35,0.3);
+}
+.reviews-all-link:hover span{
+  color: var(--dark);
+  transform: translateX(3px);
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px){
+  .reviews-header{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .reviews-rating-card{
+    justify-content: center;
+    padding: 12px 16px;
+  }
+  .reviews-rating-info b{ font-size: 18px; }
+  .reviews-rating-stars{ font-size: 16px; }
+  .reviews-all-link{
+    width: 100%;
+    justify-content: center;
+    font-size: 13.5px;
+    padding: 12px 16px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1907,10 +2037,27 @@
 </section>
 
 <!-- ===== REVIEWS ===== -->
+<!-- ===== REVIEWS ===== -->
 <section class="section reviews" id="reviews">
   <div class="wrap">
-    <h2 class="section-title">Отзывы клиентов</h2>
-    <p class="section-sub">Реальные отзывы после сдачи объектов. Листайте вбок, чтобы посмотреть все.</p>
+    <div class="reviews-header">
+      <div class="reviews-header-left">
+        <h2 class="section-title">Отзывы клиентов</h2>
+        <p class="section-sub">Реальные отзывы после сдачи объектов в Екатеринбурге.</p>
+      </div>
+
+      <a href="https://profi.ru/profile/KryuchkovAV38"
+         target="_blank" rel="noopener"
+         class="reviews-rating-card"
+         aria-label="Профиль на Профи.ру — рейтинг 4.9 из 5, 17 отзывов">
+        <div class="reviews-rating-stars" aria-hidden="true">★★★★★</div>
+        <div class="reviews-rating-info">
+          <b>4.9</b>
+          <span>17 отзывов · Профи.ру</span>
+        </div>
+        <div class="reviews-rating-arrow" aria-hidden="true">→</div>
+      </a>
+    </div>
 
     <div class="reviews-track" id="reviewsSlider">
       <div class="review-card"><img src="images/review-1.webp" alt="Отзыв клиента 1" loading="lazy"></div>
@@ -1921,6 +2068,15 @@
 
     <div class="reviews-hint" id="reviewsHint">
       <span class="active"></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="reviews-all-link-wrap">
+      <a href="https://profi.ru/profile/KryuchkovAV38"
+         target="_blank" rel="noopener"
+         class="reviews-all-link">
+        Читать все отзывы на Профи.ру
+        <span aria-hidden="true">→</span>
+      </a>
     </div>
   </div>
 </section>
