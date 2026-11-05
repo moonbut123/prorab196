@@ -451,7 +451,6 @@
   .step h3{ font-size:18px; margin-bottom:8px; color: #fff; }
   .step p{ font-size:14.5px; color:#cfd6e3; }
 
-  /* Слайдер шагов для мобильной версии */
   @media(max-width: 768px) {
     .steps {
       display: flex;
@@ -536,7 +535,11 @@
     touch-action: pan-y;
   }
   .lightbox.show{ display:flex; opacity:1; }
-  .lightbox img{ max-width:92%; max-height:92%; object-fit:contain; border-radius:8px; box-shadow:0 0 40px rgba(0,0,0,0.8); user-select: none; cursor: grab; }
+  .lightbox img{ 
+    max-width:92%; max-height:92%; object-fit:contain; border-radius:8px; 
+    box-shadow:0 0 40px rgba(0,0,0,0.8); user-select: none; cursor: grab; 
+    transition: transform 0.3s ease; transform-origin: center center;
+  }
   .lightbox img:active { cursor: grabbing; }
   .lightbox-close{ position:absolute; top:20px; right:25px; color:#fff; font-size:38px; cursor:pointer; z-index: 2002; }
   .lightbox-nav{
@@ -1132,7 +1135,7 @@
 <section class="section portfolio" id="portfolio">
   <div class="wrap">
     <h2 class="section-title">Примеры выполненных работ</h2>
-    <p class="section-sub">Листайте фото стрелочками, свайпами или перетаскиванием мыши. Нажмите или сделайте двойной тап по фото для увеличения.</p>
+    <p class="section-sub">Листайте фото стрелочками или свайпами. Двойной тап по картинке открывает увеличение.</p>
 
     <div class="portfolio-grid" id="portfolioGrid">
 
@@ -1743,6 +1746,7 @@ const projectsData = [
 ];
 
 let lightboxProjectIdx = 0, lightboxImageIdx = 0;
+let isZoomed = false;
 
 function switchImage(projectIdx, imageIdx, thumbElement, event) {
   if(event) event.stopPropagation();
@@ -1767,19 +1771,24 @@ function changeCardImage(projectIdx, direction, event) {
 }
 
 function openLightbox(projectIdx, event) {
-  if (event.target.classList.contains('card-arrow')) return;
+  if (event && event.target.classList.contains('card-arrow')) return;
   
   lightboxProjectIdx = projectIdx;
   const activeWrapIdx = parseInt(document.querySelectorAll('.project-card')[projectIdx].querySelector('.card-main-img').getAttribute('data-index')) || 0;
   lightboxImageIdx = activeWrapIdx;
   
-  document.getElementById('lightboxImg').src = projectsData[projectIdx].images[lightboxImageIdx];
+  const lightboxImg = document.getElementById('lightboxImg');
+  isZoomed = false;
+  lightboxImg.style.transform = "scale(1)";
+  lightboxImg.src = projectsData[projectIdx].images[lightboxImageIdx];
   document.getElementById('lightbox').classList.add('show');
 }
 
 function closeLightbox(e) {
   if (e.target.id === 'lightbox' || e.target.className === 'lightbox-close') {
     document.getElementById('lightbox').classList.remove('show');
+    isZoomed = false;
+    document.getElementById('lightboxImg').style.transform = "scale(1)";
   }
 }
 
@@ -1787,7 +1796,11 @@ function navLightbox(direction, event) {
   if(event) event.stopPropagation();
   const images = projectsData[lightboxProjectIdx].images;
   lightboxImageIdx = (lightboxImageIdx + direction + images.length) % images.length;
-  document.getElementById('lightboxImg').src = images[lightboxImageIdx];
+  
+  const lightboxImg = document.getElementById('lightboxImg');
+  isZoomed = false;
+  lightboxImg.style.transform = "scale(1)";
+  lightboxImg.src = images[lightboxImageIdx];
   switchImage(lightboxProjectIdx, lightboxImageIdx, null, null);
 }
 
@@ -1797,28 +1810,47 @@ document.addEventListener('keydown', (e) => {
   if (lightbox && lightbox.classList.contains('show')) {
     if (e.key === 'ArrowLeft') navLightbox(-1);
     if (e.key === 'ArrowRight') navLightbox(1);
-    if (e.key === 'Escape') lightbox.classList.remove('show');
+    if (e.key === 'Escape') {
+      lightbox.classList.remove('show');
+      isZoomed = false;
+      document.getElementById('lightboxImg').style.transform = "scale(1)";
+    }
   }
 });
 
-// Добавление поддержки двойного тапа для открытия фото в лайтбоксе на мобильных
+// Двойной тап для увеличения картинки в лайтбоксе на телефоне
 document.addEventListener('DOMContentLoaded', function() {
-  const mainImages = document.querySelectorAll('.card-main-img');
-  
-  mainImages.forEach((wrap, projectIdx) => {
-    let lastTapTime = 0;
-    
-    wrap.addEventListener('touchend', function(e) {
+  const lightboxImg = document.getElementById('lightboxImg');
+  let lastLightboxTap = 0;
+
+  if (lightboxImg) {
+    lightboxImg.addEventListener('touchend', function(e) {
       const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTapTime;
+      const tapLength = currentTime - lastLightboxTap;
       
       if (tapLength < 300 && tapLength > 0) {
         e.preventDefault();
-        openLightbox(projectIdx, e);
+        isZoomed = !isZoomed;
+        if (isZoomed) {
+          lightboxImg.style.transform = "scale(2.2)";
+        } else {
+          lightboxImg.style.transform = "scale(1)";
+        }
       }
-      lastTapTime = currentTime;
+      lastLightboxTap = currentTime;
     });
-  });
+
+    // Дублируем и для двойного клика мышкой (на случай ПК)
+    lightboxImg.addEventListener('dblclick', function(e) {
+      e.preventDefault();
+      isZoomed = !isZoomed;
+      if (isZoomed) {
+        lightboxImg.style.transform = "scale(2.2)";
+      } else {
+        lightboxImg.style.transform = "scale(1)";
+      }
+    });
+  }
 });
 
 // Универсальная функция для свайпов и перетаскивания мышкой (Drag)
