@@ -149,7 +149,7 @@
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c2331'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial,Helvetica,sans-serif' font-size='38' font-weight='800' fill='%23f5a623' text-anchor='middle' dominant-baseline='middle'%3EП%3C/text%3E%3C/svg%3E">
 
-<!-- Подключаем библиотеку Panzoom для продвинутого зума и перетаскивания картинок -->
+<!-- Библиотека Panzoom для зума пальцами и перетаскивания -->
 <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
 
 <style>
@@ -1760,7 +1760,7 @@ let panzoomInstance = null;
 document.addEventListener('DOMContentLoaded', function() {
   const lightboxImg = document.getElementById('lightboxImg');
   
-  // Инициализируем Panzoom для зума пальцами/мышкой и перетаскивания
+  // Инициализируем Panzoom
   panzoomInstance = Panzoom(lightboxImg, {
     maxScale: 5,
     minScale: 1,
@@ -1769,7 +1769,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cursor: 'grab'
   });
 
-  // Обработка двойного тапа или клика для быстрого приближения/возврата
+  // Двойной тап / двойной клик для приближения или сброса в исходный размер
   let lastTapTime = 0;
   lightboxImg.addEventListener('touchend', function(e) {
     const currentTime = new Date().getTime();
@@ -1777,7 +1777,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (tapLength < 300 && tapLength > 0) {
       e.preventDefault();
       const currentScale = panzoomInstance.getScale();
-      if (currentScale > 1) {
+      if (currentScale > 1.05) {
         panzoomInstance.reset({ animate: true });
       } else {
         panzoomInstance.zoom(2.5, { animate: true });
@@ -1789,14 +1789,14 @@ document.addEventListener('DOMContentLoaded', function() {
   lightboxImg.addEventListener('dblclick', function(e) {
     e.preventDefault();
     const currentScale = panzoomInstance.getScale();
-    if (currentScale > 1) {
+    if (currentScale > 1.05) {
       panzoomInstance.reset({ animate: true });
     } else {
       panzoomInstance.zoom(2.5, { animate: true });
     }
   });
 
-  // Отслеживаем изменение зума: если картинка увеличена, скрываем стрелки перелистывания фото, чтобы не мешать просмотру
+  // Отслеживаем масштаб: скрываем или показываем стрелки навигации
   lightboxImg.addEventListener('panzoomchange', (e) => {
     const scale = e.detail.scale;
     const prevBtn = document.getElementById('lightboxPrevBtn');
@@ -1861,7 +1861,7 @@ function closeLightbox(e) {
 
 function navLightbox(direction, event) {
   if(event) event.stopPropagation();
-  // Если картинка увеличена, запрещаем листать галерею
+  // Если картинка приближена, листать галерею нельзя
   if (panzoomInstance && panzoomInstance.getScale() > 1.05) return;
 
   const images = projectsData[lightboxProjectIdx].images;
@@ -1875,7 +1875,7 @@ function navLightbox(direction, event) {
   switchImage(lightboxProjectIdx, lightboxImageIdx, null, null);
 }
 
-// Управление клавиатурой (стрелочки в лайтбоксе)
+// Управление клавиатурой
 document.addEventListener('keydown', (e) => {
   const lightbox = document.getElementById('lightbox');
   if (lightbox && lightbox.classList.contains('show')) {
@@ -1927,7 +1927,7 @@ document.querySelectorAll('.project-card').forEach((card, idx) => {
   );
 });
 
-// Свайпы для переключения картинок в лайтбоксе (работают только если масштаб равен 1)
+// Свайпы для галереи в лайтбоксе (блокируются, если картинка увеличена)
 const lightboxContentWrap = document.querySelector('.lightbox-content-wrap');
 if (lightboxContentWrap) {
   let lbStartX = 0;
@@ -1940,7 +1940,7 @@ if (lightboxContentWrap) {
   }, {passive: true});
 
   lightboxContentWrap.addEventListener('touchend', (e) => {
-    if (panzoomInstance && panzoomInstance.getScale() > 1.05) return; // Защита: не свайпать галерею при зуме
+    if (panzoomInstance && panzoomInstance.getScale() > 1.05) return; 
     if (e.changedTouches.length === 1) {
       let endX = e.changedTouches[0].clientX;
       let endY = e.changedTouches[0].clientY;
@@ -1958,7 +1958,7 @@ if (lightboxContentWrap) {
   }, {passive: true});
 }
 
-// Безопасное открытие/закрытие плавающей кнопки связи
+// Открытие/закрытие плавающей кнопки связи
 document.addEventListener('DOMContentLoaded', function() {
   const mainBtn = document.getElementById('mainContactBtn');
   const subMenu = document.getElementById('subMenu');
