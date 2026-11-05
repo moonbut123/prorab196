@@ -1480,6 +1480,443 @@
   }
 }
 
+/* ===== КВИЗ-ЧАТ ===== */
+.quiz-section{
+  background:
+    radial-gradient(circle at 90% 10%, rgba(245,166,35,0.06), transparent 45%),
+    var(--bg-warm);
+  position: relative;
+}
+
+.quiz-header{
+  text-align: center;
+  margin-bottom: 40px;
+}
+.quiz-header .section-title{
+  margin-left: auto;
+  margin-right: auto;
+}
+.quiz-header .section-sub{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.quiz-chat{
+  max-width: 560px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(28,35,49,0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Шапка */
+.quiz-chat-header{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--dark);
+  color: #fff;
+  position: relative;
+}
+.quiz-chat-avatar{
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--dark);
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.quiz-chat-who{
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.quiz-chat-who b{
+  font-size: 15px;
+  font-weight: 700;
+}
+.quiz-chat-who span{
+  font-size: 12px;
+  color: #b9c0cf;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.quiz-chat-dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #25D366;
+  display: inline-block;
+  box-shadow: 0 0 0 rgba(37,211,102,.5);
+  animation: quizDotPulse 1.8s infinite;
+}
+@keyframes quizDotPulse{
+  0%{ box-shadow: 0 0 0 0 rgba(37,211,102,.5); }
+  70%{ box-shadow: 0 0 0 6px rgba(37,211,102,0); }
+  100%{ box-shadow: 0 0 0 0 rgba(37,211,102,0); }
+}
+.quiz-chat-progress{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+}
+.quiz-chat-progress-bar{
+  height: 100%;
+  width: 25%;
+  background: var(--accent);
+  transition: width .35s ease;
+}
+
+/* Лента */
+.quiz-chat-body{
+  padding: 18px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 280px;
+  max-height: 460px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,.15) transparent;
+}
+.quiz-chat-body::-webkit-scrollbar{ width: 6px; }
+.quiz-chat-body::-webkit-scrollbar-thumb{ background: rgba(0,0,0,.15); border-radius: 3px; }
+
+.quiz-msg{
+  max-width: 82%;
+  padding: 10px 14px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  border-radius: 16px;
+  animation: quizMsgIn .25s ease;
+  word-wrap: break-word;
+}
+@keyframes quizMsgIn{
+  from{ opacity: 0; transform: translateY(6px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+/* Сообщение Александра */
+.quiz-msg--bot{
+  background: #f4f6f8;
+  color: var(--text);
+  align-self: flex-start;
+  border-bottom-left-radius: 6px;
+}
+/* Сообщение пользователя */
+.quiz-msg--user{
+  background: var(--accent);
+  color: var(--dark);
+  align-self: flex-end;
+  border-bottom-right-radius: 6px;
+  font-weight: 600;
+}
+
+/* Точки «печатает» */
+.quiz-typing{
+  display: inline-flex;
+  gap: 4px;
+  padding: 12px 16px;
+  background: #f4f6f8;
+  border-radius: 16px;
+  border-bottom-left-radius: 6px;
+  align-self: flex-start;
+}
+.quiz-typing span{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b9c0cf;
+  animation: quizTyping 1.2s infinite;
+}
+.quiz-typing span:nth-child(2){ animation-delay: .15s; }
+.quiz-typing span:nth-child(3){ animation-delay: .3s; }
+@keyframes quizTyping{
+  0%, 60%, 100%{ transform: translateY(0); opacity: .4; }
+  30%{ transform: translateY(-4px); opacity: 1; }
+}
+
+/* Кнопки быстрых ответов */
+.quiz-chat-actions{
+  padding: 8px 14px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  min-height: 60px;
+}
+.quiz-chat-actions button{
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--dark);
+  cursor: pointer;
+  transition: all .18s;
+  line-height: 1.2;
+}
+.quiz-chat-actions button:hover{
+  border-color: var(--accent);
+  background: #fff8ec;
+  transform: translateY(-1px);
+}
+.quiz-chat-actions button:active{
+  transform: scale(0.97);
+}
+.quiz-chat-actions button.quiz-send-wa{ background: var(--wa); border-color: var(--wa); color: #fff; }
+.quiz-chat-actions button.quiz-send-tg{ background: var(--tg); border-color: var(--tg); color: #fff; }
+.quiz-chat-actions button.quiz-send-max{ background: var(--max); border-color: var(--max); color: #fff; }
+.quiz-chat-actions button.quiz-send-wa:hover,
+.quiz-chat-actions button.quiz-send-tg:hover,
+.quiz-chat-actions button.quiz-send-max:hover{ filter: brightness(1.05); }
+
+.quiz-chat-actions button.quiz-restart{
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 6px 10px;
+  text-decoration: underline;
+}
+.quiz-chat-actions button.quiz-restart:hover{
+  color: var(--accent-dark);
+  background: none;
+  border-color: transparent;
+  transform: none;
+}
+
+/* Финальная цена в чате */
+.quiz-msg--price{
+  background: #fff8ec !important;
+  border: 1.5px dashed var(--accent);
+  color: var(--dark) !important;
+  font-weight: 800;
+  font-size: 18px !important;
+  align-self: flex-start;
+  max-width: 90%;
+}
+.quiz-msg--price small{
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 600px){
+  .quiz-chat{
+    border-radius: 16px;
+  }
+  .quiz-chat-header{
+    padding: 12px 14px;
+  }
+  .quiz-chat-avatar{
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  .quiz-chat-body{
+    padding: 14px 12px 6px;
+    min-height: 240px;
+    max-height: 380px;
+  }
+  .quiz-msg{
+    font-size: 14px;
+    padding: 9px 12px;
+  }
+  .quiz-chat-actions{
+    padding: 8px 12px 14px;
+    gap: 6px;
+  }
+  .quiz-chat-actions button{
+    font-size: 13px;
+    padding: 9px 14px;
+  }
+  .quiz-msg--price{
+    font-size: 16px !important;
+  }
+}
+
+/* ===== КВИЗ-ЧАТ: ПО ШИРИНЕ КОНТЕНТА ===== */
+.quiz-chat{
+  max-width: var(--maxw);       /* 1140px — как .wrap */
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Внутри — не растягиваем пузыри на всю ширину */
+.quiz-chat-body{
+  padding: 22px 24px 10px;
+  max-height: 520px;
+}
+
+.quiz-msg{
+  max-width: 70%;                /* было 82% — теперь пузыри аккуратнее */
+  font-size: 15px;
+}
+
+.quiz-msg--price{
+  max-width: 80%;
+  font-size: 20px !important;
+}
+
+/* Кнопки быстрых ответов — в одну строку с переносом */
+.quiz-chat-actions{
+  padding: 12px 20px 22px;
+  gap: 10px;
+}
+
+/* На мобильных — на всю ширину, как было */
+@media (max-width: 600px){
+  .quiz-chat{
+    max-width: 100%;
+  }
+  .quiz-chat-body{
+    padding: 14px 12px 6px;
+    max-height: 380px;
+  }
+  .quiz-msg{
+    max-width: 84%;
+  }
+}
+
+/* На средних экранах — чуть компактнее пузыри */
+@media (min-width: 601px) and (max-width: 960px){
+  .quiz-msg{
+    max-width: 78%;
+  }
+  .quiz-chat-body{
+    padding: 20px 20px 10px;
+  }
+}
+
+/* ===== КВИЗ: ФОН КАК У БЛОКА "ПРИМЕРЫ РАБОТ" ===== */
+.quiz-section{
+  background: var(--bg-alt) !important;   /* #f4f6f8 — как .portfolio */
+}
+
+/* ===== ДОГОВОР И ГАРАНТИЯ: ФОН КАК У КВИЗА + РАЗДЕЛИТЕЛЬ ===== */
+
+/* Фон как у квиза */
+section#guarantee{
+  background: var(--bg-alt) !important;   /* #f4f6f8 — как .quiz-section и .portfolio */
+}
+
+/* Квиз — позиционируем, чтобы линия была снизу */
+.quiz-section{
+  position: relative;
+}
+
+/* Разделитель между квизом и «Договор и гарантия» — по ширине .wrap */
+.quiz-section::after{
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: var(--maxw);
+  height: 1px;
+  background: rgba(0, 0, 0, 0.10);
+}
+
+/* На мобильных — короче, как у «Обо мне» */
+@media (max-width: 600px){
+  .quiz-section::after{
+    width: calc(100% - 32px);
+    background: rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* ===== РАЗДЕЛИТЕЛЬ: ПРИМЕРЫ РАБОТ → КВИЗ ===== */
+.portfolio{
+  position: relative;
+}
+
+.portfolio::after{
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: var(--maxw);
+  height: 1px;
+  background: rgba(0, 0, 0, 0.10);
+}
+
+@media (max-width: 600px){
+  .portfolio::after{
+    width: calc(100% - 32px);
+    background: rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* ===== ЗАГОЛОВОК КВИЗА — СЛЕВА, КАК ВСЕ ===== */
+.quiz-header{
+  text-align: left;
+  margin-bottom: 32px;
+}
+
+.quiz-header .section-title{
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.quiz-header .section-sub{
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
+}
+
+/* ===== ФОН БЛОКА КВИЗА: images/fon-site.jpg ===== */
+.quiz-section{
+  background-color: #1c2331 !important;
+  background-image:
+    linear-gradient(rgba(28, 35, 49, 0.88), rgba(28, 35, 49, 0.94)),
+    url("images/fon-site.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+/* Заголовок и подзаголовок — светлые на тёмном фоне */
+.quiz-section .section-title{
+  color: #ffffff !important;
+}
+.quiz-section .section-sub{
+  color: #b9c0cf !important;
+}
+
+/* На мобильных fixed-фон отключаем, чтобы не тормозило */
+@media (max-width: 768px){
+  .quiz-section{
+    background-attachment: scroll !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1932,16 +2369,32 @@
   <button class="lightbox-nav next" onclick="navLightbox(1, event)">›</button>
 </div>
 
-<!-- ===== SHOPS ===== -->
-<section class="section shops" id="shops">
+<!-- ===== QUIZ-ЧАТ ===== -->
+<section class="section quiz-section" id="quiz">
   <div class="wrap">
-    <h2 class="section-title">Где я покупаю материалы — и ваша выгода</h2>
-    <p class="section-sub">У меня партнёрские условия в магазинах Екатеринбурга. Вы платите меньше, чем в рознице, а чеки я показываю.</p>
-    <div class="shop-grid">
-      <div class="shop-card"><h3>Строительные базы</h3><p>Черновые материалы: ГКЛ, профиль, смеси, стяжка.</p><div class="disc">до –10% от розницы</div></div>
-      <div class="shop-card"><h3>Салоны плитки</h3><p>Керамогранит и плитка в Екатеринбурге, 3–4 салона-партнёра.</p><div class="disc">до –7% + бесплатная доставка</div></div>
-      <div class="shop-card"><h3>Сантехника</h3><p>Смесители, ванны, инсталляции. Официальные дилеры.</p><div class="disc">–5% по моей карте</div></div>
-      <div class="shop-card"><h3>Двери и мебель</h3><p>Межкомнатные двери, кухни на заказ по партнёрским ценам.</p><div class="disc">–5% + замер бесплатно</div></div>
+    <div class="quiz-header">
+      <h2 class="section-title">Рассчитайте ремонт за 1 минуту</h2>
+      <p class="section-sub">Ответьте на 4 вопроса — Александр покажет вилку стоимости и подготовит смету после замера.</p>
+    </div>
+
+    <div class="quiz-chat" id="quizChat">
+      <!-- Шапка чата -->
+      <div class="quiz-chat-header">
+        <div class="quiz-chat-avatar" aria-hidden="true">А</div>
+        <div class="quiz-chat-who">
+          <b>Александр</b>
+          <span><i class="quiz-chat-dot"></i> онлайн · прораб</span>
+        </div>
+        <div class="quiz-chat-progress">
+          <div class="quiz-chat-progress-bar" id="quizProgressBar"></div>
+        </div>
+      </div>
+
+      <!-- Лента сообщений -->
+      <div class="quiz-chat-body" id="quizChatBody"></div>
+
+      <!-- Быстрые ответы -->
+      <div class="quiz-chat-actions" id="quizChatActions"></div>
     </div>
   </div>
 </section>
@@ -2917,6 +3370,269 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(hidePreloader, 5000);
   }
 })();
+
+
+/* ===== КВИЗ-ЧАТ ===== */
+(function(){
+  var QUIZ_PRICES = { cosmetic: 5500, capital: 8500, design: 13000 };
+  var QUIZ_TYPE_LABELS = { cosmetic: 'Косметический', capital: 'Капитальный', design: 'Дизайнерский' };
+
+  var chat = document.getElementById('quizChat');
+  if (!chat) return;
+
+  var bodyEl = document.getElementById('quizChatBody');
+  var actionsEl = document.getElementById('quizChatActions');
+  var progressBar = document.getElementById('quizProgressBar');
+
+  var state = { type: null, area: null, district: null, deadline: null };
+  var stepIndex = 0;
+
+  // Сценарий квиза: сообщение бота → варианты ответа
+  var SCRIPT = [
+    {
+      question: 'Здравствуйте! Я Александр, частный прораб в Екатеринбурге. Помогу прикинуть стоимость ремонта. Какой ремонт планируете?',
+      field: 'type',
+      options: [
+        { label: 'Косметический', value: 'cosmetic' },
+        { label: 'Капитальный',   value: 'capital' },
+        { label: 'Дизайнерский',  value: 'design' }
+      ]
+    },
+    {
+      question: 'Отлично. Какая площадь квартиры?',
+      field: 'area',
+      options: [
+        { label: 'до 30 м²',  value: 25 },
+        { label: '30–50 м²',  value: 40 },
+        { label: '50–70 м²',  value: 60 },
+        { label: '70+ м²',    value: 85 }
+      ],
+      // Покажем человекочитаемый ответ
+      labelFor: { 25: 'до 30 м²', 40: '30–50 м²', 60: '50–70 м²', 85: '70+ м²' }
+    },
+    {
+      question: 'В каком районе объект?',
+      field: 'district',
+      options: [
+        { label: 'Академический',       value: 'Академический' },
+        { label: 'Верх-Исетский',       value: 'Верх-Исетский' },
+        { label: 'Железнодорожный',     value: 'Железнодорожный' },
+        { label: 'Кировский',           value: 'Кировский' },
+        { label: 'Ленинский',           value: 'Ленинский' },
+        { label: 'Октябрьский',         value: 'Октябрьский' },
+        { label: 'Орджоникидзевский',   value: 'Орджоникидзевский' },
+        { label: 'Чкаловский',          value: 'Чкаловский' },
+        { label: 'ВИЗ',                 value: 'ВИЗ' },
+        { label: 'Уралмаш',             value: 'Уралмаш' },
+        { label: 'Ботанический',        value: 'Ботанический' },
+        { label: 'Пионерский',          value: 'Пионерский' }
+      ]
+    },
+    {
+      question: 'И последнее — когда планируете начать?',
+      field: 'deadline',
+      options: [
+        { label: 'Срочно',            value: 'Срочно (в ближайшие 2 недели)' },
+        { label: '1–2 месяца',        value: 'В течение 1–2 месяцев' },
+        { label: 'Позже',             value: 'Позже' },
+        { label: 'Пока изучаю',       value: 'Пока изучаю' }
+      ]
+    }
+  ];
+
+  function scrollBottom(){
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+
+  function addMsg(text, who, extraClass){
+    var div = document.createElement('div');
+    div.className = 'quiz-msg quiz-msg--' + who + (extraClass ? ' ' + extraClass : '');
+    div.innerHTML = text;
+    bodyEl.appendChild(div);
+    scrollBottom();
+    return div;
+  }
+
+  function addTyping(){
+    var div = document.createElement('div');
+    div.className = 'quiz-typing';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    bodyEl.appendChild(div);
+    scrollBottom();
+    return div;
+  }
+
+  function clearActions(){
+    actionsEl.innerHTML = '';
+  }
+
+  function setProgress(percent){
+    progressBar.style.width = percent + '%';
+  }
+
+  function askStep(index){
+    if (index >= SCRIPT.length){
+      renderResult();
+      return;
+    }
+    stepIndex = index;
+    setProgress(Math.round((index / SCRIPT.length) * 100));
+
+    var step = SCRIPT[index];
+    var typing = addTyping();
+
+    setTimeout(function(){
+      typing.remove();
+      addMsg(step.question, 'bot');
+
+      clearActions();
+      step.options.forEach(function(opt){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = opt.label;
+        btn.addEventListener('click', function(){
+          // Ответ пользователя
+          state[step.field] = opt.value;
+          addMsg(opt.label, 'user');
+          clearActions();
+
+          // Следующий шаг
+          setTimeout(function(){ askStep(index + 1); }, 350);
+        });
+        actionsEl.appendChild(btn);
+      });
+      scrollBottom();
+    }, 450);
+  }
+
+  function renderResult(){
+    setProgress(100);
+
+    var price = 0;
+    if (state.type && state.area){
+      price = QUIZ_PRICES[state.type] * state.area;
+    }
+
+    var typing = addTyping();
+    setTimeout(function(){
+      typing.remove();
+
+      // Сообщение с ценой
+      var priceHtml = 'Вилка стоимости: <b>от ' + price.toLocaleString('ru-RU') + ' ₽</b>' +
+                      '<small>Работа + черновые материалы. Точная смета — после бесплатного замера.</small>';
+      addMsg(priceHtml, 'price');
+
+      // Короткое резюме
+      var summary = [];
+      if (state.type) summary.push(QUIZ_TYPE_LABELS[state.type]);
+      if (state.area) summary.push('~' + state.area + ' м²');
+      if (state.district) summary.push(state.district);
+      if (state.deadline) summary.push(state.deadline);
+
+      setTimeout(function(){
+        addMsg('Записал: <b>' + summary.join(' · ') + '</b>. Куда отправить заявку, чтобы я подготовил точную смету?', 'bot');
+
+        clearActions();
+
+        var waBtn = document.createElement('button');
+        waBtn.type = 'button';
+        waBtn.className = 'quiz-send-wa';
+        waBtn.textContent = 'WhatsApp';
+        waBtn.addEventListener('click', function(){ sendQuiz('whatsapp'); });
+        actionsEl.appendChild(waBtn);
+
+        var tgBtn = document.createElement('button');
+        tgBtn.type = 'button';
+        tgBtn.className = 'quiz-send-tg';
+        tgBtn.textContent = 'Telegram';
+        tgBtn.addEventListener('click', function(){ sendQuiz('telegram'); });
+        actionsEl.appendChild(tgBtn);
+
+        var maxBtn = document.createElement('button');
+        maxBtn.type = 'button';
+        maxBtn.className = 'quiz-send-max';
+        maxBtn.textContent = 'MAX';
+        maxBtn.addEventListener('click', function(){ sendQuiz('max'); });
+        actionsEl.appendChild(maxBtn);
+
+        var restart = document.createElement('button');
+        restart.type = 'button';
+        restart.className = 'quiz-restart';
+        restart.textContent = 'Пройти заново';
+        restart.addEventListener('click', resetQuiz);
+        actionsEl.appendChild(restart);
+
+        scrollBottom();
+      }, 400);
+    }, 600);
+  }
+
+  function resetQuiz(){
+    state = { type: null, area: null, district: null, deadline: null };
+    bodyEl.innerHTML = '';
+    clearActions();
+    setProgress(25);
+    askStep(0);
+  }
+
+  function sendQuiz(messenger){
+    var name = (document.getElementById('name') || {}).value || '';
+    var phone = (document.getElementById('phone') || {}).value || '';
+    name = name.trim();
+    phone = phone.trim();
+
+    // Если имя/телефон не заполнены — скроллим к форме и подсвечиваем
+    if (!name || !phone || phone.replace(/\D/g,'').length < 11){
+      var form = document.getElementById('form');
+      if (form) form.scrollIntoView({behavior:'smooth', block:'start'});
+      setTimeout(function(){
+        var nameInput = document.getElementById('name');
+        if (nameInput){
+          nameInput.focus();
+          nameInput.style.boxShadow = '0 0 0 3px rgba(245,166,35,0.35)';
+          setTimeout(function(){ nameInput.style.boxShadow = ''; }, 1800);
+        }
+      }, 400);
+      return;
+    }
+
+    var lines = [
+      '🔨 Заявка с сайта ПРОРАБ.ЕКБ (квиз-чат)',
+      '— — — — — — — — — —',
+      'Имя: ' + name,
+      'Телефон: ' + phone,
+      'Тип ремонта: ' + (QUIZ_TYPE_LABELS[state.type] || '—'),
+      'Площадь: ~' + (state.area || '—') + ' м²',
+      'Район: ' + (state.district || '—'),
+      'Сроки: ' + (state.deadline || '—'),
+      '— — — — — — — — — —',
+      'Отправлено: ' + new Date().toLocaleString('ru-RU')
+    ];
+    var text = lines.join('\n');
+
+    var MY_WHATSAPP = '79221230234';
+    var MY_TELEGRAM_USERNAME = 'The_fabo';
+
+    if (messenger === 'whatsapp'){
+      window.open('https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text), '_blank');
+    } else if (messenger === 'telegram'){
+      window.open('https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text), '_blank');
+    } else if (messenger === 'max'){
+      var modal = document.getElementById('maxModalOverlay');
+      var textarea = document.getElementById('maxTextarea');
+      if (modal && textarea){
+        textarea.value = text;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+  }
+
+  // Старт
+  askStep(0);
+})();
+
+
 </script>
 
 </body>
