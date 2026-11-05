@@ -1674,56 +1674,52 @@ document.getElementById('copyMaxBtn').addEventListener('click', () => {
   document.execCommand('copy');
   alert('Текст заявки скопирован!');
 });
-// Мобильное меню: открытие, закрытие и надежный свайп
+// Мобильное меню: открытие, закрытие и корректный свайп
 document.addEventListener('DOMContentLoaded', function() {
   const burgerBtn = document.getElementById('burgerBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
   const mobileMenuClose = document.getElementById('mobileMenuClose');
 
-  function openMobileMenu(e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    burgerBtn.classList.add('active');
-    mobileMenu.classList.add('active');
-    mobileMenuOverlay.classList.add('active');
+  function openMenu() {
+    if (burgerBtn) burgerBtn.classList.add('active');
+    if (mobileMenu) mobileMenu.classList.add('active');
+    if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
-  function closeMobileMenu() {
-    burgerBtn.classList.remove('active');
-    mobileMenu.classList.remove('active');
-    mobileMenuOverlay.classList.remove('active');
+  function closeMenu() {
+    if (burgerBtn) burgerBtn.classList.remove('active');
+    if (mobileMenu) mobileMenu.classList.remove('active');
+    if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
     document.body.style.overflow = '';
   }
 
-  // Клик по бургеру (теперь состояние переключается железобетонно)
+  // Клик по бургеру
   if (burgerBtn) {
     burgerBtn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if (mobileMenu.classList.contains('active')) {
-        closeMobileMenu();
+      if (mobileMenu && mobileMenu.classList.contains('active')) {
+        closeMenu();
       } else {
-        openMobileMenu(e);
+        openMenu();
       }
     });
   }
 
-  // Кнопка закрытия и оверлей
-  if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
-  if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+  // Закрытие по крестику и фону
+  if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMenu);
+  if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMenu);
 
-  // Закрытие по клику на ссылки внутри меню
+  // Закрытие по клику на любую ссылку в меню
   if (mobileMenu) {
     mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', closeMobileMenu);
+      link.addEventListener('click', closeMenu);
     });
   }
 
-// Поддержка свайпа вправо (порог 110px) с синхронизацией кнопки
+  // Свайп вправо для закрытия
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -1734,15 +1730,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     mobileMenu.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].clientX;
-      
-      // Если свайпнули вправо больше чем на 110 пикселей
       if (touchEndX - touchStartX > 110) {
-        // Закрываем меню и СРАЗУ убираем класс active с бургера
-        closeMobileMenu();
-        if (burgerBtn) burgerBtn.classList.remove('active');
+        closeMenu();
       }
     }, { passive: true });
   }
+});
 
 const projectsData = [
   { images: ["images/1 (2).webp","images/3 (1).webp","images/4 (2).webp","images/5 (2).webp"] },
