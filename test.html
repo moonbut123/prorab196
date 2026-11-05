@@ -1435,6 +1435,51 @@
   }
 }
 
+/* ===== ОТЗЫВЫ + FAQ: ОДИН ФОН + РАЗДЕЛИТЕЛЬ ===== */
+
+/* Скрываем кнопку «Читать все отзывы» */
+.reviews-all-link-wrap{
+  display: none !important;
+}
+
+/* Один фон у двух блоков */
+.reviews,
+.faq-section{
+  background: var(--bg-warm) !important;   /* тёплый, как у "Обо мне" */
+}
+
+/* FAQ больше не серый — теперь тёплый */
+.faq-section{
+  padding-top: 40px;   /* чуть плотнее к разделителю */
+}
+
+/* Разделитель между Отзывами и FAQ — по ширине .wrap */
+.reviews{
+  position: relative;
+}
+.reviews::after{
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: var(--maxw);
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* На мобильных — короче, как у «Обо мне» */
+@media (max-width: 600px){
+  .reviews::after{
+    width: calc(100% - 32px);
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .faq-section{
+    padding-top: 32px;
+  }
+}
+
 </style>
 </head>
 <body>
