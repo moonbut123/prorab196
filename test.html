@@ -3183,11 +3183,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var MY_WHATSAPP = '79221230234';
     var MY_TELEGRAM_USERNAME = 'The_fabo';
+    var isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
     if (messenger === 'whatsapp'){
-      window.open('https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text), '_blank');
+      var url = 'https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text);
+      if (isTouchDevice && typeof showVpnBanner === 'function') {
+        showVpnBanner('WhatsApp', function() { window.open(url, '_blank'); });
+      } else {
+        window.open(url, '_blank');
+      }
     } else if (messenger === 'telegram'){
-      window.open('https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text), '_blank');
+      var url = 'https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text);
+      if (isTouchDevice && typeof showVpnBanner === 'function') {
+        showVpnBanner('Telegram', function() { window.open(url, '_blank'); });
+      } else {
+        window.open(url, '_blank');
+      }
     } else if (messenger === 'max'){
       var modal = document.getElementById('maxModalOverlay');
       var textarea = document.getElementById('maxTextarea');
