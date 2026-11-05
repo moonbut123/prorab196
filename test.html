@@ -499,47 +499,237 @@
     .slider-hint { display: none; }
   }
 
-  /* PORTFOLIO */
+   /* ===== PORTFOLIO (СКОРРЕКТИРОВАННЫЙ) ===== */
   .portfolio{background:var(--bg-alt); position: relative;}
   .portfolio::after{
     content: "";position: absolute;bottom: 0;left: 50%;transform: translateX(-50%);
     width: calc(100% - 40px);max-width: var(--maxw);height: 1px;background: rgba(0, 0, 0, 0.10);
   }
-  .portfolio-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(450px, 1fr)); gap:24px;}
-  .project-card{background:#fff; border-radius:14px; overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.05); border:1px solid var(--border);display:flex; flex-direction:column;}
-  .card-top{padding:12px 12px 0 12px; background:#fff;}
-  .card-main-img{position:relative; border-radius:10px; overflow:hidden;aspect-ratio: 4/3; background:#eee; cursor:zoom-in;touch-action: pan-y;-webkit-user-select: none;-webkit-tap-highlight-color: transparent;}
-  .card-main-img img{width:100%; height:100%; object-fit:cover; transition:transform 0.3s;user-select:none; -webkit-user-drag:none;pointer-events: none;}
-  .card-main-img:hover img{transform:scale(1.02);}
-  .card-dots{position:absolute; bottom:10px; left:50%; transform:translateX(-50%);display:flex; gap:5px; background:rgba(0,0,0,0.4); padding:4px 10px; border-radius:10px;z-index: 2;}
-  .card-dots span{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.4); cursor:pointer;}
-  .card-dots span.active{background:#fff;}
+  .portfolio-grid{
+    display:grid; 
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); 
+    gap: 30px;
+  }
 
-  .card-bottom{padding:12px 20px 20px; display:flex; flex-direction:column; gap:15px;}
-  .card-thumbs{display:flex; flex-direction:row; gap:8px; overflow-x:auto; width:100%; padding-bottom: 4px;scrollbar-width: none; -ms-overflow-style: none;}
-  .card-thumbs::-webkit-scrollbar { display: none; }
-  .card-thumb{width:60px; height:60px; border-radius:8px; overflow:hidden; cursor:pointer;opacity:0.6; transition:0.2s; border:2px solid transparent; flex-shrink: 0;}
-  .card-thumb img{width:100%; height:100%; object-fit:cover;}
-  .card-thumb.active, .card-thumb:hover{opacity:1; border-color:var(--accent);}
+  .project-card{
+    background:#fff; 
+    border-radius:12px; /* Уменьшили скругление карточки */
+    overflow:hidden;
+    box-shadow:0 4px 20px rgba(0,0,0,.05); 
+    border:1px solid var(--border);
+    display:flex; 
+    flex-direction:column;
+    padding: 0; 
+  }
 
-  .card-info-wrapper{display:flex; justify-content:space-between; align-items:flex-end; gap:15px; width:100%;}
-  .card-info h3{font-size:18px; font-weight:800; margin-bottom:6px; color:var(--dark);}
-  .card-info .meta{display:flex; gap:12px; font-size:13px; color:var(--muted); margin-bottom:4px;}
-  .card-info .type{font-size:12.5px; color:#9ca3af;}
+  /* Обертка для фото и превью */
+  .card-visual-wrapper {
+    display: flex;
+    gap: 8px; /* Небольшой отступ между превью и фото */
+    height: 340px; 
+    padding: 12px 12px 0 12px; /* Отступы сверху и по бокам */
+    border-radius: 12px 12px 0 0; 
+    overflow: hidden; 
+  }
 
-  .card-btn{background:var(--accent); color:var(--dark);border:none; padding:12px 18px; border-radius:8px;font-weight:700; font-size:14px; cursor:pointer;text-align:center; transition:0.2s; flex-shrink:0;display:flex; flex-direction:column; gap:2px;}
-  .card-btn:hover{background:var(--accent-dark); transform:translateY(-1px);}
-  .card-btn small{font-size:10px; font-weight:500; opacity:0.8;}
+  /* Левая колонка с миниатюрами */
+  .card-thumbs-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; 
+    width: 80px; 
+    flex-shrink: 0;
+    overflow-y: auto; 
+    scrollbar-width: none;
+  }
+  .card-thumbs-vertical::-webkit-scrollbar { display: none; }
 
+  .card-thumb {
+    width: 100%; 
+    height: 80px; 
+    border-radius: 6px; /* Небольшое скругление у превью */
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: 0.2s;
+    border: none; 
+    flex-shrink: 0;
+    display: block;
+  }
+  
+  .card-thumb img {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
+  }
+  
+  .card-thumb.active, .card-thumb:hover {
+    opacity: 1; 
+    box-shadow: inset 0 0 0 2px var(--accent); /* Рамка теперь внутри */
+  }
+
+  /* Главное фото */
+  .card-main-img {
+    flex-grow: 1;
+    position: relative;
+    border-radius: 8px; /* Скругление главного фото */
+    overflow: hidden;
+    background: #f4f6f8; 
+    cursor: pointer;
+    height: 100%;
+  }
+  .card-main-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  /* Стрелки на главном фото */
+  .card-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: #fff; color: var(--accent); border: none; 
+    width: 32px; height: 32px; border-radius: 6px; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 3; transition: 0.2s;
+  }
+  .card-arrow:hover { background: var(--accent); color: #fff; }
+  .card-arrow.prev { left: 12px; }
+  .card-arrow.next { right: 12px; }
+
+  /* Точки снизу */
+  .card-dots {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px; z-index: 2;
+  }
+  .card-dots span {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.5); cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .card-dots span.active { background: #fff; }
+
+  /* Нижняя часть с текстом и кнопкой */
+  .card-bottom {
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between; 
+    align-items: center; /* Выравниваем кнопку по центру текста */
+    gap: 15px;
+    padding: 16px 20px 20px; 
+    margin-top: auto; 
+  }
+
+  /* Группировка текста */
+  .card-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+  }
+  
+  .card-meta-row {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark);
+    line-height: 1.2;
+    margin: 0;
+  }
+  .card-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 0; 
+  }
+
+  /* Кнопка "Рассчитать" */
+  .card-action-row {
+    display: flex;
+    flex-shrink: 0; 
+  }
+  .card-btn-large {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: var(--dark);
+    padding: 10px 16px; /* Уменьшили отступы внутри кнопки */
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px; /* Уменьшили шрифт, чтобы влезло в одну строку */
+    text-align: center;
+    transition: 0.2s;
+    white-space: nowrap; 
+  }
+  .card-btn-large:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245,166,35,0.3);
+  }
+  .card-btn-large small {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  /* Адаптив */
+  @media(max-width:1200px){
+    .card-btn-large { font-size: 13px; padding: 10px 14px; }
+  }
   @media(max-width:960px){
     .portfolio-grid{grid-template-columns:1fr;}
   }
+  @media(max-width: 768px){
+    .card-bottom {
+      flex-direction: column; 
+      align-items: stretch;
+      gap: 12px;
+    }
+    .card-action-row {
+      width: 100%;
+    }
+    .card-btn-large {
+      width: 100%; 
+      white-space: normal;
+      padding: 12px 16px;
+      font-size: 15px;
+    }
+  }
   @media(max-width:550px){
-    .portfolio-grid{grid-template-columns:1fr;}
-    .card-top{padding:10px 10px 0 10px;}
-    .card-thumb{width:50px; height:50px;}
-    .card-info-wrapper{flex-direction:column; align-items:stretch;}
-    .card-btn{width:100%;}
+    .card-visual-wrapper {
+      flex-direction: column;
+      height: auto;
+      padding: 12px;
+    }
+    .card-main-img {
+      height: 240px;
+      border-radius: 8px;
+      order: 1;
+    }
+    .card-thumbs-vertical {
+      flex-direction: row;
+      width: 100%;
+      height: 60px;
+      order: 2;
+      overflow-x: auto;
+      overflow-y: hidden;
+      gap: 6px;
+      padding-bottom: 0;
+    }
+    .card-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 4px;
+    }
+    .card-title { font-size: 18px; }
+    .card-bottom { padding: 0 16px 16px; }
   }
   @media (max-width: 600px){
     .portfolio::after{width: calc(100% - 32px);background: rgba(0, 0, 0, 0.08);}
@@ -652,30 +842,13 @@
   }
 
   /* GUARANTEE */
-  section#guarantee{
-    background: var(--bg-alt) !important;
-    position: relative; /* Чтобы позиционировать линию */
-  }
-  
-  /* Разделитель между Договором и Ценами */
+  section#guarantee{background: var(--bg-alt) !important; position: relative;}
   section#guarantee::after{
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 40px);
-    max-width: var(--maxw);
-    height: 1px;
-    background: rgba(0, 0, 0, 0.1); /* Тонкая темная линия */
+    content: "";position: absolute;bottom: 0;left: 50%;transform: translateX(-50%);
+    width: calc(100% - 40px);max-width: var(--maxw);height: 1px;background: rgba(0, 0, 0, 0.1);
   }
-  
-  /* На мобильных делаем линию короче */
   @media (max-width: 600px){
-    section#guarantee::after{
-      width: calc(100% - 32px);
-      background: rgba(0, 0, 0, 0.08);
-    }
+    section#guarantee::after{width: calc(100% - 32px);background: rgba(0, 0, 0, 0.08);}
   }
   .guarantee-flex {display: flex;flex-wrap: wrap;gap: 50px;align-items: center;}
   .guarantee-img {flex: 1 1 450px;max-width: 550px;position: relative;display: flex;justify-content: center;}
@@ -696,7 +869,7 @@
   }
 
   /* PRICE M2 */
-  .price-m2{ background: var(--bg-alt); /* Светло-серый, как у блока "Договор" */}
+  .price-m2{background: var(--bg-alt); padding: 80px 0;}
   .price-m2-header{max-width: 680px;margin-bottom: 40px;}
   .price-m2-header .section-title{margin-bottom: 12px;}
   .price-m2-header .section-sub{margin-bottom: 0;}
@@ -722,20 +895,20 @@
     z-index: 2;
   }
 
-  /* Кнопка "Заказать звонок" (в цветах вашего сайта) */
+  /* Кнопка "Заказать звонок" (в цветах сайта) */
   .price-m2-call{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--accent); /* Жёлтый акцент сайта */
-    color: var(--dark);        /* Тёмный текст для контраста */
+    background: var(--accent);
+    color: var(--dark);
     font-size: 13px;
     font-weight: 700;
     padding: 8px 16px;
     border-radius: 100px;
     text-decoration: none;
     transition: background .2s, transform .2s;
-    box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3); /* Жёлтая тень */
+    box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
   }
   .price-m2-call:hover{
     background: var(--accent-dark);
@@ -978,10 +1151,159 @@
     .hero p.lead{font-size: 15px;margin: 16px 0 24px;}
     .hero-cta{flex-direction: column;width: 100%;}
     .hero-cta .btn{width: 100%;}
-    .card-info-wrapper{flex-direction: column;align-items: stretch;gap: 12px;}
-    .card-btn{width: 100%;}
     .form-box{padding: 24px 18px;}
   }
+
+  /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ГАЛЕРЕИ ===== */
+  @media (max-width: 600px) {
+    .card-visual-wrapper {
+      flex-direction: column;
+      height: auto;
+      gap: 10px;
+    }
+    .card-main-img {
+      width: 100%;
+      height: 240px;
+      order: 1;
+    }
+    .card-thumbs-vertical {
+      flex-direction: row;
+      width: 100%;
+      height: 60px;
+      order: 2;
+      overflow-x: auto;
+      overflow-y: hidden;
+      gap: 8px;
+      padding-bottom: 4px;
+    }
+    .card-thumb {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+    }
+  }
+
+  /* ===== ФИКС ЗАЗОРОВ В ГАЛЕРЕЕ ===== */
+  .project-card {
+    padding: 0 !important; /* Убираем отступы у самой карточки */
+  }
+
+  .card-visual-wrapper {
+    padding: 0 !important; /* Убираем отступы у обертки фото */
+    gap: 6px !important; /* Оставляем микро-зазор между превью и фото */
+    border-radius: 12px 12px 0 0 !important; /* Скругление только сверху */
+  }
+
+  .card-main-img {
+    border-radius: 0 !important; /* Убираем скругление у большого фото, чтобы прилегало */
+    background: #f4f6f8 !important; /* Светлый фон вместо синего */
+  }
+
+  .card-thumbs-vertical {
+    background: #f4f6f8 !important; /* Светлый фон вместо синего */
+    border-radius: 0 !important;
+  }
+
+  /* Убираем скругление у самой верхней левой миниатюры */
+  .card-thumb:first-child {
+    border-top-left-radius: 12px !important;
+  }
+  
+  /* Убираем скругление у самой верхней правой части фото */
+  .card-main-img img {
+    border-top-right-radius: 12px !important;
+  }
+
+  /* Текст снизу оставляем с отступами */
+  .card-bottom {
+    padding: 16px 20px 20px !important; 
+  }
+
+  /* ===== ЭФФЕКТ НАВЕДЕНИЯ НА ГЛАВНОЕ ФОТО ===== */
+  .card-img-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(28, 35, 49, 0.4); /* Затемнение */
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 2; /* Ниже стрелок (у них z-index: 3), но выше фото */
+    pointer-events: none; /* Чтобы не блокировать клики (если нужно) */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Показываем оверлей при наведении на главное фото */
+  .card-main-img:hover .card-img-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* На мобильных устройствах (где нет курсора мыши) скрываем оверлей */
+  @media (hover: none) {
+    .card-img-overlay {
+      display: none;
+    }
+  }
+
+  /* ===== ПРИГЛУШЕННЫЕ МИНИАТЮРЫ ===== */
+  
+  .card-thumb {
+    opacity: 0.4 !important; /* Делаем их полупрозрачными (еле видимыми) */
+    transition: opacity 0.25s ease, box-shadow 0.25s ease !important;
+    background: #fff; /* Чтобы фон блока просвечивал через картинку */
+  }
+
+  /* При наведении или если миниатюра активна — делаем яркой */
+  .card-thumb:hover,
+  .card-thumb.active {
+    opacity: 1 !important; /* Полная яркость */
+    box-shadow: inset 0 0 0 2px var(--accent) !important; /* Желтая рамка внутри */
+  }
+
+  /* Для мобилок (где нет мыши) делаем активную картинку яркой, а остальные чуть виднее */
+  @media (hover: none) {
+    .card-thumb {
+      opacity: 0.7 !important;
+    }
+    .card-thumb.active {
+      opacity: 1 !important;
+    }
+  }
+
+  /* ===== АНИМАЦИЯ ПЕРЕЛИСТЫВАНИЯ ГЛАВНОГО ФОТО ===== */
+  
+  /* Исходное состояние картинки (плавный переход) */
+  .card-main-img img {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    will-change: opacity, transform;
+  }
+
+  /* Состояние при перелистывании (затухание и сдвиг) */
+  .card-main-img img.fade-out {
+    opacity: 0;
+    transform: scale(0.95) translateX(10px); /* Чуть уменьшается и сдвигается вправо */
+  }
+
+  /* ===== ФИКС: НАВЕДЕНИЕ НА СТРЕЛКИ ===== */
+  
+  /* Поднимаем стрелки выше слоя с затемнением */
+  .card-arrow {
+    z-index: 5 !important; 
+  }
+
+  /* При наведении на стрелку — принудительно убираем затемнение у родителя */
+  .card-main-img:has(.card-arrow:hover) .card-img-overlay {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
 </style>
 </head>
 <body>
@@ -1289,15 +1611,25 @@
 <section class="section portfolio" id="portfolio">
   <div class="wrap">
     <h2 class="section-title">Примеры работ</h2>
-    <p class="section-sub">Свайпните большое фото, чтобы пролистать галерею. Клик по нему откроет фото на весь экран. Миниатюры — снизу.</p>
+    <p class="section-sub">Свайпните большое фото, чтобы пролистать галерею. Клик по нему откроет фото на весь экран.</p>
 
     <div class="portfolio-grid" id="portfolioGrid">
 
+      <!-- Карточка 1 -->
       <div class="project-card" data-project="0">
-        <div class="card-top">
+        <div class="card-visual-wrapper">
+          <div class="card-thumbs-vertical">
+            <div class="card-thumb active" onclick="switchImage(0, 0, this)"><img src="images/1 (2).webp" alt="фото 1"></div>
+            <div class="card-thumb" onclick="switchImage(0, 1, this)"><img src="images/3 (1).webp" alt="фото 2"></div>
+            <div class="card-thumb" onclick="switchImage(0, 2, this)"><img src="images/4 (2).webp" alt="фото 3"></div>
+            <div class="card-thumb" onclick="switchImage(0, 3, this)"><img src="images/5 (2).webp" alt="фото 4"></div>
+          </div>
           <div class="card-main-img" id="main-img-wrap-0" data-index="0" data-project="0">
-            <img id="main-img-0" src="images/1 (2).webp" alt="ЖК Панорама — капитальный ремонт квартиры 70 м² в Екатеринбурге" loading="lazy">
-            <div class="card-dots">
+            <img id="main-img-0" src="images/1 (2).webp" alt="ЖК Панорама">
+              <div class="card-img-overlay">Посмотреть</div>
+            <button class="card-arrow prev" onclick="changeCardImage(0, -1, event)">‹</button>
+            <button class="card-arrow next" onclick="changeCardImage(0, 1, event)">›</button>
+            <div class="card-dots" onclick="event.stopPropagation()">
               <span class="active" onclick="switchImage(0, 0, null, event)"></span>
               <span onclick="switchImage(0, 1, null, event)"></span>
               <span onclick="switchImage(0, 2, null, event)"></span>
@@ -1306,28 +1638,40 @@
           </div>
         </div>
         <div class="card-bottom">
-          <div class="card-thumbs">
-            <div class="card-thumb active" onclick="switchImage(0, 0, this)"><img src="images/1 (2).webp" alt="ЖК Панорама — фото 1" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(0, 1, this)"><img src="images/3 (1).webp" alt="ЖК Панорама — фото 2" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(0, 2, this)"><img src="images/4 (2).webp" alt="ЖК Панорама — фото 3" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(0, 3, this)"><img src="images/5 (2).webp" alt="ЖК Панорама — фото 4" loading="lazy"></div>
-          </div>
-          <div class="card-info-wrapper">
-            <div class="card-info">
-              <h3>ЖК «Панорама»</h3>
-              <div class="meta"><span>📐 70 м²</span><span>⏱ 88 дней</span></div>
-              <div class="type">Капитальный ремонт</div>
+          <div class="card-text-group">
+            <div class="card-meta-row">
+              <span>📐 70 м²</span>
+              <span>⏱ 88 дней</span>
             </div>
-            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+            <h3 class="card-title">ЖК «Панорама»</h3>
+            <div class="card-subtitle">Капитальный ремонт</div>
+          </div>
+          <div class="card-action-row">
+            <a href="#form" class="card-btn-large">
+              Рассчитать по своим параметрам
+              <small>Расчет онлайн за 1 мин</small>
+            </a>
           </div>
         </div>
       </div>
 
+      <!-- Карточка 2 -->
       <div class="project-card" data-project="1">
-        <div class="card-top">
+        <div class="card-visual-wrapper">
+          <div class="card-thumbs-vertical">
+            <div class="card-thumb active" onclick="switchImage(1, 0, this)"><img src="images/1 (4).webp" alt="фото 1"></div>
+            <div class="card-thumb" onclick="switchImage(1, 1, this)"><img src="images/2 (2).webp" alt="фото 2"></div>
+            <div class="card-thumb" onclick="switchImage(1, 2, this)"><img src="images/3 (3).webp" alt="фото 3"></div>
+            <div class="card-thumb" onclick="switchImage(1, 3, this)"><img src="images/4 (4).webp" alt="фото 4"></div>
+            <div class="card-thumb" onclick="switchImage(1, 4, this)"><img src="images/5 (4).webp" alt="фото 5"></div>
+            <div class="card-thumb" onclick="switchImage(1, 5, this)"><img src="images/6 (1).webp" alt="фото 6"></div>
+          </div>
           <div class="card-main-img" id="main-img-wrap-1" data-index="0" data-project="1">
-            <img id="main-img-1" src="images/1 (4).webp" alt="ЖК Светлый — косметический ремонт квартиры 43 м² в Екатеринбурге" loading="lazy">
-            <div class="card-dots">
+            <img id="main-img-1" src="images/1 (4).webp" alt="ЖК Светлый">
+            <div class="card-img-overlay">Посмотреть</div>
+            <button class="card-arrow prev" onclick="changeCardImage(1, -1, event)">‹</button>
+            <button class="card-arrow next" onclick="changeCardImage(1, 1, event)">›</button>
+            <div class="card-dots" onclick="event.stopPropagation()">
               <span class="active" onclick="switchImage(1, 0, null, event)"></span>
               <span onclick="switchImage(1, 1, null, event)"></span>
               <span onclick="switchImage(1, 2, null, event)"></span>
@@ -1338,30 +1682,38 @@
           </div>
         </div>
         <div class="card-bottom">
-          <div class="card-thumbs">
-            <div class="card-thumb active" onclick="switchImage(1, 0, this)"><img src="images/1 (4).webp" alt="ЖК Светлый — фото 1" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(1, 1, this)"><img src="images/2 (2).webp" alt="ЖК Светлый — фото 2" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(1, 2, this)"><img src="images/3 (3).webp" alt="ЖК Светлый — фото 3" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(1, 3, this)"><img src="images/4 (4).webp" alt="ЖК Светлый — фото 4" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(1, 4, this)"><img src="images/5 (4).webp" alt="ЖК Светлый — фото 5" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(1, 5, this)"><img src="images/6 (1).webp" alt="ЖК Светлый — фото 6" loading="lazy"></div>
-          </div>
-          <div class="card-info-wrapper">
-            <div class="card-info">
-              <h3>ЖК «Светлый»</h3>
-              <div class="meta"><span>📐 43 м²</span><span>⏱ 58 дней</span></div>
-              <div class="type">Косметический ремонт</div>
+          <div class="card-text-group">
+            <div class="card-meta-row">
+              <span>📐 43 м²</span>
+              <span>⏱ 58 дней</span>
             </div>
-            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+            <h3 class="card-title">ЖК «Светлый»</h3>
+            <div class="card-subtitle">Косметический ремонт</div>
+          </div>
+          <div class="card-action-row">
+            <a href="#form" class="card-btn-large">
+              Рассчитать по своим параметрам
+              <small>Расчет онлайн за 1 мин</small>
+            </a>
           </div>
         </div>
       </div>
 
+      <!-- Карточка 3 -->
       <div class="project-card" data-project="2">
-        <div class="card-top">
+        <div class="card-visual-wrapper">
+          <div class="card-thumbs-vertical">
+            <div class="card-thumb active" onclick="switchImage(2, 0, this)"><img src="images/1 (3).webp" alt="фото 1"></div>
+            <div class="card-thumb" onclick="switchImage(2, 1, this)"><img src="images/2 (1).webp" alt="фото 2"></div>
+            <div class="card-thumb" onclick="switchImage(2, 2, this)"><img src="images/4 (3).webp" alt="фото 3"></div>
+            <div class="card-thumb" onclick="switchImage(2, 3, this)"><img src="images/5 (3).webp" alt="фото 4"></div>
+          </div>
           <div class="card-main-img" id="main-img-wrap-2" data-index="0" data-project="2">
-            <img id="main-img-2" src="images/1 (3).webp" alt="ЖК Ривьера — дизайнерский ремонт квартиры 38 м² в Екатеринбурге" loading="lazy">
-            <div class="card-dots">
+            <img id="main-img-2" src="images/1 (3).webp" alt="ЖК Ривьера">
+            <div class="card-img-overlay">Посмотреть</div>
+            <button class="card-arrow prev" onclick="changeCardImage(2, -1, event)">‹</button>
+            <button class="card-arrow next" onclick="changeCardImage(2, 1, event)">›</button>
+            <div class="card-dots" onclick="event.stopPropagation()">
               <span class="active" onclick="switchImage(2, 0, null, event)"></span>
               <span onclick="switchImage(2, 1, null, event)"></span>
               <span onclick="switchImage(2, 2, null, event)"></span>
@@ -1370,28 +1722,41 @@
           </div>
         </div>
         <div class="card-bottom">
-          <div class="card-thumbs">
-            <div class="card-thumb active" onclick="switchImage(2, 0, this)"><img src="images/1 (3).webp" alt="ЖК Ривьера — фото 1" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(2, 1, this)"><img src="images/2 (1).webp" alt="ЖК Ривьера — фото 2" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(2, 2, this)"><img src="images/4 (3).webp" alt="ЖК Ривьера — фото 3" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(2, 3, this)"><img src="images/5 (3).webp" alt="ЖК Ривьера — фото 4" loading="lazy"></div>
-          </div>
-          <div class="card-info-wrapper">
-            <div class="card-info">
-              <h3>ЖК «Ривьера»</h3>
-              <div class="meta"><span>📐 38 м²</span><span>⏱ 3,5 мес.</span></div>
-              <div class="type">Дизайнерский ремонт</div>
+          <div class="card-text-group">
+            <div class="card-meta-row">
+              <span>📐 38 м²</span>
+              <span>⏱ 3,5 мес.</span>
             </div>
-            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+            <h3 class="card-title">ЖК «Ривьера»</h3>
+            <div class="card-subtitle">Дизайнерский ремонт</div>
+          </div>
+          <div class="card-action-row">
+            <a href="#form" class="card-btn-large">
+              Рассчитать по своим параметрам
+              <small>Расчет онлайн за 1 мин</small>
+            </a>
           </div>
         </div>
       </div>
 
+      <!-- Карточка 4 -->
       <div class="project-card" data-project="3">
-        <div class="card-top">
+        <div class="card-visual-wrapper">
+          <div class="card-thumbs-vertical">
+            <div class="card-thumb active" onclick="switchImage(3, 0, this)"><img src="images/diz-1.webp" alt="фото 1"></div>
+            <div class="card-thumb" onclick="switchImage(3, 1, this)"><img src="images/diz-2.webp" alt="фото 2"></div>
+            <div class="card-thumb" onclick="switchImage(3, 2, this)"><img src="images/diz-3.webp" alt="фото 3"></div>
+            <div class="card-thumb" onclick="switchImage(3, 3, this)"><img src="images/diz-4.webp" alt="фото 4"></div>
+            <div class="card-thumb" onclick="switchImage(3, 4, this)"><img src="images/diz-5.webp" alt="фото 5"></div>
+            <div class="card-thumb" onclick="switchImage(3, 5, this)"><img src="images/diz-6.webp" alt="фото 6"></div>
+            <div class="card-thumb" onclick="switchImage(3, 6, this)"><img src="images/diz-7.webp" alt="фото 7"></div>
+          </div>
           <div class="card-main-img" id="main-img-wrap-3" data-index="0" data-project="3">
-            <img id="main-img-3" src="images/diz-1.webp" alt="ЖК Современник — ремонт новостройки 54 м² в Екатеринбурге" loading="lazy">
-            <div class="card-dots">
+            <img id="main-img-3" src="images/diz-1.webp" alt="ЖК Современник">
+            <div class="card-img-overlay">Посмотреть</div>
+            <button class="card-arrow prev" onclick="changeCardImage(3, -1, event)">‹</button>
+            <button class="card-arrow next" onclick="changeCardImage(3, 1, event)">›</button>
+            <div class="card-dots" onclick="event.stopPropagation()">
               <span class="active" onclick="switchImage(3, 0, null, event)"></span>
               <span onclick="switchImage(3, 1, null, event)"></span>
               <span onclick="switchImage(3, 2, null, event)"></span>
@@ -1403,22 +1768,19 @@
           </div>
         </div>
         <div class="card-bottom">
-          <div class="card-thumbs">
-            <div class="card-thumb active" onclick="switchImage(3, 0, this)"><img src="images/diz-1.webp" alt="ЖК Современник — фото 1" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(3, 1, this)"><img src="images/diz-2.webp" alt="ЖК Современник — фото 2" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(3, 2, this)"><img src="images/diz-3.webp" alt="ЖК Современник — фото 3" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(3, 3, this)"><img src="images/diz-4.webp" alt="ЖК Современник — фото 4" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(3, 4, this)"><img src="images/diz-5.webp" alt="ЖК Современник — фото 5" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(3, 5, this)"><img src="images/diz-6.webp" alt="ЖК Современник — фото 6" loading="lazy"></div>
-            <div class="card-thumb" onclick="switchImage(3, 6, this)"><img src="images/diz-7.webp" alt="ЖК Современник — фото 7" loading="lazy"></div>
-          </div>
-          <div class="card-info-wrapper">
-            <div class="card-info">
-              <h3>ЖК «Современник»</h3>
-              <div class="meta"><span>📐 54 м²</span><span>⏱ 68 дней</span></div>
-              <div class="type">Ремонт новостройки</div>
+          <div class="card-text-group">
+            <div class="card-meta-row">
+              <span>📐 54 м²</span>
+              <span>⏱ 68 дней</span>
             </div>
-            <a href="#form" class="card-btn">Рассчитать по своим параметрам<small>Расчет онлайн за 1 мин</small></a>
+            <h3 class="card-title">ЖК «Современник»</h3>
+            <div class="card-subtitle">Ремонт новостройки</div>
+          </div>
+          <div class="card-action-row">
+            <a href="#form" class="card-btn-large">
+              Рассчитать по своим параметрам
+              <small>Расчет онлайн за 1 мин</small>
+            </a>
           </div>
         </div>
       </div>
@@ -1439,7 +1801,7 @@
   <div class="wrap">
     <div class="quiz-header">
       <h2 class="section-title">Рассчитайте ремонт за 1 минуту</h2>
-      <p class="section-sub">Ответьте на 4 вопроса — Я покажу вилку стоимости и подготовит смету после замера.</p>
+      <p class="section-sub">Ответьте на 4 вопроса — Александр покажет вилку стоимости и подготовит смету после замера.</p>
     </div>
 
     <div class="quiz-chat" id="quizChat">
@@ -2160,19 +2522,47 @@ let lightboxImageIdx = 0;
 
 function switchImage(projectIdx, imageIdx, thumbElement, event) {
   if(event) event.stopPropagation();
+  
   const card = document.querySelectorAll('.project-card')[projectIdx];
   const wrap = card.querySelector('.card-main-img');
   const imgElement = wrap.querySelector('img');
-  imgElement.src = projectsData[projectIdx].images[imageIdx];
-  wrap.setAttribute('data-index', imageIdx);
-  const thumbs = card.querySelectorAll('.card-thumb');
-  thumbs.forEach((t, i) => t.classList.toggle('active', i === imageIdx));
-  const dots = card.querySelectorAll('.card-dots span');
-  dots.forEach((d, i) => d.classList.toggle('active', i === imageIdx));
-  if (thumbElement) {
-    thumbs.forEach(t => t.classList.remove('active'));
-    thumbElement.classList.add('active');
-  }
+  
+  // Если картинка та же самая — ничего не делаем
+  if (wrap.getAttribute('data-index') == imageIdx) return;
+
+  // Добавляем класс для анимации "ухода" (затухание + сдвиг)
+  imgElement.classList.add('fade-out');
+  
+  setTimeout(function() {
+    // Меняем путь к картинке
+    imgElement.src = projectsData[projectIdx].images[imageIdx];
+    wrap.setAttribute('data-index', imageIdx);
+    
+    // Обновляем активные классы на миниатюрах и точках
+    const thumbs = card.querySelectorAll('.card-thumb');
+    thumbs.forEach((t, i) => t.classList.toggle('active', i === imageIdx));
+    const dots = card.querySelectorAll('.card-dots span');
+    dots.forEach((d, i) => d.classList.toggle('active', i === imageIdx));
+    
+    if (thumbElement) {
+      thumbs.forEach(t => t.classList.remove('active'));
+      thumbElement.classList.add('active');
+    }
+
+    // Убираем класс (картинка плавно появляется)
+    imgElement.classList.remove('fade-out');
+  }, 250); // 250 мс = время анимации затухания
+}
+
+function changeCardImage(projectIdx, direction, event) {
+  if (event) event.stopPropagation();
+  const card = document.querySelectorAll('.project-card')[projectIdx];
+  const wrap = card.querySelector('.card-main-img');
+  const images = projectsData[projectIdx].images;
+  let currentIndex = parseInt(wrap.getAttribute('data-index')) || 0;
+  
+  currentIndex = (currentIndex + direction + images.length) % images.length;
+  switchImage(projectIdx, currentIndex, null, null);
 }
 
 function initSwipe(projectIdx) {
