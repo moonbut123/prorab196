@@ -3044,6 +3044,39 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 })();
 
+<script>
+/* ===== PRELOADER: скрытие после загрузки ===== */
+(function(){
+  var preloader = document.getElementById('preloader');
+  if (!preloader) return;
+
+  var MIN_SHOW_MS = 500;
+  var start = Date.now();
+  var done = false;
+
+  function hidePreloader(){
+    if (done) return;
+    done = true;
+
+    var elapsed = Date.now() - start;
+    var wait = Math.max(0, MIN_SHOW_MS - elapsed);
+
+    setTimeout(function(){
+      preloader.classList.add('hidden');
+      setTimeout(function(){
+        if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
+      }, 500);
+    }, wait);
+  }
+
+  if (document.readyState === 'complete') {
+    hidePreloader();
+  } else {
+    window.addEventListener('load', hidePreloader);
+    setTimeout(hidePreloader, 5000);
+  }
+})();
+
 /* ===== КВИЗ-ЧАТ ===== */
 (function(){
   var QUIZ_PRICES = { cosmetic: 5500, capital: 8500, design: 13000 };
@@ -3289,26 +3322,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var MY_WHATSAPP = '79221230234';
     var MY_TELEGRAM_USERNAME = 'The_fabo';
-    var isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-if (messenger === 'whatsapp'){
-  var url = 'https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text);
-  openMessenger('WhatsApp', url);
-} else if (messenger === 'telegram'){
-  var url = 'https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text);
-  openMessenger('Telegram', url);
-} else if (messenger === 'max'){
-  var modal = document.getElementById('maxModalOverlay');
-  var textarea = document.getElementById('maxTextarea');
-  if (modal && textarea){
-    textarea.value = text;
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
+    if (messenger === 'whatsapp'){
+      var url = 'https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    } else if (messenger === 'telegram'){
+      var url = 'https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    } else if (messenger === 'max'){
+      var modal = document.getElementById('maxModalOverlay');
+      var textarea = document.getElementById('maxTextarea');
+      if (modal && textarea){
+        textarea.value = text;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+    }
   }
-}
 
+  // ✅ Запуск квиза при загрузке (ВНУТРИ IIFE, после определения всех функций)
   askStep(0);
+
 })();
+</script>
 
 </script>
 
