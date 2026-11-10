@@ -7,7 +7,7 @@
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date(); 
+        m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=113813907', 'ym');
@@ -16,7 +16,7 @@
 <noscript><div><img src="https://mc.yandex.ru/watch/113813907" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="yandex-verification" content="f8b791d1d3fe2230" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1349,17 +1349,6 @@
     }
   }
 
- /* ===== ВОЗВРАЩАЕМ ПОДПИСЬ ПОД ЛОГО В ШАПКЕ НА МОБИЛЬНЫХ ===== */
-  @media (max-width: 1080px) {
-    header .logo small {
-      display: block !important;
-      font-size: 10px; /* Чуть меньше, чтобы влезло в узкую шапку */
-      color: #b9c0cf;
-      margin-top: 2px;
-      line-height: 1.2;
-    }
-  }
-
   /* ===== ФИКС БЕЛОЙ ПОЛОСЫ НАД ШАПКОЙ НА IPHONE ===== */
   :root {
     /* Задаем цвет верхней панели браузера (Chrome/Safari на Android/iOS) */
@@ -1384,7 +1373,18 @@
       background-color: #1c2331;
     }
   }
-    
+
+    /* ===== ВОЗВРАЩАЕМ ПОДПИСЬ ПОД ЛОГО В ШАПКЕ НА МОБИЛЬНЫХ ===== */
+  @media (max-width: 1080px) {
+    header .logo small {
+      display: block !important;
+      font-size: 10px; /* Чуть меньше, чтобы влезло в узкую шапку */
+      color: #b9c0cf;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -2329,12 +2329,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var MY_WHATSAPP = '79221230234';
   var MY_TELEGRAM_USERNAME = 'The_fabo';
 
-  // Утилита: открытие мессенджера (заглушка, чтобы не падало)
-  function openMessenger(name, url) {
-    // Можно добавить логику, но по умолчанию просто открываем ссылку
-    // window.open(url, '_blank'); // раскомментируйте, если нужно здесь
-  }
-
   var phoneInput = document.getElementById('phone');
   if (phoneInput) {
     phoneInput.addEventListener('input', function(e) {
@@ -2424,61 +2418,44 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // === WhatsApp ===
-  var waBtn = document.querySelector('.wa-btn');
-  if (waBtn) {
-    waBtn.addEventListener('click', function() {
-      var text = getFormData();
-      if (!text) return;
-      var url = 'https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text);
+  document.querySelector('.wa-btn').addEventListener('click', function() {
+    var text = getFormData();
+    if (!text) return;
+    var url = 'https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text);
+    if (isTouchDevice) {
+      showVpnBanner('WhatsApp', function() { window.open(url, '_blank'); });
+    } else {
+      window.open(url, '_blank');
+    }
+  });
 
-      if (isTouchDevice) {
-        showVpnBanner('WhatsApp', function() { window.open(url, '_blank'); });
-      } else {
-        window.open(url, '_blank');
-      }
-    });
-  }
+  document.querySelector('.tg-btn').addEventListener('click', function() {
+    var text = getFormData();
+    if (!text) return;
+    var url = 'https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text);
+    if (isTouchDevice) {
+      showVpnBanner('Telegram', function() { window.open(url, '_blank'); });
+    } else {
+      window.open(url, '_blank');
+    }
+  });
 
-  // === Telegram ===
-  var tgBtn = document.querySelector('.tg-btn');
-  if (tgBtn) {
-    tgBtn.addEventListener('click', function() {
-      var text = getFormData();
-      if (!text) return;
-      var url = 'https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text);
+  document.querySelector('.max-btn').addEventListener('click', function() {
+    var text = getFormData();
+    if (!text) return;
+    var modal = document.getElementById('maxModalOverlay');
+    var textarea = document.getElementById('maxTextarea');
+    textarea.value = text;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  });
 
-      if (isTouchDevice) {
-        showVpnBanner('Telegram', function() { window.open(url, '_blank'); });
-      } else {
-        window.open(url, '_blank');
-      }
-    });
-  }
-
-  // === MAX ===
-  var maxBtn = document.querySelector('.max-btn');
-  if (maxBtn) {
-    maxBtn.addEventListener('click', function() {
-      var text = getFormData();
-      if (!text) return;
-      var modal = document.getElementById('maxModalOverlay');
-      var textarea = document.getElementById('maxTextarea');
-      if (modal && textarea) {
-        textarea.value = text;
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-      }
-    });
-  }
-
-  // === Модалка MAX ===
   var maxModal = document.getElementById('maxModalOverlay');
   var maxTextarea = document.getElementById('maxTextarea');
   var copyMaxBtn = document.getElementById('copyMaxBtn');
   var closeMaxBtn = document.getElementById('closeMaxModal');
 
-  if (maxModal && copyMaxBtn && closeMaxBtn && maxTextarea) {
+  if (maxModal) {
     copyMaxBtn.addEventListener('click', function() {
       maxTextarea.select();
       maxTextarea.setSelectionRange(0, 99999);
@@ -2490,12 +2467,10 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Не удалось скопировать. Выделите текст вручную.');
       }
     });
-
     closeMaxBtn.addEventListener('click', function() {
       maxModal.classList.remove('show');
       document.body.style.overflow = '';
     });
-
     maxModal.addEventListener('click', function(e) {
       if (e.target === maxModal) {
         maxModal.classList.remove('show');
@@ -3044,39 +3019,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 })();
 
-<script>
-/* ===== PRELOADER: скрытие после загрузки ===== */
-(function(){
-  var preloader = document.getElementById('preloader');
-  if (!preloader) return;
-
-  var MIN_SHOW_MS = 500;
-  var start = Date.now();
-  var done = false;
-
-  function hidePreloader(){
-    if (done) return;
-    done = true;
-
-    var elapsed = Date.now() - start;
-    var wait = Math.max(0, MIN_SHOW_MS - elapsed);
-
-    setTimeout(function(){
-      preloader.classList.add('hidden');
-      setTimeout(function(){
-        if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
-      }, 500);
-    }, wait);
-  }
-
-  if (document.readyState === 'complete') {
-    hidePreloader();
-  } else {
-    window.addEventListener('load', hidePreloader);
-    setTimeout(hidePreloader, 5000);
-  }
-})();
-
 /* ===== КВИЗ-ЧАТ ===== */
 (function(){
   var QUIZ_PRICES = { cosmetic: 5500, capital: 8500, design: 13000 };
@@ -3322,13 +3264,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var MY_WHATSAPP = '79221230234';
     var MY_TELEGRAM_USERNAME = 'The_fabo';
+    var isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
     if (messenger === 'whatsapp'){
       var url = 'https://wa.me/' + MY_WHATSAPP + '?text=' + encodeURIComponent(text);
-      window.open(url, '_blank');
+      if (isTouchDevice && typeof showVpnBanner === 'function') {
+        showVpnBanner('WhatsApp', function() { window.open(url, '_blank'); });
+      } else {
+        window.open(url, '_blank');
+      }
     } else if (messenger === 'telegram'){
       var url = 'https://t.me/' + MY_TELEGRAM_USERNAME + '?text=' + encodeURIComponent(text);
-      window.open(url, '_blank');
+      if (isTouchDevice && typeof showVpnBanner === 'function') {
+        showVpnBanner('Telegram', function() { window.open(url, '_blank'); });
+      } else {
+        window.open(url, '_blank');
+      }
     } else if (messenger === 'max'){
       var modal = document.getElementById('maxModalOverlay');
       var textarea = document.getElementById('maxTextarea');
@@ -3340,12 +3291,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // ✅ Запуск квиза при загрузке (ВНУТРИ IIFE, после определения всех функций)
   askStep(0);
-
 })();
-</script>
-
 </script>
 
 </body>
