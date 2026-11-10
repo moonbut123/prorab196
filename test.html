@@ -2417,6 +2417,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.target === banner) close();
     });
   }
+  window.showVpnBanner = showVpnBanner; // делаем функцию доступной для квиза  
 
   document.querySelector('.wa-btn').addEventListener('click', function() {
     var text = getFormData();
