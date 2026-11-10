@@ -3286,53 +3286,6 @@ if (messenger === 'whatsapp'){
   askStep(0);
 })();
 
-/* ===== ОБЩИЙ VPN-БАННЕР ДЛЯ ФОРМЫ И КВИЗА ===== */
-window.isMobileView = function () {
-  return window.matchMedia('(hover: none) and (pointer: coarse)').matches || window.innerWidth <= 1080;
-};
-
-window.showVpnBanner = function (messenger, onConfirm) {
-  var existing = document.getElementById('vpnBanner');
-  if (existing) existing.remove();
-
-  var banner = document.createElement('div');
-  banner.id = 'vpnBanner';
-  banner.innerHTML =
-    '<div class="vpn-banner-content">' +
-      '<div class="vpn-banner-title">Перед отправкой в ' + messenger + '</div>' +
-      '<div class="vpn-banner-text">Может потребоваться включённый VPN. Если ' + messenger + ' не открывается — включите VPN и попробуйте снова.</div>' +
-      '<div class="vpn-banner-actions">' +
-        '<button type="button" class="btn vpn-banner-cancel" style="background:#e5e7eb;color:#2b2f38;">Отмена</button>' +
-        '<button type="button" class="btn vpn-banner-ok">Продолжить</button>' +
-      '</div>' +
-    '</div>';
-
-  document.body.appendChild(banner);
-  document.body.style.overflow = 'hidden';
-
-  function close() {
-    banner.remove();
-    document.body.style.overflow = '';
-  }
-
-  banner.querySelector('.vpn-banner-cancel').addEventListener('click', close);
-  banner.querySelector('.vpn-banner-ok').addEventListener('click', function () {
-    close();
-    if (typeof onConfirm === 'function') onConfirm();
-  });
-  banner.addEventListener('click', function (e) {
-    if (e.target === banner) close();
-  });
-};
-
-window.openMessenger = function (messenger, url) {
-  if (window.isMobileView()) {
-    window.showVpnBanner(messenger, function () { window.open(url, '_blank'); });
-  } else {
-    window.open(url, '_blank');
-  }
-};  
-    
 </script>
 
 </body>
