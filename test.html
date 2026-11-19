@@ -3295,7 +3295,315 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
+<!-- === НАЧАЛО БЛОКА EXIT-INTENT POPUP (PRORAB196.RU) === -->
+<style>
+  #prorab-exit-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.78);
+    backdrop-filter: blur(4px);
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    animation: prorabFadeIn 0.25s ease-out;
+  }
 
+  #prorab-exit-modal {
+    background: #ffffff;
+    max-width: 440px;
+    width: 100%;
+    border-radius: 16px;
+    padding: 32px 28px;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    animation: prorabSlideUp 0.3s ease-out;
+  }
+
+  #prorab-exit-close {
+    position: absolute;
+    top: 14px; right: 16px;
+    background: none; border: none;
+    font-size: 28px; line-height: 1;
+    color: #94a3b8; cursor: pointer;
+    transition: color 0.2s;
+  }
+  #prorab-exit-close:hover { color: #0f172a; }
+
+  .prorab-badge {
+    display: inline-block;
+    background: #fef3c7; color: #b45309;
+    font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  #prorab-exit-modal h3 {
+    margin: 0 0 10px;
+    font-size: 23px; line-height: 1.25;
+    color: #0f172a; font-weight: 800;
+  }
+
+  #prorab-exit-modal p {
+    margin: 0 0 20px;
+    font-size: 15px; line-height: 1.5;
+    color: #475569;
+  }
+
+  .prorab-offer-box {
+    background: #f8fafc;
+    border: 2px dashed #f59e0b;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 16px;
+  }
+
+  .prorab-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .prorab-input {
+    width: 100%;
+    padding: 15px 16px;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    text-align: center;
+    letter-spacing: 0.5px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .prorab-input:focus { border-color: #f59e0b; }
+  .prorab-input.error { border-color: #ef4444; background: #fef2f2; }
+
+  .prorab-btn {
+    width: 100%;
+    padding: 16px;
+    background: #f59e0b;
+    color: #0f172a;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .prorab-btn:hover { background: #d97706; color: #ffffff; }
+  .prorab-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .prorab-phone-direct {
+    margin-top: 16px;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .prorab-phone-direct a {
+    color: #0f172a;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  #prorab-success-view { display: none; padding: 10px 0; }
+  #prorab-success-view .check-icon {
+    width: 56px; height: 56px;
+    background: #dcfce7; color: #16a34a;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin: 0 auto 16px;
+  }
+
+  @keyframes prorabFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes prorabSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
+
+<div id="prorab-exit-overlay">
+  <div id="prorab-exit-modal">
+    <button id="prorab-exit-close" aria-label="Закрыть">&times;</button>
+    
+    <!-- Основной экран с формой -->
+    <div id="prorab-form-view">
+      <div class="prorab-badge">Новогодняя акция</div>
+      <h3>Уже уходите? Заберите подарок к ремонту!</h3>
+      <p>Оставьте номер, чтобы закрепить за собой бонус на ремонт под ключ в Екатеринбурге:</p>
+      
+      <div class="prorab-offer-box">
+        🎁 Дизайн-проект БЕСПЛАТНО<br>
+        <span style="font-size: 13px; font-weight: 500; color: #64748b;">или</span><br>
+        🔥 Скидка 15% на все работы
+      </div>
+
+      <form class="prorab-form" id="prorab-exit-form">
+        <input 
+          type="tel" 
+          class="prorab-input" 
+          id="prorab-phone" 
+          placeholder="+7 (___) ___-__-__" 
+          maxlength="18"
+          autocomplete="tel"
+          required
+        >
+        <button type="submit" class="prorab-btn" id="prorab-submit-btn">Зафиксировать скидку</button>
+      </form>
+
+      <div class="prorab-phone-direct">
+        Или позвоните напрямую: <a href="tel:+79221230234">+7 922 123 02 34</a>
+      </div>
+    </div>
+
+    <!-- Экран успешной отправки -->
+    <div id="prorab-success-view">
+      <div class="check-icon">✓</div>
+      <h3>Скидка закреплена!</h3>
+      <p id="prorab-success-text">Мы получили ваш номер и скоро свяжемся с вами для бесплатного расчёта.</p>
+      <button type="button" class="prorab-btn" onclick="document.getElementById('prorab-exit-overlay').style.display='none'">Вернуться на сайт</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // === НАСТРОЙКИ TELEGRAM (ЗАМЕНИТЕ НА СВОИ) ===
+  const TG_BOT_TOKEN = 'ВАШ_ТОКЕН_БОТА'; // Например: '7123456789:AAH...'
+  const TG_CHAT_ID   = '1044366963';    // Например: '123456789'
+  // ============================================
+
+  const overlay     = document.getElementById('prorab-exit-overlay');
+  const closeBtn    = document.getElementById('prorab-exit-close');
+  const form        = document.getElementById('prorab-exit-form');
+  const phoneInput  = document.getElementById('prorab-phone');
+  const submitBtn   = document.getElementById('prorab-submit-btn');
+  const formView    = document.getElementById('prorab-form-view');
+  const successView = document.getElementById('prorab-success-view');
+  const STORAGE_KEY = 'prorab196_exit_shown';
+
+  // --- 1. МАСКА ТЕЛЕФОНА (+7 (XXX) XXX-XX-XX) ---
+  function formatPhone(value) {
+    let digits = value.replace(/\D/g, '');
+    if (!digits) return '';
+    
+    // Если начали с 8 или 7 — нормализуем под 7
+    if (digits[0] === '8' || digits[0] === '7') {
+      digits = '7' + digits.slice(1);
+    } else {
+      digits = '7' + digits;
+    }
+
+    let formatted = '+7';
+    if (digits.length > 1) formatted += ' (' + digits.substring(1, 4);
+    if (digits.length >= 4) formatted += ') ' + digits.substring(4, 7);
+    if (digits.length >= 7) formatted += '-' + digits.substring(7, 9);
+    if (digits.length >= 9) formatted += '-' + digits.substring(9, 11);
+    
+    return formatted;
+  }
+
+  phoneInput.addEventListener('focus', function() {
+    if (!this.value) this.value = '+7 (';
+  });
+
+  phoneInput.addEventListener('blur', function() {
+    if (this.value === '+7 (' || this.value === '+7') this.value = '';
+  });
+
+  phoneInput.addEventListener('input', function() {
+    this.classList.remove('error');
+    this.value = formatPhone(this.value);
+  });
+
+  // --- 2. ЛОГИКА ПОКАЗА ОКНА ---
+  function showPopup() {
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
+    overlay.style.display = 'flex';
+    sessionStorage.setItem(STORAGE_KEY, 'true');
+  }
+
+  function hidePopup() {
+    overlay.style.display = 'none';
+  }
+
+  document.addEventListener('mouseleave', function(e) {
+    if (e.clientY <= 10 || e.clientX <= 0 || e.clientX >= window.innerWidth) {
+      showPopup();
+    }
+  });
+
+  let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', function() {
+    const currentScrollY = window.scrollY;
+    if (lastScrollY - currentScrollY > 150 && currentScrollY < 300) {
+      showPopup();
+    }
+    lastScrollY = currentScrollY;
+  }, { passive: true });
+
+  closeBtn.addEventListener('click', hidePopup);
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) hidePopup();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hidePopup();
+  });
+
+  // --- 3. ОТПРАВКА В TELEGRAM ---
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const rawDigits = phoneInput.value.replace(/\D/g, '');
+    
+    // Проверяем, что введены все 11 цифр номера
+    if (rawDigits.length < 11) {
+      phoneInput.classList.add('error');
+      phoneInput.focus();
+      return;
+    }
+
+    const cleanPhone = phoneInput.value;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправка...';
+
+    const message = 
+      `🔥 <b>Новая заявка с сайта prorab196.ru!</b>\n` +
+      `🎁 Акция: <i>Бесплатный дизайн-проект / Скидка 15%</i>\n` +
+      `📞 Телефон: <code>${cleanPhone}</code>\n` +
+      `🌐 Страница: ${window.location.href}`;
+
+    try {
+      const response = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TG_CHAT_ID,
+          text: message,
+          parse_mode: 'HTML'
+        })
+      });
+
+      if (!response.ok) throw new Error('Ошибка Telegram API');
+
+      document.getElementById('prorab-success-text').textContent = 
+        `Номер ${cleanPhone} зафиксирован за акцией. Александр скоро перезвонит вам!`;
+      formView.style.display = 'none';
+      successView.style.display = 'block';
+    } catch (err) {
+      alert('Не удалось отправить заявку. Позвоните нам напрямую: +7 922 123 02 34');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Зафиксировать скидку';
+    }
+  });
+})();
+</script>
+<!-- === КОНЕЦ БЛОКА EXIT-INTENT POPUP === -->
     
 </body>
 </html>
