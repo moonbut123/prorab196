@@ -3295,5 +3295,249 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
+<!-- === НАЧАЛО БЛОКА EXIT-INTENT POPUP (PRORAB196.RU) === -->
+<style>
+  #prorab-exit-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    animation: prorabFadeIn 0.25s ease-out;
+  }
+
+  #prorab-exit-modal {
+    background: #ffffff;
+    max-width: 460px;
+    width: 100%;
+    border-radius: 16px;
+    padding: 32px 28px;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    animation: prorabSlideUp 0.3s ease-out;
+  }
+
+  #prorab-exit-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  #prorab-exit-close:hover {
+    color: #0f172a;
+  }
+
+  .prorab-badge {
+    display: inline-block;
+    background: #fef3c7;
+    color: #b45309;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  #prorab-exit-modal h3 {
+    margin: 0 0 12px;
+    font-size: 24px;
+    line-height: 1.25;
+    color: #0f172a;
+    font-weight: 800;
+  }
+
+  #prorab-exit-modal p {
+    margin: 0 0 22px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #475569;
+  }
+
+  .prorab-offer-box {
+    background: #f8fafc;
+    border: 2px dashed #f59e0b;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 22px;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 16px;
+  }
+
+  .prorab-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .prorab-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .prorab-input:focus {
+    border-color: #f59e0b;
+  }
+
+  .prorab-btn {
+    width: 100%;
+    padding: 15px;
+    background: #f59e0b;
+    color: #0f172a;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .prorab-btn:hover {
+    background: #d97706;
+    color: #ffffff;
+  }
+
+  .prorab-btn:active {
+    transform: scale(0.99);
+  }
+
+  .prorab-phone-direct {
+    margin-top: 16px;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .prorab-phone-direct a {
+    color: #0f172a;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @keyframes prorabFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes prorabSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+</style>
+
+<div id="prorab-exit-overlay">
+  <div id="prorab-exit-modal">
+    <button id="prorab-exit-close" aria-label="Закрыть">&times;</button>
+    <div class="prorab-badge">Новогоднее предложение</div>
+    <h3>Уже уходите? Заберите подарок к ремонту!</h3>
+    <p>Зафиксируйте за собой одно из двух спецпредложений на ремонт под ключ в Екатеринбурге:</p>
+    
+    <div class="prorab-offer-box">
+      🎁 Дизайн-проект БЕСПЛАТНО<br>
+      <span style="font-size: 13px; font-weight: 500; color: #64748b;">или</span><br>
+      🔥 Скидка 15% на все работы
+    </div>
+
+    <form class="prorab-form" id="prorab-exit-form">
+      <input type="tel" class="prorab-input" id="prorab-phone" placeholder="+7 (___) ___-__-__" required>
+      <button type="submit" class="prorab-btn">Зафиксировать скидку</button>
+    </form>
+
+    <div class="prorab-phone-direct">
+      Или позвоните напрямую: <a href="tel:+79221230234">+7 922 123 02 34</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const overlay = document.getElementById('prorab-exit-overlay');
+  const closeBtn = document.getElementById('prorab-exit-close');
+  const form = document.getElementById('prorab-exit-form');
+  const STORAGE_KEY = 'prorab196_exit_shown';
+
+  function showPopup() {
+    // Проверяем, показывали ли уже окно в этой вкладке
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
+    
+    overlay.style.display = 'flex';
+    sessionStorage.setItem(STORAGE_KEY, 'true');
+  }
+
+  function hidePopup() {
+    overlay.style.display = 'none';
+  }
+
+  // 1. Отслеживаем уход курсора за пределы окна (вверх к адресной строке или вбок)
+  document.addEventListener('mouseleave', function(e) {
+    // e.clientY <= 0 означает уход вверх (к вкладкам/строке поиска)
+    // Если убрать условие if (e.clientY <= 0), сработает при уходе в любую сторону
+    if (e.clientY <= 10 || e.clientX <= 0 || e.clientX >= window.innerWidth) {
+      showPopup();
+    }
+  });
+
+  // 2. Бонус для мобильных телефонов (где нет мышки):
+  // Срабатывает при резком скролле вверх, когда пользователь хочет закрыть вкладку
+  let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', function() {
+    const currentScrollY = window.scrollY;
+    // Если резко крутанули вверх больше чем на 150px
+    if (lastScrollY - currentScrollY > 150 && currentScrollY < 300) {
+      showPopup();
+    }
+    lastScrollY = currentScrollY;
+  }, { passive: true });
+
+  // Закрытие по крестику
+  closeBtn.addEventListener('click', hidePopup);
+
+  // Закрытие по клику на темный фон
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) hidePopup();
+  });
+
+  // Закрытие по кнопке Esc
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hidePopup();
+  });
+
+  // Обработка отправки формы (замените на отправку в ваш Telegram или почту)
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const phone = document.getElementById('prorab-phone').value;
+    
+    // Здесь можно подключить отправку в ваш Telegram-бот или CRM
+    alert('Спасибо! Номер ' + phone + ' зафиксирован за акцией. Скоро перезвоним!');
+    hidePopup();
+  });
+})();
+</script>
+<!-- === КОНЕЦ БЛОКА EXIT-INTENT POPUP === --> 
+    
 </body>
 </html>
