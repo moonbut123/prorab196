@@ -3340,12 +3340,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .prorab-hero-art {
     background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
-    padding: 16px 20px 10px;
+    padding: 14px 20px 8px;
     position: relative;
   }
 
   .prorab-body {
-    padding: 18px 26px 24px;
+    padding: 16px 26px 22px;
   }
 
   .prorab-badge {
@@ -3364,7 +3364,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   #prorab-exit-modal p {
-    margin: 0 0 14px;
+    margin: 0 0 12px;
     font-size: 14px; line-height: 1.4;
     color: #475569;
   }
@@ -3374,7 +3374,7 @@ document.addEventListener('DOMContentLoaded', function() {
     border: 2px dashed #f59e0b;
     border-radius: 12px;
     padding: 10px 12px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     font-weight: 700;
     color: #1e293b;
     font-size: 15px;
@@ -3388,7 +3388,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .prorab-input {
     width: 100%;
-    padding: 13px 16px;
+    padding: 12px 16px;
     border: 2px solid #cbd5e1;
     border-radius: 10px;
     font-size: 16px;
@@ -3414,7 +3414,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .prorab-btn {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     background: #f59e0b;
     color: #0f172a;
     border: none;
@@ -3426,6 +3426,54 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   .prorab-btn:hover { background: #d97706; color: #ffffff; }
   .prorab-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Галочка согласия на обработку ПДн */
+  .prorab-consent {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 7px;
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #64748b;
+    margin-top: 2px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .prorab-consent input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    accent-color: #f59e0b;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .prorab-consent a {
+    color: #475569;
+    text-decoration: underline;
+  }
+  .prorab-consent.error {
+    color: #dc2626;
+  }
+
+  /* Строка доверия: Без обязательств | Данные защищены */
+  .prorab-trust-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .prorab-trust-line svg {
+    width: 13px;
+    height: 13px;
+    color: #16a34a;
+    flex-shrink: 0;
+  }
 
   .prorab-error-msg {
     display: none;
@@ -3440,6 +3488,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .prorab-phone-direct {
     margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
     font-size: 13px;
     color: #64748b;
   }
@@ -3468,7 +3518,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- Новогодняя иллюстрация -->
     <div class="prorab-hero-art">
-      <svg width="240" height="86" viewBox="0 0 240 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="240" height="80" viewBox="0 0 240 96" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M10 12 Q60 28 120 12 Q180 28 230 12" stroke="#64748b" stroke-width="1.5" fill="none"/>
         <circle cx="35" cy="18" r="4" fill="#f59e0b"/>
         <circle cx="75" cy="19" r="4" fill="#ef4444"/>
@@ -3529,6 +3579,19 @@ document.addEventListener('DOMContentLoaded', function() {
           >
           <div class="prorab-error-msg" id="prorab-error-msg"></div>
           <button type="submit" class="prorab-btn" id="prorab-submit-btn">Зафиксировать скидку</button>
+
+          <label class="prorab-consent" id="prorab-consent-label">
+            <input type="checkbox" id="prorab-consent-check" checked>
+            <span>Согласен на <a href="/privacy" target="_blank" rel="noopener">обработку персональных данных</a></span>
+          </label>
+
+          <div class="prorab-trust-line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>Без обязательств | Данные защищены</span>
+          </div>
         </form>
 
         <div class="prorab-phone-direct">
@@ -3554,20 +3617,27 @@ document.addEventListener('DOMContentLoaded', function() {
   const TG_CHAT_ID   = '1044366963';    // Ваш числовой ID из @userinfobot
   // ============================================
 
-  const overlay     = document.getElementById('prorab-exit-overlay');
-  const closeBtn    = document.getElementById('prorab-exit-close');
-  const form        = document.getElementById('prorab-exit-form');
-  const nameInput   = document.getElementById('prorab-name');
-  const phoneInput  = document.getElementById('prorab-phone');
-  const submitBtn   = document.getElementById('prorab-submit-btn');
-  const errorBox    = document.getElementById('prorab-error-msg');
-  const formView    = document.getElementById('prorab-form-view');
-  const successView = document.getElementById('prorab-success-view');
-  const STORAGE_KEY = 'prorab196_exit_shown';
+  const overlay       = document.getElementById('prorab-exit-overlay');
+  const closeBtn      = document.getElementById('prorab-exit-close');
+  const form          = document.getElementById('prorab-exit-form');
+  const nameInput     = document.getElementById('prorab-name');
+  const phoneInput    = document.getElementById('prorab-phone');
+  const consentCheck  = document.getElementById('prorab-consent-check');
+  const consentLabel  = document.getElementById('prorab-consent-label');
+  const submitBtn     = document.getElementById('prorab-submit-btn');
+  const errorBox      = document.getElementById('prorab-error-msg');
+  const formView      = document.getElementById('prorab-form-view');
+  const successView   = document.getElementById('prorab-success-view');
+  const STORAGE_KEY   = 'prorab196_exit_shown';
 
-  // --- 1. ПОЛЕ ИМЕНИ ---
+  // --- 1. ПОЛЕ ИМЕНИ И ЧЕКБОКС ---
   nameInput.addEventListener('input', function() {
     this.classList.remove('error');
+    errorBox.style.display = 'none';
+  });
+
+  consentCheck.addEventListener('change', function() {
+    consentLabel.classList.remove('error');
     errorBox.style.display = 'none';
   });
 
@@ -3686,6 +3756,12 @@ document.addEventListener('DOMContentLoaded', function() {
       phoneInput.classList.add('error');
       showError('Введите полный 10-значный номер телефона после +7');
       phoneInput.focus();
+      return;
+    }
+
+    if (!consentCheck.checked) {
+      consentLabel.classList.add('error');
+      showError('Поставьте галочку согласия на обработку персональных данных');
       return;
     }
 
