@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Шпаргалка прораба по объекту — Чек-лист ремонта под ключ | prorab196.ru</title>
+  <!-- Подключение Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Шрифт Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #F3F5F8;
+      color: #1E293B;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+
+    /* Предотвращение авто-зума экрана при нажатии на поля ввода на iPhone/iOS */
+    @media screen and (max-width: 640px) {
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <!-- Встроенные резервные данные для автономного HTML-файла -->
+  <script id="embeddedBackupData" type="application/json">null</script>
+
+  <!-- Плавающая кнопка «Наверх» -->
+  <button id="floatingTopBtn" onclick="scrollToTop()" title="Поднять страницу наверх"
+    class="no-print fixed bottom-5 left-5 z-40 w-12 h-12 rounded-2xl bg-[#1E3A5F] hover:bg-blue-700 text-white shadow-lg border border-white/15 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"></path>
+    </svg>
+  </button>
+
+  <!-- Уведомление (Toast) -->
+  <div id="toast" class="no-print fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-[#1E3A5F] text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2.5 text-sm font-medium">
+      <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <span id="toastText">Изменения сохранены</span>
+    </div>
+  </div>
+
+  <!-- Модальное окно подтверждения / ввода -->
+  <div id="modalOverlay" class="no-print fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+      <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mb-2">Подтверждение</h3>
+      <p id="modalDesc" class="text-sm text-slate-600 mb-4"></p>
+      <div id="modalInputWrap" class="mb-4 hidden">
+        <input id="modalInput" type="text" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm" placeholder="Введите название..." />
+      </div>
+      <div class="flex justify-end gap-2.5">
+        <button id="modalCancelBtn" class="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition">Отмена</button>
+        <button id="modalConfirmBtn" class="px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-[#1E3A5F] hover:bg-blue-700 transition">Подтвердить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Верхняя шапка (на мобильных не перекрывает экран при скролле, на ПК прилипает) -->
+  <header class="bg-[#1E3A5F] text-white shadow-md sm:sticky sm:top-0 z-30 no-print">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-3.5">
+      <div class="flex flex-wrap items-center justify-between gap-2.5">
+        <!-- Логотип и название -->
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-sm sm:text-lg font-bold tracking-tight leading-tight">Шпаргалка прораба</h1>
+            <p class="text-[11px] sm:text-xs text-blue-200">Фиксация узлов ремонта • prorab196.ru</p>
+          </div>
+        </div>
+
+        <!-- Индикатор автосохранения и явная кнопка сохранения -->
+        <div class="flex items-center gap-1.5 sm:gap-2 ml-auto">
+          <div id="storageBadge" class="flex items-center gap-1.5 bg-slate-900/40 px-2.5 py-1.5 rounded-xl border border-white/10">
+            <span id="saveDot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400"></span>
+            <span id="saveStatus" class="text-[11px] sm:text-xs font-medium text-slate-200">Сохранено</span>
+          </div>
+          <button onclick="manualSave()" title="Принудительно сохранить объект"
+            class="px-3 py-2 sm:py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+            </svg>
+            <span>Сохранить</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Предупреждение если localStorage заблокирован (инкогнито / iframe) -->
+      <div id="storageWarningBanner" class="hidden mt-2.5 bg-amber-500/20 border border-amber-400/40 rounded-xl px-3 py-2 text-xs text-amber-100 flex flex-wrap items-center justify-between gap-2">
+        <span>⚠️ Браузер ограничил память (режим инкогнито или встроенное окно). Чтобы не потерять данные, скачайте <strong>HTML с данными</strong>.</span>
+        <button onclick="downloadStandaloneHTML()" class="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition">Скачать HTML</button>
+      </div>
+
+      <!-- Панель управления объектами -->
+      <div class="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2">
+        <div class="w-full sm:flex-1 sm:min-w-[220px]">
+          <label for="projectSelect" class="sr-only">Выбор объекта</label>
+          <select id="projectSelect" class="w-full bg-white text-slate-900 font-semibold text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer">
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="createNewProject()" title="Создать новый объект" class="flex-1 sm:flex-none justify-center px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium flex items-center gap-1.5 transition shadow-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>Новый объект</span>
+          </button>
+
+          <button onclick="duplicateCurrentProject()" title="Создать копию текущего объекта" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition shrink-0" aria-label="Дублировать объект">
+            <svg class="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+          </button>
+
+          <button onclick="deleteCurrentProject()" title="Удалить текущий объект" class="p-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-200 text-sm font-medium transition shrink-0" aria-label="Удалить объект">
+            <svg class="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-5 print-container">
+
+    <!-- Заголовок для печати -->
+    <div class="hidden print-only mb-4 border-b-2 border-slate-800 pb-2">
+      <div class="flex justify-between items-end">
+        <div>
+          <h1 class="text-xl font-bold">ЛИСТ ЗАМЕРА И СОГЛАСОВАНИЯ РЕМОНТА ПОД КЛЮЧ</h1>
+          <p class="text-xs text-slate-600">Техническая шпаргалка прораба • prorab196.ru</p>
+        </div>
+        <div class="text-right text-xs">
+          <p id="printProgressText"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Карточка метаданных объекта и действий -->
+    <section class="bg-white rounded-2xl shadow-xs border border-slate-200 p-4 sm:p-5 mb-5">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Адрес / Название объекта</label>
+          <input id="metaTitle" type="text" placeholder="Например: ЖК Солнечный, кв. 42" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none text-sm font-semibold text-slate-900 transition" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Заказчик (Имя, телефон)</label>
+          <input id="metaClient" type="text" placeholder="Иван +7 (900) 000-00-00" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none text-sm text-slate-800 transition" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Дата замера</label>
+          <input id="metaDate" type="date" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none text-sm text-slate-800 transition" />
+        </div>
+      </div>
+
+      <!-- Кнопки экспорта, копирования и печати -->
+      <div class="no-print mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2">
+        <button onclick="copySummaryForMessenger()" class="w-full sm:w-auto justify-center px-3.5 py-3 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium flex items-center gap-2 transition shadow-xs">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+          <span>Скопировать в WhatsApp / TG</span>
+        </button>
+
+        <div class="grid grid-cols-2 sm:flex gap-2">
+          <button onclick="openPrintView(false)" class="justify-center px-3 sm:px-3.5 py-2.5 rounded-xl bg-[#1E3A5F] hover:bg-blue-800 text-white text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 transition shadow-xs">
+            <svg class="w-4 h-4 text-blue-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <span>Печать / PDF</span>
+          </button>
+
+          <button onclick="openPrintView(true)" class="justify-center px-3 sm:px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 transition" title="Открыть компактный лист А4 только с выбранными пунктами и местом для подписи">
+            <svg class="w-4 h-4 text-slate-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Лист А4 подпись</span>
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 sm:ml-auto">
+          <button onclick="downloadStandaloneHTML()" class="flex-1 sm:flex-none justify-center px-3 py-2.5 rounded-xl bg-blue-50 border border-blue-200 hover:bg-blue-100 text-[#1E3A5F] text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition" title="Скачать готовую HTML-страницу со всеми сохраненными объектами внутри">
+            <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span>Скачать HTML</span>
+          </button>
+
+          <button onclick="exportBackupJSON()" class="px-3 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-medium flex items-center gap-1.5 transition" title="Сохранить резервную копию всех объектов в файл JSON">
+            <span>JSON ↓</span>
+          </button>
+
+          <label class="px-3 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-medium flex items-center gap-1.5 transition cursor-pointer" title="Загрузить резервную копию из файла JSON">
+            <span>JSON ↑</span>
+            <input id="importJsonInput" type="file" accept=".json,application/json" class="hidden" onchange="importBackupJSON(event)" />
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Панель прогресса и фильтров (на мобильном прилипает аккуратно к верхнему краю) -->
+    <section class="no-print bg-white/95 backdrop-blur-xs rounded-2xl shadow-xs border border-slate-200 p-3.5 sm:p-4 mb-5 sticky top-2 sm:top-[112px] z-20">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <!-- Прогресс -->
+        <div class="flex-1">
+          <div class="flex items-center justify-between text-xs sm:text-sm mb-1.5">
+            <span class="font-bold text-slate-800" id="progressCounter">Готово 0 из 35 пунктов</span>
+            <span class="font-bold text-[#2563EB]" id="progressPercent">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-[#1E3A5F] to-[#2563EB] rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="grid grid-cols-3 sm:flex items-center bg-slate-100 p-1 rounded-xl shrink-0">
+          <button onclick="setFilter('all')" id="filterAll" class="filter-btn px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-white text-[#1E3A5F] shadow-xs transition text-center">Все</button>
+          <button onclick="setFilter('pending')" id="filterPending" class="filter-btn px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition text-center">Пустые</button>
+          <button onclick="setFilter('done')" id="filterDone" class="filter-btn px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition text-center">Готовые</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Контейнер разделов с вопросами -->
+    <div id="sectionsContainer" class="space-y-6"></div>
+
+    <!-- Раздел 7: Общие условия и особые примечания по объекту -->
+    <section id="generalNotesSection" class="section-block bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden mt-6">
+      <div class="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-start sm:items-center gap-3">
+          <span class="w-8 h-8 rounded-xl bg-[#1E3A5F] text-white font-bold text-sm flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+            7
+          </span>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">Общие условия и особые примечания по объекту</h2>
+            <p class="text-xs text-slate-500">Нюансы подъема материалов, режим тишины, кто закупает черновые/чистовые и любые свободные заметки</p>
+          </div>
+        </div>
+        <button type="button" onclick="clearGeneralNotes()" class="no-print text-xs font-medium text-slate-500 hover:text-rose-600 px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition">
+          Очистить текст
+        </button>
+      </div>
+
+      <div class="p-4 sm:px-6 sm:py-5">
+        <!-- Быстрые теги-подсказки -->
+        <div class="no-print mb-3">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Быстрые формулировки (нажмите, чтобы добавить в текст):</p>
+          <div id="generalNotesChips" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- Поле свободного ввода -->
+        <div>
+          <label for="generalNotesInput" class="block text-xs font-semibold text-slate-600 mb-1.5">Общие формулировки и особые условия по квартире:</label>
+          <textarea id="generalNotesInput" rows="4"
+            placeholder="Например: Стесненные условия работы, подъем материалов вручную на 4 этаж без лифта, режим тишины в ЖК с 13:00 до 15:00, черновые материалы закупает прораб..."
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50/50 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none text-sm text-slate-900 placeholder-slate-400 transition leading-relaxed"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Кнопка «Поднять страницу наверх» в самом низу -->
+    <div class="no-print mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
+      <button type="button" onclick="manualSave()"
+        class="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-sm font-bold flex items-center justify-center gap-2 transition shadow-xs">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span>Сохранить все изменения по объекту</span>
+      </button>
+
+      <button type="button" onclick="scrollToTop()"
+        class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#1E3A5F] hover:bg-blue-800 active:scale-[0.99] text-white text-sm font-bold flex items-center justify-center gap-2 transition shadow-xs">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+        <span>↑ Поднять страницу наверх</span>
+      </button>
+    </div>
+
+    <!-- Подпись при печати -->
+    <div class="hidden print-only mt-8 pt-4 border-t border-slate-400 text-xs">
+      <div class="flex justify-between">
+        <div>Согласовано (Заказчик): _______________________ / _______________________</div>
+        <div>Принял в работу (Прораб): _______________________ / _______________________</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Подвал -->
+  <footer class="no-print bg-white border-t border-slate-200 mt-10 py-5 text-center text-xs text-slate-500">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>Шпаргалка прораба по объекту • <strong class="text-slate-700">prorab196.ru</strong></span>
+      <span>Все данные автоматически сохраняются в памяти вашего браузера (localStorage)</span>
+    </div>
+  </footer>
+
+  <!-- Скрытое поле для надежного копирования в буфер -->
+  <textarea id="clipboardHelper" class="sr-only" aria-hidden="true"></textarea>
+
+  <script>
+    /**
+     * Базовая структура разделов и вопросов шпаргалки прораба
+     */
+    const TEMPLATE_SECTIONS = [
+      {
+        id: 'sec_doors',
+        number: '1',
+        title: 'Двери и проемы',
+        subtitle: 'Самое важное для стыков полов и геометрии проемов',
+        items: [
+          {
+            id: 'q_door_open',
+            title: 'Куда открываются двери в каждую комнату?',
+            hint: 'Записать по каждой двери! От направления зависит расположение выключателей и стык пола.',
+            multi: true,
+            options: ['На себя', 'От себя', 'Левая', 'Правая'],
+            customPlaceholder: 'Распишите по дверям: Входная — ..., Ванная — ..., Спальня — ...'
+          },
+          {
+            id: 'q_door_mount',
+            title: 'Какой монтаж коробки двери?',
+            hint: 'От этого зависит где будет стык плитки! При обратном или скрытом монтаже стык сдвигается внутрь проема.',
+            multi: false,
+            options: ['Наружный по стене коридора', 'Внутри проема', 'Скрытый Invisible', 'Обратный Inside'],
+            customPlaceholder: 'Уточнение по монтажу коробок...'
+          },
+          {
+            id: 'q_door_size',
+            title: 'Размеры проемов под двери (Ш × В от чистового пола)',
+            hint: 'Учитывать высоту от чистового покрытия (плитка/ламинат), а не от черновой стяжки.',
+            multi: true,
+            options: ['700×2070', '800×2070', '900×2070', 'Нестандарт'],
+            customPlaceholder: 'Укажите нестандартные размеры или полотна (600/700/800/900)...'
+          },
+          {
+            id: 'q_door_ext',
+            title: 'Нужны ли доборы и наличники?',
+            hint: 'Замерить толщину стен после штукатурки и плитки.',
+            multi: false,
+            options: ['Да', 'Нет, скрытый короб'],
+            customPlaceholder: 'Ширина стен / глубина доборов (мм)...'
+          },
+          {
+            id: 'q_door_stop',
+            title: 'Где ставим дверные стопоры (ограничители)?',
+            hint: 'Для напольных и магнитных стопоров важно не попасть в трубу отопления или кабель теплого пола.',
+            multi: true,
+            options: ['Напольные', 'Магнитные скрытые', 'Настенные', 'Без стопоров'],
+            customPlaceholder: 'Места установки стопоров...'
+          }
+        ]
+      },
+      {
+        id: 'sec_floors',
+        number: '2',
+        title: 'Полы и стыки покрытий',
+        subtitle: 'Толщины пирогов, направление раскладки и переходные узлы',
+        items: [
+          {
+            id: 'q_floor_type',
+            title: 'Какое покрытие в комнатах и коридоре?',
+            hint: 'Зафиксировать толщину каждого материала + клей/подложка для выхода в единый уровень.',
+            multi: true,
+            options: ['Ламинат', 'Кварцвинил SPC', 'Кварцвинил LVT', 'Плитка', 'Инженерная доска'],
+            customPlaceholder: 'Помещения, бренд и толщина покрытия (мм)...'
+          },
+          {
+            id: 'q_floor_install',
+            title: 'Способ укладки ламината / кварцвинила?',
+            hint: 'Клеевой кварцвинил требует идеального наливного пола и допускает укладку без порогов.',
+            multi: false,
+            options: ['Замковой на подложку', 'Клеевой на стяжку'],
+            customPlaceholder: 'Тип подложки (мм) или марка клея...'
+          },
+          {
+            id: 'q_floor_dir',
+            title: 'Направление укладки доски / ламината?',
+            hint: 'Согласовать направление по свету от окна или вдоль коридора.',
+            multi: false,
+            options: ['От окна по свету', 'Вдоль длинной стены', 'По диагонали', 'Елочкой'],
+            customPlaceholder: 'Уточнение направления по комнатам...'
+          },
+          {
+            id: 'q_floor_contour',
+            title: 'Укладка пороговая или единым контуром?',
+            hint: 'Для замковых покрытий производители часто требуют технологические разрывы в проемах.',
+            multi: false,
+            options: ['С разрывом под дверью', 'Единым полотном без порогов'],
+            customPlaceholder: 'Где делаем разрывы...'
+          },
+          {
+            id: 'q_floor_joint',
+            title: 'Чем закрываем стык плитки и ламината/кварцвинила?',
+            hint: 'Стык должен располагаться строго по центру закрытого дверного полотна.',
+            multi: false,
+            options: ['Пробковый компенсатор', 'Жидкая пробка', 'Т-образный порожек', 'Силикон'],
+            customPlaceholder: 'Цвет порожка / герметика...'
+          },
+          {
+            id: 'q_floor_level',
+            title: 'Нужно ли выравнивать стяжку наливным полом?',
+            hint: 'Проверка правилом 2 м: перепад не более 2 мм для замковых и 1 мм для клеевых покрытий.',
+            multi: false,
+            options: ['Да, в один уровень', 'Нет, стяжка ровная'],
+            customPlaceholder: 'Зоны заливки и примерный слой (мм)...'
+          }
+        ]
+      },
+      {
+        id: 'sec_tile',
+        number: '3',
+        title: 'Плитка (санузел, фартук, коридор)',
+        subtitle: 'Форматы, раскладка, углы 45°, люки и теплый пол',
+        items: [
+          {
+            id: 'q_tile_size',
+            title: 'Какого размера плитка (стены / пол)?',
+            hint: 'Крупный формат (от 120×60) требует СВП, спецклея класса C2TE S1 и усиленного плиткореза.',
+            multi: true,
+            options: ['60×60', '120×60', '30×60', 'Мелкий формат', 'Крупноформат'],
+            customPlaceholder: 'Точные размеры по зонам (стены, пол, фартук)...'
+          },
+          {
+            id: 'q_tile_layout',
+            title: 'Откуда начинаем раскладку и где подрезки?',
+            hint: 'Избегать узких «карандашей» менее 5–7 см в видимых углах и у дверных проемов.',
+            multi: false,
+            options: ['От центра стены', 'От угла', 'От ванны', 'Симметрично'],
+            customPlaceholder: 'Куда уводим подрезку...'
+          },
+          {
+            id: 'q_tile_corners',
+            title: 'Как делаем внешние углы?',
+            hint: 'При заусовке под 45° заполняем шов эпоксидной затиркой или герметиком.',
+            multi: false,
+            options: ['Заусовка под 45°', 'Алюминиевый профиль', 'Нерж. профиль'],
+            customPlaceholder: 'Цвет и форма профиля (если профиль)...'
+          },
+          {
+            id: 'q_tile_grout',
+            title: 'Какая затирка швов?',
+            hint: 'В душевом поддоне и на фартуке лучше использовать эпоксидную затирку.',
+            multi: false,
+            options: ['Цементная', 'Эпоксидная'],
+            customPlaceholder: 'Бренд и номер цвета затирки / герметика...'
+          },
+          {
+            id: 'q_tile_hatch',
+            title: 'Где и какого размера ревизионный люк?',
+            hint: 'Размер люка привязывается строго к целым плиткам без подрезки!',
+            multi: false,
+            options: ['Под плитку нажимной', 'Скрытый', 'Без люка'],
+            customPlaceholder: 'Размер люка (Ш×В мм) и место установки...'
+          },
+          {
+            id: 'q_tile_warmfloor',
+            title: 'Будет ли электрический теплый пол и где?',
+            hint: 'Не заводить теплый пол под стационарную мебель без ножек, стиралку и унитаз.',
+            multi: true,
+            options: ['Ванная', 'Туалет', 'Коридор', 'Кухня', 'Балкон', 'Нет'],
+            customPlaceholder: 'Площадь матов (м²) и места терморегуляторов...'
+          }
+        ]
+      },
+      {
+        id: 'sec_electric',
+        number: '4',
+        title: 'Электрика и розетки',
+        subtitle: 'Количество точек, высоты, силовые линии и слаботочка',
+        items: [
+          {
+            id: 'q_elec_count',
+            title: 'Сколько всего розеток и выключателей?',
+            hint: 'Укажите предварительное или точное количество точек для расчета кабеля, подрозетников и рамок.',
+            isElectricCounter: true,
+            multi: false,
+            options: [],
+            customPlaceholder: 'Распределение по комнатам или серия механизмов...'
+          },
+          {
+            id: 'q_elec_height',
+            title: 'Высота розеток и выключателей от чистового пола?',
+            hint: 'Обязательно отсчитывать от отметки чистового пола!',
+            multi: false,
+            options: ['Стандарт 300 / 900 мм', 'Свои размеры'],
+            customPlaceholder: 'Укажите высоты (ТВ, кухня фартук, прикроватные)...'
+          },
+          {
+            id: 'q_elec_pass',
+            title: 'Есть ли проходные / перекрестные выключатели и мастер-свет?',
+            hint: 'Проверить, какие группы света отключает мастер-выключатель у входной двери (не отключать холодильник и роутер!).',
+            multi: true,
+            options: ['Да, проходные', 'Мастер-свет у входа', 'Нет, обычные'],
+            customPlaceholder: 'Откуда и чем управляем...'
+          },
+          {
+            id: 'q_elec_power',
+            title: 'Где нужны отдельные силовые линии и выводы?',
+            hint: 'Кабель 3×2.5 (16А) или 3×4 / 3×6 для варочной панели, дифавтоматы на мокрые зоны.',
+            multi: true,
+            options: ['Духовка', 'Варочная', 'Посудомойка', 'Стиралка', 'Бойлер', 'Кондиционер'],
+            customPlaceholder: 'Мощность приборов и доп. линии...'
+          },
+          {
+            id: 'q_elec_led',
+            title: 'Нужны ли выводы под подсветку и слаботочку?',
+            hint: 'Предусмотреть нишу/место с вентиляцией для блоков питания LED-лент.',
+            multi: true,
+            options: ['Зеркало', 'Кухня', 'Парящий потолок', 'Шторы', 'Интернет витая пара', 'ТВ'],
+            customPlaceholder: 'Где ставим блоки питания LED и розетки RJ-45...'
+          },
+          {
+            id: 'q_elec_panel',
+            title: 'Где ставим электрощит и роутер?',
+            hint: 'Для роутера желательно предусмотреть отдельный слаботочный щит с вентиляцией и розеткой 220В.',
+            multi: false,
+            options: ['В коридоре накладной', 'Встраиваемый', 'В шкафу'],
+            customPlaceholder: 'Количество модулей щита и место роутера...'
+          }
+        ]
+      },
+      {
+        id: 'sec_plumbing',
+        number: '5',
+        title: 'Сантехника и отопление',
+        subtitle: 'Ванна/душ, инсталляция, узлы ввода и перенос радиаторов',
+        items: [
+          {
+            id: 'q_plumb_bath',
+            title: 'Какая ванна или душ?',
+            hint: 'Для строительного поддона заранее согласовать высоту трапа и уровень канализации.',
+            multi: false,
+            options: ['Ванна акрил', 'Ванна чугун/сталь', 'Душевой поддон строительный', 'Поддон готовый'],
+            customPlaceholder: 'Размеры ванны/поддона (Д×Ш мм) и модель трапа...'
+          },
+          {
+            id: 'q_plumb_wc',
+            title: 'Унитаз обычный или инсталляция?',
+            hint: 'Высота чаши инсталляции стандартно 400–420 мм от чистового пола.',
+            multi: false,
+            options: ['Инсталляция', 'Напольный унитаз'],
+            customPlaceholder: 'Модель инсталляции и кнопки смыва...'
+          },
+          {
+            id: 'q_plumb_mixers',
+            title: 'Какие смесители ставим?',
+            hint: 'Скрытые части (iBox и аналоги) монтируются строго по глубине с учетом штукатурки и плитки.',
+            multi: true,
+            options: ['Наружные', 'Скрытого монтажа в стену', 'Гигиенический душ'],
+            customPlaceholder: 'Высота излива, тропического душа и гиг. душа...'
+          },
+          {
+            id: 'q_plumb_wash',
+            title: 'Где стоят стиральная и сушильная машины?',
+            hint: 'При установке в колонну заложить отдельные розетки и сифон скрытого монтажа.',
+            multi: false,
+            options: ['В ванной в ряд', 'В ванной в колонну', 'На кухне', 'В коридоре в шкафу'],
+            customPlaceholder: 'Размеры машин (глубина × ширина)...'
+          },
+          {
+            id: 'q_plumb_boiler',
+            title: 'Нужен ли бойлер и полотенцесушитель?',
+            hint: 'Для проточного бойлера от 6–8 кВт требуется отдельный силовой кабель 3×4 или 3×6 мм².',
+            multi: true,
+            options: ['Бойлер проточный', 'Бойлер накопительный', 'Полотенцесушитель электро', 'Полотенцесушитель водяной'],
+            customPlaceholder: 'Объем/мощность бойлера и место скрытого подключения ПС...'
+          },
+          {
+            id: 'q_plumb_protect',
+            title: 'Ставим ли защиту от протечек и фильтры?',
+            hint: 'Продумать размещение датчиков протечки (под ванной, у инсталляции, под раковиной, на кухне).',
+            multi: true,
+            options: ['Защита от протечек', 'Редукторы давления', 'Магистральные фильтры', 'Без доп. систем'],
+            customPlaceholder: 'Модель системы (Нептун, Аквасторож, Gidrolock)...'
+          },
+          {
+            id: 'q_plumb_radiators',
+            title: 'Что делаем с радиаторами отопления?',
+            hint: 'Вывод труб из стены намного упрощает укладку ламината/плитки и плинтусов.',
+            multi: false,
+            options: ['Оставляем', 'Меняем', 'Переносим трубы из пола в стену'],
+            customPlaceholder: 'Количество радиаторов и тип подключения...'
+          }
+        ]
+      },
+      {
+        id: 'sec_walls',
+        number: '6',
+        title: 'Стены, потолки и что ещё делаем',
+        subtitle: 'Финишная отделка, геометрия углов 90°, потолки и доп. работы',
+        items: [
+          {
+            id: 'q_wall_finish',
+            title: 'Что делаем со стенами?',
+            hint: 'Под покраску обязательна проклейка стеклохолста и вышкуривание под проявочный свет.',
+            multi: true,
+            options: ['Обои', 'Покраска', 'Стеклохолст', 'Декоративная штукатурка'],
+            customPlaceholder: 'Какие комнаты под обои, какие под покраску...'
+          },
+          {
+            id: 'q_wall_90',
+            title: 'Какие стены выводим строго под 90 градусов?',
+            hint: 'Геометрия 90° критична для угловой кухни, встроенных шкафов и душевых кабин.',
+            multi: true,
+            options: ['Угол под кухню', 'Встроенные шкафы', 'Душевая и ванна', 'Все стены'],
+            customPlaceholder: 'Конкретные углы по плану...'
+          },
+          {
+            id: 'q_ceiling_type',
+            title: 'Какие будут потолки?',
+            hint: 'Заранее согласовать закладные под встроенные шкафы-купе и трековые светильники.',
+            multi: false,
+            options: ['Натяжные теневой профиль', 'Натяжные обычный профиль', 'ГКЛ под покраску'],
+            customPlaceholder: 'Опускание потолка (см) и тип освещения...'
+          },
+          {
+            id: 'q_curtains',
+            title: 'Как крепим шторы?',
+            hint: 'Для ниши под шторы оставить ширину 15–20 см от окна (с учетом вылета радиатора и подоконника!).',
+            multi: false,
+            options: ['Ниша в потолке скрытый карниз', 'Потолочный карниз', 'Настенный карниз'],
+            customPlaceholder: 'Ширина ниши и нужна ли LED-подсветка штор...'
+          },
+          {
+            id: 'q_plinth',
+            title: 'Какие плинтусы ставим?',
+            hint: 'Теневой или скрытый плинтус закладывается на этапе штукатурки и монтажа ГКЛ!',
+            multi: false,
+            options: ['МДФ', 'Дюрополимер', 'Алюминиевый теневой', 'ПВХ'],
+            customPlaceholder: 'Высота плинтуса (мм) и цвет...'
+          },
+          {
+            id: 'q_extra_works',
+            title: 'Дополнительные работы (что ещё делаем)?',
+            hint: 'Зафиксировать объем демонтажа, замену входной двери и трассы сплит-систем до старта.',
+            multi: true,
+            options: ['Демонтаж', 'Замена входной двери', 'Утепление балкона', 'Трассы кондиционеров', 'Вывоз мусора'],
+            customPlaceholder: 'Прочие работы и пожелания заказчика...'
+          }
+        ]
+      }
+    ];
+
+    const STORAGE_KEY = 'prorab196_checklist_projects_v1';
+    const ACTIVE_PROJECT_KEY = 'prorab196_active_project_v1';
+
+    const GENERAL_NOTE_TAGS = [
+      'Стесненные условия работы',
+      'Нет грузового лифта (подъем вручную)',
+      'ЖК с жестким режимом тишины (13:00–15:00)',
+      'Проживание заказчика во время ремонта',
+      'Работа по дизайн-проекту',
+      'Материал закупает заказчик',
+      'Материал закупает прораб',
+      'Требуется согласование с УК',
+      'Старый фонд / кривые стены'
+    ];
+
+    let isLocalStorageAvailable = true;
+
+    let appState = {
+      projects: [],
+      activeProjectId: null,
+      filter: 'all' // 'all' | 'pending' | 'done'
+    };
+
+    let saveTimeout = null;
+    let toastTimeout = null;
+
+    /**
+     * Проверка реальной доступности localStorage (защита от инкогнито и iframe)
+     */
+    function checkStorageAvailability() {
+      try {
+        const testKey = '__prorab196_test__';
+        localStorage.setItem(testKey, '1');
+        localStorage.removeItem(testKey);
+        isLocalStorageAvailable = true;
+      } catch (e) {
+        isLocalStorageAvailable = false;
+        const warnBanner = document.getElementById('storageWarningBanner');
+        const statusEl = document.getElementById('saveStatus');
+        const dotEl = document.getElementById('saveDot');
+        if (warnBanner) warnBanner.classList.remove('hidden');
+        if (statusEl) statusEl.textContent = 'Память ограничена';
+        if (dotEl) {
+          dotEl.classList.remove('bg-emerald-400');
+          dotEl.classList.add('bg-amber-400');
+        }
+      }
+      return isLocalStorageAvailable;
+    }
+
+    /**
+     * Плавный скролл страницы наверх
+     */
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /**
+     * Генерация уникального ID
+     */
+    function generateId(prefix = 'id') {
+      return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    }
+
+    /**
+     * Создание нового пустого объекта (квартиры)
+     */
+    function createEmptyProject(title = 'Новый объект') {
+      const today = new Date().toISOString().split('T')[0];
+      const answers = {};
+      TEMPLATE_SECTIONS.forEach(sec => {
+        sec.items.forEach(item => {
+          answers[item.id] = {
+            done: false,
+            selected: [],
+            customText: '',
+            socketsCount: '',
+            switchesCount: ''
+          };
+        });
+      });
+
+      return {
+        id: generateId('proj'),
+        title: title,
+        client: '',
+        date: today,
+        generalNotes: '',
+        customQuestions: {},
+        answers: answers,
+        updatedAt: Date.now()
+      };
+    }
+
+    /**
+     * Загрузка данных из localStorage или встроенного резервного блока
+     */
+    function loadState() {
+      checkStorageAvailability();
+      let loadedProjects = null;
+      let loadedActiveId = null;
+
+      if (isLocalStorageAvailable) {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              loadedProjects = parsed;
+            }
+          }
+          loadedActiveId = localStorage.getItem(ACTIVE_PROJECT_KEY);
+        } catch (e) {
+          loadedProjects = null;
+        }
+      }
+
+      if (!loadedProjects) {
+        try {
+          const embeddedEl = document.getElementById('embeddedBackupData');
+          if (embeddedEl && embeddedEl.textContent && embeddedEl.textContent.trim() !== 'null') {
+            const embedded = JSON.parse(embeddedEl.textContent);
+            if (embedded && Array.isArray(embedded.projects) && embedded.projects.length > 0) {
+              loadedProjects = embedded.projects;
+              loadedActiveId = embedded.activeProjectId || embedded.projects[0].id;
+            }
+          }
+        } catch (e) {
+          loadedProjects = null;
+        }
+      }
+
+      if (loadedProjects && loadedProjects.length > 0) {
+        appState.projects = loadedProjects;
+        const exists = appState.projects.some(p => p.id === loadedActiveId);
+        appState.activeProjectId = exists ? loadedActiveId : appState.projects[0].id;
+      } else {
+        const defaultProj = createEmptyProject('ЖК Солнечный, кв. 42 (пример)');
+        appState.projects = [defaultProj];
+        appState.activeProjectId = defaultProj.id;
+        persistToStorage();
+      }
+    }
+
+    /**
+     * Запись текущего состояния в localStorage
+     */
+    function persistToStorage() {
+      const dot = document.getElementById('saveDot');
+      const status = document.getElementById('saveStatus');
+
+      if (!isLocalStorageAvailable) {
+        if (status) status.textContent = 'Память ограничена';
+        return false;
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.projects));
+        if (appState.activeProjectId) {
+          localStorage.setItem(ACTIVE_PROJECT_KEY, appState.activeProjectId);
+        }
+        const nowStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        if (dot) {
+          dot.classList.remove('bg-amber-400', 'bg-rose-400');
+          dot.classList.add('bg-emerald-400');
+        }
+        if (status) status.textContent = `Сохранено (${nowStr})`;
+        return true;
+      } catch (e) {
+        if (dot) {
+          dot.classList.remove('bg-emerald-400');
+          dot.classList.add('bg-rose-400');
+        }
+        if (status) status.textContent = 'Ошибка памяти';
+        return false;
+      }
+    }
+
+    /**
+     * Автосохранение с небольшой задержкой
+     */
+    function saveState(debounce = true) {
+      const proj = getActiveProject();
+      if (proj) proj.updatedAt = Date.now();
+
+      const dot = document.getElementById('saveDot');
+      const status = document.getElementById('saveStatus');
+      if (dot && isLocalStorageAvailable) {
+        dot.classList.remove('bg-emerald-400');
+        dot.classList.add('bg-amber-400');
+      }
+      if (status && isLocalStorageAvailable) {
+        status.textContent = 'Сохранение...';
+      }
+
+      clearTimeout(saveTimeout);
+      if (debounce) {
+        saveTimeout = setTimeout(() => {
+          persistToStorage();
+        }, 250);
+      } else {
+        persistToStorage();
+      }
+    }
+
+    /**
+     * Ручное сохранение по кнопке «Сохранить»
+     */
+    function manualSave() {
+      clearTimeout(saveTimeout);
+      const ok = persistToStorage();
+      if (ok) {
+        showToast('Все данные по объекту надежно сохранены');
+      } else {
+        showToast('Память браузера ограничена — используйте «Скачать HTML с данными»');
+      }
+    }
+
+    /**
+     * Скачивание автономного HTML-файла со всеми объектами внутри
+     */
+    function downloadStandaloneHTML() {
+      try {
+        clearTimeout(saveTimeout);
+        persistToStorage();
+
+        const backupPayload = JSON.stringify({
+          exportedAt: new Date().toISOString(),
+          activeProjectId: appState.activeProjectId,
+          projects: appState.projects
+        }).replace(/<\/script>/gi, '<\\/script>');
+
+        const docClone = document.documentElement.cloneNode(true);
+        const embeddedScript = docClone.querySelector('#embeddedBackupData');
+        if (embeddedScript) {
+          embeddedScript.textContent = backupPayload;
+        }
+
+        const htmlContent = '<!DOCTYPE html>\n' + docClone.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const dateTag = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `prorab196_shpargalka_${dateTag}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Файл HTML со всеми объектами скачан');
+      } catch (e) {
+        showToast('Не удалось сформировать HTML-файл');
+      }
+    }
+
+    /**
+     * Получение активного объекта
+     */
+    function getActiveProject() {
+      return appState.projects.find(p => p.id === appState.activeProjectId) || appState.projects[0];
+    }
+
+    /**
+     * Гарантирует наличие объекта ответа для конкретного вопроса
+     */
+    function ensureAnswer(proj, itemId) {
+      if (!proj.answers) proj.answers = {};
+      if (!proj.answers[itemId]) {
+        proj.answers[itemId] = {
+          done: false,
+          selected: [],
+          customText: '',
+          socketsCount: '',
+          switchesCount: ''
+        };
+      }
+      return proj.answers[itemId];
+    }
+
+    /**
+     * Отрисовка выпадающего списка объектов в шапке
+     */
+    function renderProjectSelect() {
+      const select = document.getElementById('projectSelect');
+      if (!select) return;
+      select.innerHTML = '';
+
+      appState.projects.forEach(proj => {
+        const opt = document.createElement('option');
+        opt.value = proj.id;
+        opt.textContent = proj.title || 'Без названия';
+        if (proj.id === appState.activeProjectId) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      });
+
+      select.onchange = (e) => {
+        appState.activeProjectId = e.target.value;
+        saveState(false);
+        renderAll();
+      };
+    }
+
+    /**
+     * Отрисовка метаданных (Адрес, Заказчик, Дата)
+     */
+    function renderMetadata() {
+      const proj = getActiveProject();
+      if (!proj) return;
+
+      const titleInput = document.getElementById('metaTitle');
+      const clientInput = document.getElementById('metaClient');
+      const dateInput = document.getElementById('metaDate');
+
+      titleInput.value = proj.title || '';
+      clientInput.value = proj.client || '';
+      dateInput.value = proj.date || '';
+
+      titleInput.oninput = (e) => {
+        proj.title = e.target.value;
+        renderProjectSelect();
+        saveState();
+      };
+
+      clientInput.oninput = (e) => {
+        proj.client = e.target.value;
+        saveState();
+      };
+
+      dateInput.onchange = (e) => {
+        proj.date = e.target.value;
+        saveState();
+      };
+    }
+
+    /**
+     * Отрисовка блока 7 (Общие условия и особые примечания)
+     */
+    function renderGeneralNotes() {
+      const proj = getActiveProject();
+      const chipsWrap = document.getElementById('generalNotesChips');
+      const textarea = document.getElementById('generalNotesInput');
+      if (!proj || !chipsWrap || !textarea) return;
+
+      textarea.value = proj.generalNotes || '';
+      textarea.oninput = (e) => {
+        proj.generalNotes = e.target.value;
+        saveState();
+      };
+
+      chipsWrap.innerHTML = '';
+      GENERAL_NOTE_TAGS.forEach(tag => {
+        const isPresent = (proj.generalNotes || '').includes(tag);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = isPresent
+          ? 'chip-btn chip-selected bg-[#2563EB] text-white border border-[#2563EB] px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs'
+          : 'chip-btn bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium';
+        btn.textContent = (isPresent ? '✓ ' : '+ ') + tag;
+        btn.onclick = () => appendGeneralNoteTag(tag);
+        chipsWrap.appendChild(btn);
+      });
+    }
+
+    function appendGeneralNoteTag(tag) {
+      const proj = getActiveProject();
+      if (!proj) return;
+      const current = (proj.generalNotes || '').trim();
+      if (current.includes(tag)) {
+        const lines = current
+          .split('\n')
+          .map(l => l.replace(/^•\s*/, '').trim())
+          .filter(l => l && l !== tag);
+        proj.generalNotes = lines.map(l => `• ${l}`).join('\n');
+      } else {
+        proj.generalNotes = current ? `${current}\n• ${tag}` : `• ${tag}`;
+      }
+      saveState();
+      renderGeneralNotes();
+    }
+
+    function clearGeneralNotes() {
+      const proj = getActiveProject();
+      if (!proj) return;
+      proj.generalNotes = '';
+      saveState();
+      renderGeneralNotes();
+      showToast('Примечания очищены');
+    }
+
+    /**
+     * Получение полного списка вопросов для раздела (стандартные + добавленные вручную)
+     */
+    function getSectionItems(proj, sec) {
+      const customList = (proj.customQuestions && proj.customQuestions[sec.id]) ? proj.customQuestions[sec.id] : [];
+      return [...sec.items, ...customList];
+    }
+
+    /**
+     * Отрисовка всех разделов и вопросов
+     */
+    function renderSections() {
+      const container = document.getElementById('sectionsContainer');
+      const proj = getActiveProject();
+      if (!container || !proj) return;
+
+      container.innerHTML = '';
+
+      TEMPLATE_SECTIONS.forEach(sec => {
+        const items = getSectionItems(proj, sec);
+
+        const visibleItems = items.filter(item => {
+          const ans = ensureAnswer(proj, item.id);
+          if (appState.filter === 'pending') return !ans.done;
+          if (appState.filter === 'done') return ans.done;
+          return true;
+        });
+
+        const secBlock = document.createElement('section');
+        secBlock.className = 'section-block bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden';
+
+        const doneInSec = items.filter(it => ensureAnswer(proj, it.id).done).length;
+
+        let itemsHtml = '';
+        if (visibleItems.length === 0) {
+          itemsHtml = `<div class="p-6 text-center text-sm text-slate-400">Нет пунктов по выбранному фильтру в этом разделе.</div>`;
+        } else {
+          visibleItems.forEach(item => {
+            const ans = ensureAnswer(proj, item.id);
+            const isCustom = Boolean(item.isCustom);
+
+            let chipsHtml = '';
+            if (item.options && item.options.length > 0) {
+              chipsHtml = `<div class="flex flex-wrap gap-2 mt-2.5">`;
+              item.options.forEach(opt => {
+                const isSelected = ans.selected && ans.selected.includes(opt);
+                const chipClass = isSelected
+                  ? 'chip-btn chip-selected bg-[#2563EB] text-white border border-[#2563EB] px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-2xs'
+                  : 'chip-btn bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-300 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium';
+                const safeOpt = opt.replace(/'/g, "\\'");
+                chipsHtml += `<button type="button" onclick="toggleChip('${item.id}', '${safeOpt}', ${Boolean(item.multi)})" class="${chipClass}">${opt}</button>`;
+              });
+              chipsHtml += `</div>`;
+            }
+
+            // Специальный блок счетчиков розеток/выключателей для п.4.1
+            let countersHtml = '';
+            if (item.isElectricCounter) {
+              countersHtml = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-w-lg">
+                  <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Розеток, шт.</label>
+                    <div class="flex items-center gap-1.5">
+                      <button type="button" onclick="stepCounter('${item.id}', 'socketsCount', -1)"
+                        class="no-print w-10 h-10 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 font-bold text-slate-700 text-lg flex items-center justify-center shrink-0">−</button>
+                      <input id="cnt_${item.id}_socketsCount" type="number" min="0" inputmode="numeric" placeholder="0"
+                        value="${ans.socketsCount || ''}"
+                        oninput="updateTextField('${item.id}', 'socketsCount', this.value)"
+                        class="w-full px-2 py-2 rounded-lg border border-slate-300 bg-white text-center text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-600" />
+                      <button type="button" onclick="stepCounter('${item.id}', 'socketsCount', 1)"
+                        class="no-print w-10 h-10 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 font-bold text-slate-700 text-lg flex items-center justify-center shrink-0">+</button>
+                    </div>
+                  </div>
+                  <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Выключателей, шт.</label>
+                    <div class="flex items-center gap-1.5">
+                      <button type="button" onclick="stepCounter('${item.id}', 'switchesCount', -1)"
+                        class="no-print w-10 h-10 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 font-bold text-slate-700 text-lg flex items-center justify-center shrink-0">−</button>
+                      <input id="cnt_${item.id}_switchesCount" type="number" min="0" inputmode="numeric" placeholder="0"
+                        value="${ans.switchesCount || ''}"
+                        oninput="updateTextField('${item.id}', 'switchesCount', this.value)"
+                        class="w-full px-2 py-2 rounded-lg border border-slate-300 bg-white text-center text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-600" />
+                      <button type="button" onclick="stepCounter('${item.id}', 'switchesCount', 1)"
+                        class="no-print w-10 h-10 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 font-bold text-slate-700 text-lg flex items-center justify-center shrink-0">+</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+
+            // Поле уточнения / заметки
+            const customInputHtml = `
+              <div class="mt-2.5">
+                <input type="text"
+                  value="${(ans.customText || '').replace(/"/g, '&quot;')}"
+                  placeholder="${item.customPlaceholder || 'Точный ответ / уточнение для себя...'}"
+                  oninput="updateTextField('${item.id}', 'customText', this.value)"
+                  class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 outline-none text-xs sm:text-sm text-slate-800 placeholder-slate-400 transition" />
+              </div>
+            `;
+
+            const deleteCustomBtn = isCustom
+              ? `<button type="button" onclick="removeCustomQuestion('${sec.id}', '${item.id}')" title="Удалить свой вопрос" class="no-print text-xs text-rose-500 hover:text-rose-700 ml-2 px-1.5 py-0.5 rounded hover:bg-rose-50">Удалить</button>`
+              : '';
+
+            itemsHtml += `
+              <div class="question-card p-3.5 sm:p-4 sm:px-6 border-b border-slate-100 last:border-b-0 ${ans.done ? 'bg-emerald-50/40' : 'bg-white'}">
+                <div class="flex items-start gap-3 sm:gap-3.5">
+                  <button type="button" onclick="toggleDone('${item.id}')"
+                    aria-label="Отметить выполнение"
+                    class="mt-0.5 w-8 h-8 sm:w-7 sm:h-7 rounded-xl sm:rounded-lg border-2 flex items-center justify-center shrink-0 transition ${ans.done ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white hover:border-blue-500'}">
+                    ${ans.done ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' : ''}
+                  </button>
+
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-2">
+                      <h3 onclick="toggleDone('${item.id}')" class="text-sm sm:text-base font-semibold cursor-pointer leading-snug ${ans.done ? 'text-slate-500 line-through decoration-slate-400' : 'text-slate-900'}">
+                        ${item.title}
+                      </h3>
+                      ${deleteCustomBtn}
+                    </div>
+                    ${item.hint ? `<p class="text-xs text-slate-500 mt-1 leading-relaxed">${item.hint}</p>` : ''}
+                    ${countersHtml}
+                    ${chipsHtml}
+                    ${customInputHtml}
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+        }
+
+        secBlock.innerHTML = `
+          <div class="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-start sm:items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-[#1E3A5F] text-white font-bold text-sm flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                ${sec.number}
+              </span>
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">${sec.title}</h2>
+                <p class="text-xs text-slate-500">${sec.subtitle}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${doneInSec === items.length && items.length > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200/70 text-slate-700'}">
+                ${doneInSec} / ${items.length}
+              </span>
+              <button type="button" onclick="promptAddCustomQuestion('${sec.id}', '${sec.title.replace(/'/g, "\\'")}')"
+                class="no-print text-xs font-semibold text-[#2563EB] hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg transition">
+                + Свой вопрос
+              </button>
+            </div>
+          </div>
+          <div>${itemsHtml}</div>
+        `;
+
+        container.appendChild(secBlock);
+      });
+    }
+
+    /**
+     * Переключение галочки «Готово» по пункту
+     */
+    function toggleDone(itemId) {
+      const proj = getActiveProject();
+      const ans = ensureAnswer(proj, itemId);
+      ans.done = !ans.done;
+      saveState();
+      renderSections();
+      updateProgress();
+    }
+
+    /**
+     * Выбор/снятие чипа ответа
+     */
+    function toggleChip(itemId, optionValue, isMulti) {
+      const proj = getActiveProject();
+      const ans = ensureAnswer(proj, itemId);
+      if (!ans.selected) ans.selected = [];
+
+      const idx = ans.selected.indexOf(optionValue);
+      if (isMulti) {
+        if (idx > -1) {
+          ans.selected.splice(idx, 1);
+        } else {
+          ans.selected.push(optionValue);
+        }
+      } else {
+        if (idx > -1) {
+          ans.selected = [];
+        } else {
+          ans.selected = [optionValue];
+        }
+      }
+
+      if (ans.selected.length > 0) {
+        ans.done = true;
+      }
+
+      saveState();
+      renderSections();
+      updateProgress();
+    }
+
+    /**
+     * Обновление текстовых полей и счетчиков
+     */
+    function updateTextField(itemId, field, value) {
+      const proj = getActiveProject();
+      const ans = ensureAnswer(proj, itemId);
+      ans[field] = value;
+
+      const hasAnyValue = (ans.customText && ans.customText.trim().length > 0) ||
+                          (ans.socketsCount && ans.socketsCount !== '') ||
+                          (ans.switchesCount && ans.switchesCount !== '') ||
+                          (ans.selected && ans.selected.length > 0);
+      if (hasAnyValue && !ans.done) {
+        ans.done = true;
+        updateProgress();
+      }
+
+      saveState();
+    }
+
+    /**
+     * Изменение счетчика розеток/выключателей кнопками +/-
+     */
+    function stepCounter(itemId, field, delta) {
+      const proj = getActiveProject();
+      const ans = ensureAnswer(proj, itemId);
+      const currVal = parseInt(ans[field], 10) || 0;
+      const nextVal = Math.max(0, currVal + delta);
+      ans[field] = nextVal === 0 ? '' : String(nextVal);
+      if (nextVal > 0 && !ans.done) {
+        ans.done = true;
+      }
+      saveState();
+      renderSections();
+      updateProgress();
+    }
+
+    /**
+     * Печать или сохранение в PDF (через чистое печатное окно с fallback на window.print)
+     */
+    function openPrintView(compactOnlyFilled = false) {
+      const proj = getActiveProject();
+      if (!proj) return;
+
+      const escapeHtml = (str) => String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+
+      let sectionsHtml = '';
+      TEMPLATE_SECTIONS.forEach(sec => {
+        const items = getSectionItems(proj, sec);
+        let rowsHtml = '';
+
+        items.forEach(item => {
+          const ans = ensureAnswer(proj, item.id);
+          const hasSelection = ans.selected && ans.selected.length > 0;
+          const hasText = ans.customText && ans.customText.trim().length > 0;
+          const hasCounters = (ans.socketsCount && ans.socketsCount !== '') || (ans.switchesCount && ans.switchesCount !== '');
+          const isFilled = ans.done || hasSelection || hasText || hasCounters;
+
+          if (compactOnlyFilled && !isFilled) return;
+
+          const parts = [];
+          if (item.isElectricCounter && hasCounters) {
+            const s = ans.socketsCount ? `Розеток: ${ans.socketsCount} шт.` : '';
+            const sw = ans.switchesCount ? `Выключателей: ${ans.switchesCount} шт.` : '';
+            parts.push([s, sw].filter(Boolean).join(', '));
+          }
+          if (hasSelection) parts.push(ans.selected.join(', '));
+          if (hasText) parts.push(ans.customText.trim());
+
+          const answerText = parts.length > 0
+            ? escapeHtml(parts.join(' — '))
+            : (ans.done ? 'Согласовано' : '<span style="color:#94A3B8;">___________________________</span>');
+
+          rowsHtml += `
+            <tr>
+              <td style="width:26px;text-align:center;font-weight:bold;">${ans.done ? '☑' : '☐'}</td>
+              <td style="width:44%;font-weight:600;">${escapeHtml(item.title)}</td>
+              <td>${answerText}</td>
+            </tr>
+          `;
+        });
+
+        if (rowsHtml) {
+          sectionsHtml += `
+            <div class="sec">
+              <div class="sec-hdr">${escapeHtml(sec.number)}. ${escapeHtml(sec.title)}</div>
+              <table>${rowsHtml}</table>
+            </div>
+          `;
+        }
+      });
+
+      const generalNotes = (proj.generalNotes || '').trim();
+      if (generalNotes || !compactOnlyFilled) {
+        sectionsHtml += `
+          <div class="sec">
+            <div class="sec-hdr">7. Общие условия и особые примечания по объекту</div>
+            <div style="padding:8pt;min-height:36pt;white-space:pre-wrap;">${generalNotes ? escapeHtml(generalNotes) : '<span style="color:#94A3B8;">Особых примечаний нет</span>'}</div>
+          </div>
+        `;
+      }
+
+      const printDocHtml = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Лист согласования — ${escapeHtml(proj.title || 'Объект')}</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm; }
+    body { font-family: Arial, sans-serif; font-size: 9.5pt; color: #0F172A; margin: 0; padding: 0; }
+    .top { border-bottom: 2px solid #1E3A5F; padding-bottom: 6pt; margin-bottom: 10pt; display: flex; justify-content: space-between; align-items: flex-end; }
+    .top h1 { font-size: 13pt; margin: 0 0 2pt 0; color: #1E3A5F; }
+    .meta { width: 100%; border-collapse: collapse; margin-bottom: 10pt; }
+    .meta td { border: 1px solid #CBD5E1; padding: 5pt 7pt; }
+    .sec { margin-bottom: 9pt; border: 1px solid #94A3B8; border-radius: 4pt; overflow: hidden; page-break-inside: avoid; }
+    .sec-hdr { background: #E2E8F0; font-weight: bold; padding: 4pt 7pt; color: #1E3A5F; border-bottom: 1px solid #94A3B8; }
+    table { width: 100%; border-collapse: collapse; }
+    td { border-bottom: 1px solid #E2E8F0; padding: 4.5pt 7pt; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    .signs { margin-top: 16pt; display: flex; justify-content: space-between; font-size: 9.5pt; page-break-inside: avoid; }
+    .toolbar { background: #1E3A5F; color: #fff; padding: 8pt 12pt; margin-bottom: 12pt; display: flex; justify-content: space-between; align-items: center; }
+    .toolbar button { background: #2563EB; color: #fff; border: none; padding: 6pt 14pt; border-radius: 4pt; font-weight: bold; cursor: pointer; }
+    @media print { .toolbar { display: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <span>Предпросмотр листа А4 (в окне печати выберите «Сохранить как PDF» или принтер)</span>
+    <button onclick="window.print()">Печать / Сохранить PDF</button>
+  </div>
+  <div class="top">
+    <div>
+      <h1>ЛИСТ ЗАМЕРА И СОГЛАСОВАНИЯ РЕМОНТА ПОД КЛЮЧ</h1>
+      <div style="font-size:8pt;color:#475569;">Шпаргалка прораба • prorab196.ru</div>
+    </div>
+    <div style="font-size:8.5pt;text-align:right;">Дата: <strong>${escapeHtml(proj.date || '___________')}</strong></div>
+  </div>
+  <table class="meta">
+    <tr>
+      <td style="width:55%;"><strong>Объект:</strong> ${escapeHtml(proj.title || '___________________________')}</td>
+      <td style="width:45%;"><strong>Заказчик:</strong> ${escapeHtml(proj.client || '_______________________')}</td>
+    </tr>
+  </table>
+  ${sectionsHtml}
+  <div class="signs">
+    <div>Согласовано (Заказчик): ______________________ / ______________</div>
+    <div>Принял в работу (Прораб): ____________________ / ______________</div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() { window.print(); }, 250);
+    };
+  <\/script>
+</body>
+</html>`;
+
+      const printWin = window.open('', '_blank', 'width=900,height=800');
+      if (printWin) {
+        printWin.document.open();
+        printWin.document.write(printDocHtml);
+        printWin.document.close();
+      } else {
+        showToast('Браузер заблокировал новое окно — открываю печать текущей страницы');
+        window.print();
+      }
+    }
+
+    /**
+     * Обновление шкалы прогресса
+     */
+    function updateProgress() {
+      const proj = getActiveProject();
+      if (!proj) return;
+
+      let total = 0;
+      let done = 0;
+
+      TEMPLATE_SECTIONS.forEach(sec => {
+        const items = getSectionItems(proj, sec);
+        items.forEach(item => {
+          total++;
+          if (ensureAnswer(proj, item.id).done) done++;
+        });
+      });
+
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      const counterEl = document.getElementById('progressCounter');
+      const pctEl = document.getElementById('progressPercent');
+      const barEl = document.getElementById('progressBar');
+      const printTextEl = document.getElementById('printProgressText');
+
+      if (counterEl) counterEl.textContent = `Готово ${done} из ${total} пунктов`;
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      if (barEl) barEl.style.width = `${pct}%`;
+      if (printTextEl) printTextEl.textContent = `Готовность согласования: ${done} из ${total} (${pct}%)`;
+    }
+
+    /**
+     * Фильтрация пунктов (Все / Незаполненные / Готовые)
+     */
+    function setFilter(filterMode) {
+      appState.filter = filterMode;
+      ['all', 'pending', 'done'].forEach(mode => {
+        const btn = document.getElementById(`filter${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+        if (!btn) return;
+        if (mode === filterMode) {
+          btn.className = 'filter-btn px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-white text-[#1E3A5F] shadow-xs transition text-center';
+        } else {
+          btn.className = 'filter-btn px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition text-center';
+        }
+      });
+      renderSections();
+    }
+
+    /**
+     * Показ всплывающего уведомления
+     */
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toastText');
+      if (!toast || !text) return;
+
+      text.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2800);
+    }
+
+    /**
+     * Модальное окно для ввода или подтверждения
+     */
+    function openModal({ title, desc, showInput = false, defaultValue = '', placeholder = '', confirmText = 'Подтвердить', onConfirm }) {
+      const overlay = document.getElementById('modalOverlay');
+      const mTitle = document.getElementById('modalTitle');
+      const mDesc = document.getElementById('modalDesc');
+      const inputWrap = document.getElementById('modalInputWrap');
+      const input = document.getElementById('modalInput');
+      const cancelBtn = document.getElementById('modalCancelBtn');
+      const confirmBtn = document.getElementById('modalConfirmBtn');
+
+      mTitle.textContent = title;
+      mDesc.textContent = desc;
+      confirmBtn.textContent = confirmText;
+
+      if (showInput) {
+        inputWrap.classList.remove('hidden');
+        input.value = defaultValue;
+        input.placeholder = placeholder;
+      } else {
+        inputWrap.classList.add('hidden');
+      }
+
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      if (showInput) setTimeout(() => input.focus(), 50);
+
+      const closeModal = () => {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+      };
+
+      cancelBtn.onclick = closeModal;
+      confirmBtn.onclick = () => {
+        const val = input.value.trim();
+        closeModal();
+        if (onConfirm) onConfirm(val);
+      };
+
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          confirmBtn.click();
+        }
+      };
+    }
+
+    /**
+     * Управление объектами: создание, дублирование, удаление
+     */
+    function createNewProject() {
+      openModal({
+        title: 'Новый объект',
+        desc: 'Введите адрес или название новой квартиры:',
+        showInput: true,
+        placeholder: 'Например: ул. Ленина, д. 15, кв. 8',
+        confirmText: 'Создать',
+        onConfirm: (val) => {
+          const newProj = createEmptyProject(val || `Объект №${appState.projects.length + 1}`);
+          appState.projects.unshift(newProj);
+          appState.activeProjectId = newProj.id;
+          saveState();
+          renderAll();
+          showToast('Новый объект создан');
+        }
+      });
+    }
+
+    function duplicateCurrentProject() {
+      const current = getActiveProject();
+      if (!current) return;
+      const copy = JSON.parse(JSON.stringify(current));
+      copy.id = generateId('proj');
+      copy.title = `${current.title} (копия)`;
+      copy.updatedAt = Date.now();
+      appState.projects.unshift(copy);
+      appState.activeProjectId = copy.id;
+      saveState();
+      renderAll();
+      showToast('Создана копия объекта');
+    }
+
+    function deleteCurrentProject() {
+      if (appState.projects.length <= 1) {
+        showToast('Нельзя удалить единственный объект');
+        return;
+      }
+      const current = getActiveProject();
+      openModal({
+        title: 'Удалить объект?',
+        desc: `Вы действительно хотите удалить «${current.title}»? Все данные по нему будут стерты.`,
+        showInput: false,
+        confirmText: 'Удалить',
+        onConfirm: () => {
+          appState.projects = appState.projects.filter(p => p.id !== current.id);
+          appState.activeProjectId = appState.projects[0].id;
+          saveState();
+          renderAll();
+          showToast('Объект удален');
+        }
+      });
+    }
+
+    /**
+     * Добавление и удаление пользовательского вопроса в разделе
+     */
+    function promptAddCustomQuestion(secId, secTitle) {
+      openModal({
+        title: `Добавить вопрос в раздел «${secTitle}»`,
+        desc: 'Сформулируйте дополнительный вопрос или узел для проверки на этом объекте:',
+        showInput: true,
+        placeholder: 'Например: Куда открывается дверца коллекторного шкафа?',
+        confirmText: 'Добавить',
+        onConfirm: (val) => {
+          if (!val) return;
+          const proj = getActiveProject();
+          if (!proj.customQuestions) proj.customQuestions = {};
+          if (!proj.customQuestions[secId]) proj.customQuestions[secId] = [];
+
+          const newItem = {
+            id: generateId('custom_q'),
+            title: val,
+            hint: 'Дополнительный пункт по объекту',
+            multi: false,
+            options: [],
+            customPlaceholder: 'Ответ / решение по пункту...',
+            isCustom: true
+          };
+
+          proj.customQuestions[secId].push(newItem);
+          ensureAnswer(proj, newItem.id);
+          saveState();
+          renderSections();
+          updateProgress();
+          showToast('Свой вопрос добавлен');
+        }
+      });
+    }
+
+    function removeCustomQuestion(secId, itemId) {
+      const proj = getActiveProject();
+      if (!proj || !proj.customQuestions || !proj.customQuestions[secId]) return;
+      proj.customQuestions[secId] = proj.customQuestions[secId].filter(q => q.id !== itemId);
+      if (proj.answers) delete proj.answers[itemId];
+      saveState();
+      renderSections();
+      updateProgress();
+      showToast('Вопрос удален');
+    }
+
+    /**
+     * Экспорт и импорт резервной копии JSON
+     */
+    function exportBackupJSON() {
+      try {
+        const dataStr = JSON.stringify({
+          exportedAt: new Date().toISOString(),
+          projects: appState.projects
+        }, null, 2);
+
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const dateTag = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `prorab196_objects_${dateTag}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Резервная копия JSON скачана');
+      } catch (e) {
+        showToast('Ошибка выгрузки JSON');
+      }
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          const importedProjects = Array.isArray(parsed) ? parsed : parsed.projects;
+          if (!Array.isArray(importedProjects) || importedProjects.length === 0) {
+            throw new Error('Неверный формат файла');
+          }
+          appState.projects = importedProjects;
+          appState.activeProjectId = importedProjects[0].id;
+          saveState();
+          renderAll();
+          showToast(`Загружено объектов: ${importedProjects.length}`);
+        } catch (err) {
+          showToast('Ошибка чтения JSON-файла');
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /**
+     * Формирование и копирование текстовой сводки для WhatsApp / Telegram
+     */
+    function copySummaryForMessenger() {
+      const proj = getActiveProject();
+      if (!proj) return;
+
+      const lines = [
+        `📋 *ЛИСТ ЗАМЕРА И СОГЛАСОВАНИЯ РЕМОНТА*`,
+        `🏠 *Объект:* ${proj.title || 'Не указан'}`,
+        proj.client ? `👤 *Заказчик:* ${proj.client}` : '',
+        proj.date ? `📅 *Дата:* ${proj.date}` : '',
+        `——————————————`
+      ].filter(Boolean);
+
+      let answeredCount = 0;
+
+      TEMPLATE_SECTIONS.forEach(sec => {
+        const items = getSectionItems(proj, sec);
+        const secLines = [];
+
+        items.forEach(item => {
+          const ans = ensureAnswer(proj, item.id);
+          const hasSelection = ans.selected && ans.selected.length > 0;
+          const hasText = ans.customText && ans.customText.trim().length > 0;
+          const hasCounters = (ans.socketsCount && ans.socketsCount !== '') || (ans.switchesCount && ans.switchesCount !== '');
+
+          if (ans.done || hasSelection || hasText || hasCounters) {
+            answeredCount++;
+            const parts = [];
+            if (item.isElectricCounter && hasCounters) {
+              const s = ans.socketsCount ? `Розеток: ${ans.socketsCount} шт.` : '';
+              const sw = ans.switchesCount ? `Выключателей: ${ans.switchesCount} шт.` : '';
+              parts.push([s, sw].filter(Boolean).join(', '));
+            }
+            if (hasSelection) parts.push(ans.selected.join(', '));
+            if (hasText) parts.push(ans.customText.trim());
+
+            const valStr = parts.length > 0 ? parts.join(' — ') : 'Согласовано ✓';
+            secLines.push(`• ${item.title}: *${valStr}*`);
+          }
+        });
+
+        if (secLines.length > 0) {
+          lines.push(`\n*${sec.number}. ${sec.title.toUpperCase()}*`);
+          lines.push(...secLines);
+        }
+      });
+
+      const generalNotes = (proj.generalNotes || '').trim();
+      if (generalNotes) {
+        answeredCount++;
+        lines.push(`\n*7. ОБЩИЕ УСЛОВИЯ И ОСОБЫЕ ПРИМЕЧАНИЯ*`);
+        lines.push(`📝 ${generalNotes}`);
+      }
+
+      if (answeredCount === 0) {
+        lines.push(`\nПока не заполнено ни одного пункта.`);
+      }
+
+      lines.push(`\n——————————————`);
+      lines.push(`Сформировано в шпаргалке прораба • prorab196.ru`);
+
+      const finalText = lines.join('\n');
+      const helper = document.getElementById('clipboardHelper');
+      helper.value = finalText;
+      helper.select();
+      helper.setSelectionRange(0, 99999);
+
+      try {
+        document.execCommand('copy');
+        showToast('Сводка скопирована! Можно вставлять в WhatsApp / Telegram');
+      } catch (err) {
+        showToast('Не удалось скопировать текст');
+      }
+    }
+
+    // Инициализация приложения при загрузке страницы
+    function renderAll() {
+      renderProjectSelect();
+      renderMetadata();
+      renderSections();
+      renderGeneralNotes();
+      updateProgress();
+    }
+
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('floatingTopBtn');
+      if (!btn) return;
+      if (window.scrollY > 320) {
+        btn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+      } else {
+        btn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      }
+    });
+
+    window.onload = function () {
+      loadState();
+      renderAll();
+    };
+  </script>
+</body>
+</html>
