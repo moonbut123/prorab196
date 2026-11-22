@@ -25,6 +25,7 @@
       input[type="text"],
       input[type="number"],
       input[type="date"],
+      input[type="password"],
       select,
       textarea {
         font-size: 16px !important;
@@ -35,6 +36,35 @@
 <body class="min-h-screen flex flex-col">
   <!-- Встроенные резервные данные для автономного HTML-файла -->
   <script id="embeddedBackupData" type="application/json">null</script>
+
+  <!-- Экран блокировки / Входа по ПИН-коду -->
+  <div id="pinLockScreen" class="fixed inset-0 bg-[#1E3A5F] z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 shadow-2xl border border-slate-200 text-center">
+      <div class="w-14 h-14 bg-blue-50 text-[#1E3A5F] rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xs">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        </svg>
+      </div>
+      <h2 id="pinScreenTitle" class="text-xl font-bold text-slate-900 mb-1">Личный кабинет</h2>
+      <p id="pinScreenDesc" class="text-xs sm:text-sm text-slate-500 mb-6">Введите ваш ПИН-код для доступа к объектам</p>
+
+      <form onsubmit="handlePinSubmit(event)" class="space-y-4">
+        <div>
+          <input id="pinCodeInput" type="password" inputmode="numeric" maxlength="6"
+            placeholder="••••"
+            class="w-full px-4 py-3 text-center text-2xl tracking-widest rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none font-bold text-slate-900 bg-slate-50" />
+        </div>
+        <div id="pinErrorMsg" class="text-xs text-rose-600 font-medium hidden">Неверный ПИН-код. Попробуйте еще раз.</div>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-[#1E3A5F] hover:bg-blue-800 text-white font-bold text-sm transition shadow-md active:scale-98">
+          Войти
+        </button>
+      </form>
+      <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+        <button type="button" onclick="resetPinCode()" class="text-xs text-slate-400 hover:text-slate-600 transition">Сбросить ПИН</button>
+        <button type="button" onclick="changePinCode()" class="text-xs text-blue-600 hover:text-blue-800 font-medium transition">Сменить ПИН</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Плавающая кнопка «Наверх» -->
   <button id="floatingTopBtn" onclick="scrollToTop()" title="Поднять страницу наверх"
@@ -88,6 +118,11 @@
 
         <!-- Индикатор автосохранения и явная кнопка сохранения -->
         <div class="flex items-center gap-1.5 sm:gap-2 ml-auto">
+          <button onclick="lockApp()" title="Заблокировать (выйти)" class="px-2.5 py-2 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <span class="hidden sm:inline">Заблокировать</span>
+          </button>
+
           <div id="storageBadge" class="flex items-center gap-1.5 bg-slate-900/40 px-2.5 py-1.5 rounded-xl border border-white/10">
             <span id="saveDot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400"></span>
             <span id="saveStatus" class="text-[11px] sm:text-xs font-medium text-slate-200">Сохранено</span>
@@ -650,6 +685,8 @@
 
     const STORAGE_KEY = 'prorab196_checklist_projects_v1';
     const ACTIVE_PROJECT_KEY = 'prorab196_active_project_v1';
+    const PIN_STORAGE_KEY = 'prorab196_user_pin_v1';
+    const SESSION_AUTH_KEY = 'prorab196_session_auth_v1';
 
     const GENERAL_NOTE_TAGS = [
       'Стесненные условия работы',
@@ -696,6 +733,126 @@
         }
       }
       return isLocalStorageAvailable;
+    }
+
+    /**
+     * Логика авторизации по ПИН-коду
+     */
+    function checkPinAuthOnStart() {
+      checkStorageAvailability();
+      const savedPin = localStorage.getItem(PIN_STORAGE_KEY);
+      const isAuth = sessionStorage.getItem(SESSION_AUTH_KEY);
+
+      const lockScreen = document.getElementById('pinLockScreen');
+      const titleEl = document.getElementById('pinScreenTitle');
+      const descEl = document.getElementById('pinScreenDesc');
+
+      if (!savedPin) {
+        // Первый вход — создаем пин-код
+        titleEl.textContent = 'Создание ПИН-кода';
+        descEl.textContent = 'Придумайте и введите ПИН-код (от 4 цифр) для защиты ваших объектов:';
+      } else {
+        titleEl.textContent = 'Личный кабинет прораба';
+        descEl.textContent = 'Введите ваш ПИН-код для доступа к объектам:';
+      }
+
+      if (isAuth === 'true') {
+        lockScreen.classList.add('hidden');
+        loadState();
+        renderAll();
+      } else {
+        lockScreen.classList.remove('hidden');
+        setTimeout(() => {
+          const inp = document.getElementById('pinCodeInput');
+          if (inp) inp.focus();
+        }, 100);
+      }
+    }
+
+    function handlePinSubmit(e) {
+      e.preventDefault();
+      const inputEl = document.getElementById('pinCodeInput');
+      const errEl = document.getElementById('pinErrorMsg');
+      const enteredPin = (inputEl.value || '').trim();
+
+      if (enteredPin.length < 4) {
+        errEl.textContent = 'ПИН-код должен содержать не менее 4 символов.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const savedPin = localStorage.getItem(PIN_STORAGE_KEY);
+
+      if (!savedPin) {
+        // Сохраняем новый пин
+        localStorage.setItem(PIN_STORAGE_KEY, enteredPin);
+        sessionStorage.setItem(SESSION_AUTH_KEY, 'true');
+        document.getElementById('pinLockScreen').classList.add('hidden');
+        showToast('ПИН-код успешно установлен!');
+        loadState();
+        renderAll();
+      } else {
+        if (enteredPin === savedPin) {
+          sessionStorage.setItem(SESSION_AUTH_KEY, 'true');
+          document.getElementById('pinLockScreen').classList.add('hidden');
+          inputEl.value = '';
+          errEl.classList.add('hidden');
+          loadState();
+          renderAll();
+        } else {
+          errEl.textContent = 'Неверный ПИН-код. Попробуйте еще раз.';
+          errEl.classList.remove('hidden');
+          inputEl.value = '';
+          inputEl.focus();
+        }
+      }
+    }
+
+    function lockApp() {
+      sessionStorage.removeItem(SESSION_AUTH_KEY);
+      const lockScreen = document.getElementById('pinLockScreen');
+      const titleEl = document.getElementById('pinScreenTitle');
+      const descEl = document.getElementById('pinScreenDesc');
+      titleEl.textContent = 'Личный кабинет заблокирован';
+      descEl.textContent = 'Введите ПИН-код для разблокировки:';
+      lockScreen.classList.remove('hidden');
+      setTimeout(() => {
+        const inp = document.getElementById('pinCodeInput');
+        if (inp) inp.focus();
+      }, 100);
+    }
+
+    function resetPinCode() {
+      openModal({
+        title: 'Сбросить ПИН-код?',
+        desc: 'Вы действительно хотите сбросить текущий ПИН-код? При следующем входе нужно будет задать новый.',
+        showInput: false,
+        confirmText: 'Сбросить',
+        onConfirm: () => {
+          localStorage.removeItem(PIN_STORAGE_KEY);
+          sessionStorage.removeItem(SESSION_AUTH_KEY);
+          showToast('ПИН-код сброшен');
+          checkPinAuthOnStart();
+        }
+      });
+    }
+
+    function changePinCode() {
+      openModal({
+        title: 'Смена ПИН-кода',
+        desc: 'Введите новый ПИН-код:',
+        showInput: true,
+        placeholder: 'Новый ПИН (от 4 знаков)',
+        confirmText: 'Изменить',
+        onConfirm: (newPin) => {
+          if (!newPin || newPin.length < 4) {
+            showToast('ПИН-код должен быть не менее 4 символов');
+            return;
+          }
+          localStorage.setItem(PIN_STORAGE_KEY, newPin);
+          showToast('ПИН-код успешно изменен!');
+        }
+      });
     }
 
     /**
@@ -1777,8 +1934,7 @@
     });
 
     window.onload = function () {
-      loadState();
-      renderAll();
+      checkPinAuthOnStart();
     };
   </script>
 </body>
