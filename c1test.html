@@ -37,7 +37,7 @@
   <!-- Встроенные резервные данные для автономного HTML-файла -->
   <script id="embeddedBackupData" type="application/json">null</script>
 
-  <!-- Экран блокировки / Входа по ПИН-коду (пароль 2556) -->
+  <!-- Экран блокировки / Входа по ПИН-коду (пароль 2556 скрыт) -->
   <div id="pinLockScreen" class="fixed inset-0 bg-[#1E3A5F] z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 shadow-2xl border border-slate-200 text-center">
       <div class="w-14 h-14 bg-blue-50 text-[#1E3A5F] rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xs">
@@ -54,7 +54,7 @@
             placeholder="••••"
             class="w-full px-4 py-3 text-center text-2xl tracking-widest rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none font-bold text-slate-900 bg-slate-50" />
         </div>
-        <div id="pinErrorMsg" class="text-xs text-rose-600 font-medium hidden">Неверный пароль. Попробуйте еще раз.</div>
+        <div id="pinErrorMsg" class="text-xs text-rose-600 font-medium hidden">Неверный пароль. Доступа нет.</div>
         <button type="submit" class="w-full py-3.5 rounded-xl bg-[#1E3A5F] hover:bg-blue-800 text-white font-bold text-sm transition shadow-md active:scale-98">
           Войти
         </button>
@@ -766,7 +766,7 @@
         loadState();
         renderAll();
       } else {
-        errEl.textContent = 'Неверный пароль. Введите 2556.';
+        errEl.textContent = 'Неверный пароль. Доступа нет.';
         errEl.classList.remove('hidden');
         inputEl.value = '';
         inputEl.focus();
