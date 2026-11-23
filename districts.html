@@ -19,8 +19,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta charset="UTF-8">
 
-<title>Районы работы в Екатеринбурге — ремонт квартир | ПРОРАБ.ЕКБ</title>
-<meta name="description" content="Выезд на бесплатный замер и ремонт квартир под ключ во всех районах Екатеринбурга: Академический, ВИЗ, Уралмаш, Ботанический, Центр, Автовокзал и другие. Частный прораб Александр.">
+<title>Районы и ЖК Екатеринбурга — ремонт квартир | ПРОРАБ.ЕКБ</title>
+<meta name="description" content="Выезд на бесплатный замер и ремонт квартир под ключ во всех районах и ЖК Екатеринбурга: Академический, ВИЗ, Уралмаш, Ботанический, Центр, Автовокзал и другие. Частный прораб Александр.">
 <link rel="canonical" href="https://prorab196.ru/districts.html">
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c2331'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial,Helvetica,sans-serif' font-size='38' font-weight='800' fill='%23f5a623' text-anchor='middle' dominant-baseline='middle'%3EП%3C/text%3E%3C/svg%3E">
@@ -37,7 +37,7 @@
     --text:#2b2f38;
     --muted:#6b7280;
     --border:#e5e7eb;
-    --radius:14px;
+    --radius:16px;
     --maxw:1140px;
     --wa:#25D366;
     --tg:#229ED9;
@@ -74,191 +74,413 @@
   .header-inner{display:flex;align-items:center;justify-content:space-between;gap:20px; position: relative;}
   .logo{font-weight:800;font-size:18px;letter-spacing:.3px;line-height:1.2; z-index: 2; flex-shrink: 0;}
   .logo a{color:#fff;display:block}
+  .logo a:hover{color:#fff}
   .logo .logo-dot{color:var(--accent)}
   .logo .logo-ekb{color:var(--accent);letter-spacing:.5px}
+  .logo a:hover .logo-ekb{color:#fff}
   .logo small{display:block;font-size:11px;font-weight:400;color:#b9c0cf}
 
   .header-right{display:flex;align-items:center;gap:20px; flex-shrink: 0;}
 
+  /* DESKTOP NAV */
   .nav-links{
     display:flex;flex-wrap:nowrap;align-items:center;gap:18px;
     font-size:13.5px;font-weight:600;white-space:nowrap;flex-shrink:0;
   }
-  .nav-links a{transition:0.2s;position:relative;}
+  .nav-links a{
+    white-space:nowrap;display:inline-block;transition:0.2s;position:relative;
+  }
   .nav-links a:hover, .nav-links a.active{color:var(--accent);}
+
+  /* DROPDOWN DISTRICTS (DESKTOP) */
+  .nav-item-dropdown{position:relative;flex-shrink:0;white-space:nowrap;}
+  .nav-item-dropdown > a{display:inline-flex;align-items:center;gap:6px;}
+  .nav-item-dropdown > a::after{
+    content:"";width:0;height:0;
+    border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:5px solid currentColor;opacity:.7;transition:transform .2s;
+  }
+  .nav-item-dropdown:hover > a::after,
+  .nav-item-dropdown.open > a::after{transform:rotate(180deg);}
+  .nav-item-dropdown > a:hover{color:var(--accent);}
+
+  .districts-dropdown{
+    position:absolute;top:calc(100% + 10px);left:50%;
+    transform:translateX(-50%) translateY(6px);
+    background:#1c2331;color:#fff;border-radius:12px;
+    box-shadow:0 16px 40px rgba(0,0,0,0.4);
+    border:1px solid rgba(255,255,255,0.12);
+    padding:8px;min-width:340px;
+    display:grid;grid-template-columns:repeat(2, minmax(160px, 1fr));gap:2px;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease, visibility .18s;
+    z-index:120;
+  }
+  .districts-dropdown::before{
+    content:"";position:absolute;top:-12px;left:0;right:0;height:12px;
+  }
+  .nav-item-dropdown:hover .districts-dropdown,
+  .nav-item-dropdown.open .districts-dropdown{
+    opacity:1;visibility:visible;pointer-events:auto;
+    transform:translateX(-50%) translateY(0);
+  }
+  .districts-dropdown a{
+    display:flex;align-items:center;
+    padding:9px 12px;border-radius:8px;
+    font-size:13.5px;font-weight:600;color:#cfd6e3;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    transition:background .18s, color .18s, transform .15s;
+    line-height:1.3;
+    border:1px solid transparent;
+  }
+  .districts-dropdown a:hover{
+    background:#252f42;
+    color:var(--accent);
+    border-color:rgba(245,166,35,0.5);
+    transform:translateX(3px);
+  }
 
   .header-contacts{display:flex;align-items:center;gap:14px;}
   .header-phone{font-weight:700;font-size:16px;white-space:nowrap;text-align:right}
   .header-phone small{display:block;font-weight:400;font-size:12px;color:#b9c0cf}
 
-  /* BURGER & MOBILE MENU */
-  .burger{display:none; flex-direction:column; gap:5px; cursor:pointer; z-index: 102; padding: 5px;}
-  .burger span{display:block; width:25px; height:2px; background:#fff; transition:0.3s;}
+  /* BURGER */
+  .burger{
+    display:none; flex-direction:column; gap:5px; cursor:pointer; z-index: 102; padding: 5px;
+  }
+  .burger span{
+    display:block; width:25px; height:2px; background:#fff; transition:0.3s;
+  }
   .burger.active span:nth-child(1){transform: translateY(7px) rotate(45deg);}
   .burger.active span:nth-child(2){opacity: 0;}
   .burger.active span:nth-child(3){transform: translateY(-7px) rotate(-45deg);}
 
+  /* MOBILE MENU */
   .mobile-menu-overlay {
     position: fixed;top:0;left:0;width:100%;height:100%;
-    background: rgba(0,0,0,0.5);z-index: 99;opacity:0;pointer-events:none;transition: opacity 0.3s ease;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;opacity:0;pointer-events:none;
+    transition: opacity 0.3s ease;
   }
   .mobile-menu-overlay.active {opacity: 1;pointer-events: auto;}
 
   .mobile-menu {
-    position: fixed;top:0;right:0;width: 88%;max-width: 360px;height: 100vh;
-    background: var(--dark);z-index: 101;display: flex;flex-direction: column;
-    padding: 20px;gap: 8px;transform: translateX(100%);
+    position: fixed;top:0;right:0;
+    width: 88%;max-width: 360px;height: 100vh;
+    background: var(--dark);
+    z-index: 101;
+    display: flex;flex-direction: column;
+    padding: 20px;gap: 8px;
+    transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -5px 0 30px rgba(0,0,0,0.5);overflow-y: auto;
+    box-shadow: -5px 0 30px rgba(0,0,0,0.5);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .mobile-menu.active {transform: translateX(0);}
-  .mobile-menu-close {
-    align-self: flex-end;width: 38px;height: 38px;border-radius: 50%;
-    background: rgba(255,255,255,0.08);color: #fff;display: flex;align-items: center;justify-content: center;
-    font-size: 24px;cursor: pointer;border: none;margin-bottom: 4px;
-  }
-  .mobile-menu .mobile-logo{
-    font-size:19px;font-weight:800;color:#fff;padding:4px 4px 12px;
-    border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px;
-  }
-  .mobile-menu .mobile-logo span{color:var(--accent)}
-  .mobile-menu .mobile-link{
-    font-size: 15px;font-weight: 600;color: #fff;padding: 11px 12px;border-radius: 10px;
-  }
-  .mobile-menu .mobile-link:hover{background: rgba(255,255,255,0.05);color: var(--accent);}
 
+  .mobile-menu-close {
+    align-self: flex-end;
+    width: 38px;height: 38px;border-radius: 50%;
+    background: rgba(255,255,255,0.08);color: #fff;
+    display: flex;align-items: center;justify-content: center;
+    font-size: 24px;cursor: pointer;
+    transition: 0.2s;margin-bottom: 4px;border: none;
+  }
+  .mobile-menu-close:hover {background: var(--accent);color: var(--dark);}
+
+  .mobile-menu .mobile-logo{
+    font-size:19px;font-weight:800;letter-spacing:.3px;
+    color:#fff;padding:4px 4px 12px;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    margin-bottom:6px;
+  }
+  .mobile-menu .mobile-logo .logo-dot{color:var(--accent)}
+  .mobile-menu .mobile-logo .logo-ekb{color:var(--accent);letter-spacing:.5px}
+
+  .mobile-menu > a,
+  .mobile-menu .mobile-link{
+    font-size: 15px;font-weight: 600;color: #fff;
+    padding: 11px 12px;border-radius: 10px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .mobile-menu > a:hover,
+  .mobile-menu .mobile-link:hover,
+  .mobile-menu .mobile-link:active{
+    background: rgba(255,255,255,0.05);
+    color: var(--accent);
+  }
+  .mobile-menu .mobile-link.active{
+    background: rgba(245,166,35,0.12);
+    color: var(--accent);
+  }
+
+  .mobile-menu .btn{
+    margin-top: 10px;color: var(--dark);
+    text-align: center;font-size: 15px;
+    padding: 13px 20px;border-radius: 10px;
+  }
+  .mobile-menu .btn:hover{color:var(--dark)}
+
+  .mobile-menu .phone-link {
+    text-align: center;margin-top: 4px;
+    font-size: 16px;font-weight: 700;color: #fff;
+    padding: 8px 0;
+  }
+
+  /* MOBILE SOCIALS */
+  .mobile-socials{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 6px;}
+  .mobile-socials .ms-btn{height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:.2s;}
+  .mobile-socials .ms-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .mobile-socials .ms-btn.wa{background:var(--wa)}
+  .mobile-socials .ms-btn.tg{background:var(--tg)}
+  .mobile-socials .ms-btn.max{background:var(--max)}
+  .mobile-socials .ms-btn svg{width:22px;height:22px;fill:#fff}
+  .mobile-socials .ms-btn img{width:24px;height:24px;object-fit:contain}
+
+  /* STATUS UNDER PHONE */
+  .mobile-phone-status-wrap{display: flex;flex-direction: column;gap: 8px;margin-top: 6px;}
+  .mobile-master-status{
+    display: flex;align-items: center;gap: 10px;padding: 10px 12px;
+    background: rgba(255,255,255,0.04);border: 1px solid rgba(255,255,255,0.10);border-radius: 12px;
+  }
+  .status-dot-pulse{
+    width: 10px;height: 10px;border-radius: 50%;background: #25D366;flex-shrink: 0;position: relative;
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);animation: statusPulse 1.8s infinite;
+  }
+  @keyframes statusPulse{
+    0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+  }
+  .status-text{display: flex;flex-direction: column;line-height: 1.3;}
+  .status-text b{font-size: 14px;font-weight: 700;color: #fff;}
+  .status-text span{font-size: 12px;color: #b9c0cf;}
+
+  /* HEADER ADAPTIVE */
   @media (max-width:1080px){
-    .nav-links, .header-contacts{ display: none; }
+    .nav-links, .header-contacts, .header-phone{ display: none; }
     .burger{ display: flex; }
-    .header-right{ margin-left: auto; }
-    header .logo small{ display: block !important; font-size: 10px; margin-top: 2px; }
+    .mobile-menu{ display: flex; }
+    .header-right{ gap: 0; margin-left: auto; }
+    header{ background-color: #1c2331; }
+    header .logo small {
+      display: block !important;
+      font-size: 10px;
+      color: #b9c0cf;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+
+    .mobile-menu{padding: 14px 14px 18px;gap: 4px;}
+    .mobile-menu-close{width: 34px;height: 34px;font-size: 20px;margin-bottom: 2px;}
+    .mobile-menu .mobile-logo{font-size: 18px;padding: 2px 4px 10px;margin-bottom: 4px;}
+    .mobile-menu > a, .mobile-menu .mobile-link{font-size: 15px;padding: 9px 12px;border-radius: 10px;}
+    .mobile-menu .btn{padding: 11px 18px;margin-top: 6px;}
+    .mobile-menu .phone-link{padding: 4px 0;margin-top: 2px;}
+    .mobile-socials{margin: 6px 0 2px;gap: 6px;}
+    .mobile-socials .ms-btn{height: 40px;}
   }
   @media (min-width:1081px){
     .mobile-menu, .mobile-menu-overlay{ display: none; }
+    .nav-links{ display: flex; }
+  }
+  @media (max-width: 1200px) and (min-width: 1081px){
+    .districts-dropdown{min-width: 250px;grid-template-columns: 1fr;}
+  }
+  @media (max-width: 360px){
+    .mobile-menu{padding: 12px 12px 16px;gap: 3px;}
+    .mobile-menu > a, .mobile-menu .mobile-link{font-size: 14px;padding: 8px 10px;}
   }
 
   /* HERO BANNER ДЛЯ РАЙОНОВ */
   .districts-hero{
-    background: linear-gradient(rgba(20,26,38,.82),rgba(20,26,38,.92)), url("images/hero-bg.jpg") center/cover no-repeat;
+    background: linear-gradient(135deg, #161c28 0%, #232d40 100%);
     color:#fff;
-    padding: 54px 0 60px;
+    padding: 46px 0 50px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
   }
   .breadcrumbs{
     display: inline-flex;align-items: center;gap: 8px;
-    background: rgba(255,255,255,0.08);border: 1px solid rgba(255,255,255,0.12);
-    padding: 6px 14px;border-radius: 8px;font-size: 13px;color: #b9c0cf;
-    margin-bottom: 20px;
+    font-size: 13px;color: #9ca3af;
+    margin-bottom: 16px;
   }
   .breadcrumbs a:hover{color: var(--accent);}
   .breadcrumbs span.current{color: #fff;font-weight: 600;}
 
   .districts-hero h1{
-    font-size: clamp(28px, 4.5vw, 42px);
-    font-weight: 800;line-height: 1.2;margin-bottom: 14px;max-width: 780px;
+    font-size: clamp(28px, 4.2vw, 40px);
+    font-weight: 800;line-height: 1.18;margin-bottom: 12px;max-width: 760px;
   }
   .districts-hero h1 em{color: var(--accent);font-style: normal;}
   .districts-hero p{
-    font-size: 17px;color: #cfd6e3;max-width: 640px;margin-bottom: 28px;
+    font-size: 16px;color: #cfd6e3;max-width: 640px;margin-bottom: 24px;
   }
 
-  /* ПОИСК ПО РАЙОНАМ */
+  /* ПОИСК ПО РАЙОНУ И ЖК */
   .district-search-wrap{
-    position: relative;max-width: 440px;
+    position: relative;max-width: 520px;
   }
   .district-search-wrap svg{
     position: absolute;left: 16px;top: 50%;transform: translateY(-50%);
     width: 18px;height: 18px;color: #6b7280;pointer-events: none;
   }
   .district-search{
-    width: 100%;padding: 14px 16px 14px 44px;
+    width: 100%;padding: 15px 42px 15px 44px;
     border-radius: 12px;border: 2px solid transparent;
     background: #fff;color: var(--dark);
     font-size: 15px;font-weight: 500;font-family: inherit;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.22);
     transition: border-color .2s;
   }
   .district-search:focus{outline: none;border-color: var(--accent);}
+  .search-clear{
+    position: absolute;right: 12px;top: 50%;transform: translateY(-50%);
+    width: 24px;height: 24px;border-radius: 50%;
+    background: #e5e7eb;color: var(--dark);border: none;
+    font-size: 16px;line-height: 1;cursor: pointer;
+    display: none;align-items: center;justify-content: center;
+  }
+  .search-clear.visible{display: flex;}
+  .search-hint{
+    font-size: 12.5px;color: #9ca3af;margin-top: 8px;
+  }
+  .search-hint span{color: #d1d5db;border-bottom: 1px dashed rgba(255,255,255,0.3);cursor: pointer;}
+  .search-hint span:hover{color: var(--accent);}
 
   /* ОСНОВНАЯ СЕКЦИЯ КАРТОЧЕК */
-  .districts-main{padding: 56px 0 80px;flex: 1;}
+  .districts-main{padding: 48px 0 80px;flex: 1;}
   .group-header{
     display: flex;align-items: center;justify-content: space-between;
-    margin-bottom: 22px;padding-bottom: 12px;border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;padding-bottom: 10px;border-bottom: 1px solid var(--border);
   }
-  .group-header h2{font-size: 22px;font-weight: 800;color: var(--dark);}
+  .group-header h2{font-size: 20px;font-weight: 800;color: var(--dark);}
   .group-header span{
-    font-size: 13px;font-weight: 700;color: var(--muted);
-    background: #fff;border: 1px solid var(--border);
-    padding: 4px 12px;border-radius: 100px;
+    font-size: 12.5px;font-weight: 700;color: var(--muted);
   }
 
+  /* 3 КОЛОНКИ */
   .districts-grid{
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
     margin-bottom: 48px;
   }
 
+  /* КАРТОЧКА С ВНУТРЕННИМ ФОТО-ПРОЯВЛЕНИЕМ И СПИСКОМ ЖК */
   .district-card{
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
+    border-radius: var(--radius);
+    padding: 20px 22px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 14px;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     position: relative;
     overflow: hidden;
+    isolation: isolate;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
   }
-  .district-card::before{
-    content: "";position: absolute;top: 0;left: 0;width: 4px;height: 100%;
-    background: var(--accent);opacity: 0;transition: opacity .2s;
+
+  .dc-bg{
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.06);
+    transition: opacity .35s ease, transform .5s ease;
+    z-index: -2;
   }
+  .dc-bg::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(20, 26, 38, 0.80) 0%, rgba(20, 26, 38, 0.92) 100%);
+  }
+
   .district-card:hover{
     transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(28, 35, 49, 0.08);
+    box-shadow: 0 18px 36px rgba(20, 26, 38, 0.16);
     border-color: var(--accent);
   }
-  .district-card:hover::before{opacity: 1;}
+  .district-card:hover .dc-bg{
+    opacity: 1;
+    transform: scale(1);
+  }
 
-  .dc-top{display: flex;align-items: flex-start;justify-content: space-between;gap: 10px;}
-  .dc-icon{
-    width: 38px;height: 38px;border-radius: 10px;
-    background: #fff8ec;color: var(--accent-dark);
-    display: flex;align-items: center;justify-content: center;flex-shrink: 0;
+  .dc-top{display: flex;align-items: center;justify-content: space-between;gap: 10px;margin-bottom: 8px;}
+  .dc-tag{
+    font-size: 11.5px;font-weight: 700;
+    color: var(--accent-dark);
+    background: #fff8ec;
+    padding: 3px 9px;border-radius: 6px;
+    transition: background .25s, color .25s;
   }
-  .dc-icon svg{width: 20px;height: 20px;}
-  .dc-badge{
-    font-size: 11px;font-weight: 700;color: var(--muted);
-    background: var(--bg-alt);padding: 3px 8px;border-radius: 6px;
+  .district-card:hover .dc-tag{
+    background: rgba(245, 166, 35, 0.2);
+    color: var(--accent);
   }
+
+  .dc-free{
+    font-size: 11.5px;font-weight: 600;color: var(--muted);
+    transition: color .25s;
+  }
+  .district-card:hover .dc-free{color: #d1d5db;}
 
   .dc-title{
-    font-size: 18px;font-weight: 800;color: var(--dark);line-height: 1.25;
+    font-size: 20px;font-weight: 800;color: var(--dark);line-height: 1.25;
+    transition: color .25s;
   }
-  .dc-desc{
-    font-size: 13px;color: var(--muted);line-height: 1.45;margin-top: 4px;
+  .district-card:hover .dc-title{color: #fff;}
+
+  /* СПИСОК ЖК ВНУТРИ КАРТОЧКИ */
+  .dc-jk{
+    font-size: 12.5px;
+    color: #4b5563;
+    line-height: 1.45;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e5e7eb;
+    transition: color .25s, border-color .25s;
+  }
+  .dc-jk b{
+    color: var(--dark);
+    font-weight: 700;
+    transition: color .25s;
+  }
+  .district-card:hover .dc-jk{
+    color: #d1d5db;
+    border-top-color: rgba(255,255,255,0.18);
+  }
+  .district-card:hover .dc-jk b{
+    color: #fff;
   }
 
   .dc-footer{
     display: flex;align-items: center;justify-content: space-between;
-    padding-top: 12px;border-top: 1px solid #f1f3f5;
-    font-size: 13px;font-weight: 700;color: var(--accent-dark);
+    padding-top: 10px;
+    border-top: 1px solid #f1f3f5;
+    font-size: 13.5px;font-weight: 700;color: var(--dark);
+    transition: border-color .25s, color .25s;
   }
-  .district-card:hover .dc-arrow{transform: translateX(4px);}
-  .dc-arrow{transition: transform .2s;font-size: 16px;}
-
-  /* ПЛАШКА ВНИЗУ (ЕСЛИ НЕ НАШЛИ РАЙОН) */
-  .cta-banner{
-    background: var(--dark);color: #fff;border-radius: 18px;
-    padding: 32px 36px;display: flex;align-items: center;
-    justify-content: space-between;gap: 24px;flex-wrap: wrap;
-    box-shadow: 0 16px 40px rgba(28,35,49,0.15);
+  .district-card:hover .dc-footer{
+    border-top-color: rgba(255,255,255,0.16);
+    color: var(--accent);
   }
-  .cta-banner h3{font-size: 22px;font-weight: 800;margin-bottom: 6px;}
-  .cta-banner p{font-size: 15px;color: #cfd6e3;max-width: 560px;}
+  .dc-arrow{
+    width: 28px;height: 28px;border-radius: 50%;
+    background: var(--bg-alt);
+    display: inline-flex;align-items: center;justify-content: center;
+    font-size: 15px;
+    transition: background .25s, color .25s, transform .25s;
+  }
+  .district-card:hover .dc-arrow{
+    background: var(--accent);
+    color: var(--dark);
+    transform: translateX(3px);
+  }
 
   .empty-search{
     display: none;text-align: center;padding: 40px 20px;
@@ -267,28 +489,299 @@
   }
   .empty-search p{color: var(--muted);margin-bottom: 14px;}
 
-  @media (max-width: 1024px){
-    .districts-grid{grid-template-columns: repeat(3, 1fr);}
+  /* ПЛАШКА ВНИЗУ */
+  .cta-banner{
+    background: var(--dark);color: #fff;border-radius: 18px;
+    padding: 32px 36px;display: flex;align-items: center;
+    justify-content: space-between;gap: 24px;flex-wrap: wrap;
+    box-shadow: 0 16px 40px rgba(28,35,49,0.15);
+    margin-bottom: 56px;
   }
-  @media (max-width: 768px){
-    .districts-grid{grid-template-columns: repeat(2, 1fr);gap: 12px;}
-    .district-card{padding: 16px;}
-    .dc-title{font-size: 16px;}
+  .cta-banner h3{font-size: 22px;font-weight: 800;margin-bottom: 6px;}
+  .cta-banner p{font-size: 15px;color: #cfd6e3;max-width: 560px;}
+
+  /* ===== ИНТЕРАКТИВНАЯ КАРТА МИКРОРАЙОНОВ И РАЙОНОВ ЕКАТЕРИНБУРГА ===== */
+  .ekb-map-section{
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 12px 32px rgba(28,35,49,0.06);
+  }
+  .ekb-map-head{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .ekb-map-head h2{
+    font-size: 24px;font-weight: 800;color: var(--dark);margin-bottom: 4px;
+  }
+  .ekb-map-head p{
+    font-size: 14.5px;color: var(--muted);
+  }
+
+  /* Быстрые кнопки выбора района прямо над картой */
+  .map-quick-tabs{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .map-tab{
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .18s ease;
+  }
+  .map-tab:hover{
+    border-color: var(--accent);
+    color: var(--dark);
+  }
+  .map-tab.active{
+    background: var(--dark);
+    border-color: var(--dark);
+    color: var(--accent);
+  }
+
+  .ekb-map-layout{
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  /* Контейнер квадратной карты микрорайонов */
+  .ekb-micros-canvas{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    background: #dce8d4;
+  }
+  .ekb-micros-canvas img.bg-ref{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .ekb-micros-canvas svg{
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Подложка ландшафта */
+  .m-bg{fill: #dce8d4;}
+  .m-road-grid{fill: none; stroke: rgba(255,255,255,0.45); stroke-width: 1.5; pointer-events: none;}
+  .m-water{fill: #98cde6; stroke: #7dbad9; stroke-width: 1; pointer-events: none;}
+
+  /* Полигоны микрорайонов */
+  .micro-poly{
+    stroke: #3b424c;
+    stroke-width: 1.3;
+    stroke-linejoin: round;
+    cursor: pointer;
+    opacity: 0.78;
+    transition: opacity .18s ease, stroke .18s ease, stroke-width .18s ease, filter .18s ease;
+  }
+  .micro-poly:hover{
+    opacity: 0.96;
+    stroke: #111827;
+    stroke-width: 2.4;
+    filter: brightness(1.06);
+  }
+  .ekb-micros-canvas.has-active .micro-poly{
+    opacity: 0.42;
+  }
+  .ekb-micros-canvas.has-active .micro-poly.in-district{
+    opacity: 0.90;
+    stroke: #1c2331;
+    stroke-width: 2;
+  }
+  .ekb-micros-canvas.has-active .micro-poly.is-hovered{
+    opacity: 1;
+    stroke: #f5a623;
+    stroke-width: 3;
+  }
+
+  /* Подписи микрорайонов прямо на полигонах */
+  .micro-lbl{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    fill: #1c2331;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: rgba(255,255,255,0.82);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+  }
+  .micro-lbl.sm{font-size: 9px;}
+  .micro-lbl.lg{font-size: 13.5px; font-weight: 800;}
+
+  /* ИНФО-ПАНЕЛЬ СПРАВА ОТ КАРТЫ */
+  .map-info-card{
+    background: var(--dark);
+    color: #fff;
+    border-radius: 16px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .mic-badge{
+    display: inline-block;
+    background: rgba(245,166,35,0.18);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .map-info-card h3{
+    font-size: 22px;font-weight: 800;line-height: 1.25;margin-bottom: 6px;
+  }
+  .mic-selected-micro{
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 14px;
+    min-height: 20px;
+  }
+  .mic-subtitle{
+    font-size: 12px;color: #9ca3af;text-transform: uppercase;letter-spacing: .5px;font-weight: 700;margin-bottom: 8px;
+  }
+  .mic-micros{
+    display: flex;flex-wrap: wrap;gap: 6px;
+    margin-bottom: 14px;
+  }
+  .mic-micros span{
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #f3f4f6;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 7px;
+    transition: all .15s;
+  }
+  .mic-micros span.active-chip{
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--dark);
+    font-weight: 700;
+  }
+  .mic-note{
+    font-size: 13px;
+    color: #b9c0cf;
+    line-height: 1.45;
+  }
+  .mic-actions{
+    padding-top: 16px;border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .mic-actions .btn{
+    padding: 12px 20px;font-size: 14px;width: 100%;
+  }
+
+  @media (max-width: 960px){
+    .districts-grid{grid-template-columns: repeat(2, 1fr);gap: 14px;}
+    .ekb-map-layout{grid-template-columns: 1fr;}
+  }
+  @media (max-width: 600px){
+    .wrap{padding-left: 14px !important;padding-right: 14px !important;}
+    .districts-grid{grid-template-columns: 1fr;gap: 12px;}
+    .district-card{padding: 18px;}
+    .dc-title{font-size: 18px;}
     .cta-banner{padding: 24px 20px;}
     .cta-banner .btn{width: 100%;}
-  }
-  @media (max-width: 480px){
-    .districts-grid{grid-template-columns: 1fr;}
+    .ekb-map-section{padding: 20px 14px;}
+    .map-info-card{padding: 20px;}
   }
 
   /* FOOTER */
   footer{background:var(--dark);color:#b9c0cf;padding:46px 0 30px;font-size:14px;margin-top: auto;}
   .footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px;margin-bottom:30px}
   .footer-grid h4{color:#fff;font-size:15px;margin-bottom:12px}
+  .footer-grid h4 a{color:#fff}
   .footer-grid h4 .logo-dot, .footer-grid h4 .logo-ekb{color:var(--accent)}
   .footer-grid p{font-size:13.5px;line-height:1.7}
   .footer-grid a:hover{color:var(--accent)}
+  .footer-socials{display:flex;gap:10px;margin-top:14px}
+  .footer-socials .icon-btn{width:36px;height:36px; display: flex; align-items: center; justify-content: center; border-radius: 50%;}
+  .footer-socials .icon-btn svg,.footer-socials .icon-btn img {width: 20px;height: 20px;object-fit: contain;fill: #fff;}
+  .footer-socials .wa{background:var(--wa)}
+  .footer-socials .tg{background:var(--tg)}
+  .footer-socials .max{background:var(--max)}
   .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;font-size:12.5px;color:#8b93a3}
+  .footer-bottom a{color:#b9c0cf}
+  .footer-bottom a:hover{color:var(--accent)}
+
+  /* FLOATING CONTACTS */
+  .float-contacts{position:fixed;right:16px;bottom:16px;z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+  .float-contacts .main-btn{width:60px;height:60px;border-radius:50%;background:var(--accent);color:var(--dark);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(245,166,35,.4);transition:.3s;cursor:pointer;border: none;}
+  .float-contacts .main-btn svg{width:28px;height:28px;fill:var(--dark);}
+  .float-contacts .main-btn.open{transform:rotate(45deg);}
+  
+  .float-contacts .sub-menu{display:flex;flex-direction:column;gap:10px;opacity:0; pointer-events:none; transform:translateY(10px);transition:.3s; margin-bottom: 5px;}
+  .float-contacts .sub-menu.active{opacity:1; pointer-events:all; transform:translateY(0);}
+
+  .float-contacts .sub-menu a{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2);transition:.2s;}
+  .float-contacts .sub-menu a:hover{transform:scale(1.05);}
+  .float-contacts .sub-menu a svg {width:22px;height:22px;fill:#fff;}
+  .float-contacts .sub-menu a img {width: 26px;height: 26px;object-fit: contain;}
+  
+  .float-contacts .wa{background:var(--wa)}
+  .float-contacts .tg{background:var(--tg)}
+  .float-contacts .max{background:var(--max)}
+  .float-contacts .call{background:#333;color:#fff}
+  .float-contacts .call svg{fill:#fff}
+
+  @media(min-width:1081px){
+    .float-contacts { right: 24px; bottom: 24px; gap: 12px; }
+    .float-contacts .main-btn { width: 70px; height: 70px; box-shadow: 0 10px 30px rgba(245,166,35,.5); }
+    .float-contacts .main-btn svg { width: 32px; height: 32px; }
+    .float-contacts .sub-menu { gap: 12px; }
+    .float-contacts .sub-menu a { width: 56px; height: 56px; box-shadow: 0 6px 16px rgba(0,0,0,.25); }
+    .float-contacts .sub-menu a svg { width: 24px; height: 24px; }
+    .float-contacts .sub-menu a img { width: 30px; height: 30px; }
+  }
+  
+ /* HERO BANNER ДЛЯ РАЙОНОВ (КАК НА ГЛАВНОЙ) */
+  .districts-hero{
+    position: relative;
+    background: #161c28 url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    color:#fff;
+    padding: 56px 0 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    isolation: isolate;
+  }
+  .districts-hero::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(22, 28, 40, 0.90) 0%, rgba(35, 45, 64, 0.82) 100%);
+    z-index: -1;
+  } 
 </style>
 </head>
 <body>
@@ -306,7 +799,29 @@
     <nav class="nav-links">
       <a href="index.html#about">Обо мне</a>
       <a href="index.html#how">Как работаю</a>
-      <a href="districts.html" class="active">Районы</a>
+
+      <div class="nav-item-dropdown" id="districtsNav">
+        <a href="districts.html" class="active" aria-haspopup="true" aria-expanded="false">Районы</a>
+        <div class="districts-dropdown" role="menu">
+          <a href="districts/akademicheskiy.html" role="menuitem">Академический</a>
+          <a href="districts/verh-isetskiy.html" role="menuitem">Верх-Исетский</a>
+          <a href="districts/zheleznodorozhnyy.html" role="menuitem">Железнодорожный</a>
+          <a href="districts/kirovskiy.html" role="menuitem">Кировский</a>
+          <a href="districts/leninskiy.html" role="menuitem">Ленинский</a>
+          <a href="districts/oktyabrskiy.html" role="menuitem">Октябрьский</a>
+          <a href="districts/ordzhonikidzevskiy.html" role="menuitem">Орджоникидзевский</a>
+          <a href="districts/chkalovskiy.html" role="menuitem">Чкаловский</a>
+          <a href="districts/avtovokzal.html" role="menuitem">Автовокзал</a>
+          <a href="districts/botanicheskiy.html" role="menuitem">Ботанический</a>
+          <a href="districts/viz.html" role="menuitem">ВИЗ</a>
+          <a href="districts/pionerskiy.html" role="menuitem">Пионерский</a>
+          <a href="districts/uralmash.html" role="menuitem">Уралмаш</a>
+          <a href="districts/yug-centr.html" role="menuitem">Юг-Центр</a>
+          <a href="districts/centr.html" role="menuitem">Центр</a>
+          <a href="districts/shirokaya-rechka.html" role="menuitem">Широкая Речка</a>
+        </div>
+      </div>
+
       <a href="index.html#portfolio">Примеры работ</a>
       <a href="index.html#reviews">Отзывы</a>
       <a href="index.html#guarantee">Гарантия</a>
@@ -326,16 +841,43 @@
 </header>
 
 <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
 <div class="mobile-menu" id="mobileMenu">
   <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Закрыть меню">&times;</button>
-  <a href="index.html" class="mobile-logo mobile-link">ПРОРАБ<span>.ЕКБ</span></a>
+  <a href="index.html" class="mobile-logo mobile-link">
+    ПРОРАБ<span class="logo-dot">.</span><span class="logo-ekb">ЕКБ</span>
+  </a>
   <a href="index.html#about" class="mobile-link">Обо мне</a>
   <a href="index.html#how" class="mobile-link">Как работаю</a>
-  <a href="districts.html" class="mobile-link" style="color:var(--accent);">Районы Екатеринбурга</a>
+  <a href="districts.html" class="mobile-link active">Районы Екатеринбурга</a>
   <a href="index.html#portfolio" class="mobile-link">Примеры работ</a>
   <a href="index.html#reviews" class="mobile-link">Отзывы</a>
   <a href="index.html#guarantee" class="mobile-link">Гарантия</a>
-  <a href="index.html#form" class="btn mobile-link" style="margin-top:12px;">Вызвать на замер</a>
+
+  <div class="mobile-socials">
+    <a href="https://wa.me/79221230234" class="ms-btn wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.93 1.35-.53.05-1.02.24-3.45-.72-2.93-1.15-4.8-4.15-4.95-4.34-.15-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.82 2 .89 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.14.17-.3.37-.43.5-.14.14-.29.29-.12.57.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.45.29.14.46.12.63-.07.17-.19.73-.85.93-1.14.19-.29.39-.24.66-.14.27.1 1.69.8 1.98.94.29.14.48.22.55.34.07.12.07.68-.17 1.36z"/></svg>
+    </a>
+    <a href="https://t.me/The_fabo" class="ms-btn tg" target="_blank" rel="noopener" aria-label="Telegram">
+      <svg viewBox="0 0 24 24"><path d="M9.04 15.47l-.38 5.34c.54 0 .78-.23 1.06-.5l2.55-2.45 5.28 3.87c.97.53 1.66.25 1.92-.9l3.48-16.32.01-.01c.31-1.43-.52-1.99-1.47-1.63L1.6 9.9C.2 10.45.22 11.25 1.36 11.6l5.11 1.59L18.3 6.1c.56-.37 1.07-.16.65.21L9.04 15.47z"/></svg>
+    </a>
+    <a href="https://max.ru/u/f9LHodD0cOIla8fwUzY-qb4nxfN2PkkKd1sPPFidHCv_dgxbCTTdMzdyMBU" class="ms-btn max" target="_blank" rel="noopener" aria-label="MAX">
+      <img src="images/max-icon.png" alt="MAX">
+    </a>
+  </div>
+
+  <a href="index.html#form" class="btn mobile-link" style="color:var(--dark);">Вызвать на замер</a>
+  <div class="mobile-phone-status-wrap">
+    <a href="tel:+79221230234" class="phone-link mobile-link">+7 (922) 123-02-34</a>
+
+    <div class="mobile-master-status">
+      <span class="status-dot-pulse" aria-hidden="true"></span>
+      <div class="status-text">
+        <b>Александр · прораб</b>
+        <span>Ежедневно с 9:00 до 21:00</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== HERO ===== -->
@@ -347,12 +889,16 @@
       <span class="current">Районы Екатеринбурга</span>
     </nav>
 
-    <h1>Ремонт квартир во всех <em>районах Екатеринбурга</em></h1>
-    <p>Выберите ваш район, чтобы узнать условия работы, сроки выезда на бесплатный замер и посмотреть расценки.</p>
+    <h1>Ремонт квартир во всех <em>районах и ЖК Екатеринбурга</em></h1>
+    <p>Введите название района или вашего жилого комплекса — покажу условия работы и выеду на бесплатный замер.</p>
 
     <div class="district-search-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="districtSearch" class="district-search" placeholder="Быстрый поиск района (например, ВИЗ или Академ)...">
+      <input type="text" id="districtSearch" class="district-search" placeholder="Поиск по району или ЖК (например, Макаровский, Академ, Клевер)...">
+      <button type="button" id="searchClear" class="search-clear" aria-label="Очистить">&times;</button>
+    </div>
+    <div class="search-hint">
+      Попробуйте: <span data-quick="Близкий">Близкий</span>, <span data-quick="Макаровский">Макаровский</span>, <span data-quick="Клевер Парк">Клевер Парк</span>, <span data-quick="Солнечный">Солнечный</span>, <span data-quick="Изумрудный бор">Изумрудный бор</span>
     </div>
   </div>
 </section>
@@ -362,112 +908,120 @@
   <div class="wrap">
 
     <div class="empty-search" id="emptySearch">
-      <p>По вашему запросу район не найден, но я выезжаю по всему Екатеринбургу и ближайшему пригороду.</p>
+      <p>По вашему запросу район или ЖК не найден, но я работаю по всему Екатеринбургу и ближайшему пригороду.</p>
       <a href="index.html#form" class="btn">Заказать бесплатный замер</a>
     </div>
 
-    <!-- Группа 1: Административные районы (8) -->
+<!-- Группа 1: Административные районы (8) -->
     <div class="district-group" data-group>
       <div class="group-header">
         <h2>Административные районы</h2>
-        <span>8 районов</span>
+        <span>Выезд на замер — 0 ₽</span>
       </div>
 
       <div class="districts-grid">
-        <a href="districts/akademicheskiy.html" class="district-card" data-name="академический">
+        <a href="districts/akademicheskiy.html" class="district-card" data-search="академический преображенский близкий первый квартал сахарова де геннина краснолесье спутник-1 юг-центр академик">
+          <div class="dc-bg" style="background-image:url('districts/images/akademicheskiy.webp')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">Новостройки</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Академический</h3>
-            <p class="dc-desc">Ремонт в новостройках и сдача под ключ</p>
+            <div class="dc-jk"><b>ЖК:</b> Преображенский, Близкий, Первый Академ, Сахарова, Спутник-1, кварталы на Де Геннина</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/verh-isetskiy.html" class="district-card" data-name="верх-исетский">
+        <a href="districts/verh-isetskiy.html" class="district-card" data-search="верх-исетский нагорный репин парк белорецкий татлин русь московский квартал фламинго виз">
+          <div class="dc-bg" style="background-image:url('districts/images/verh-isetskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">ЖК и вторичка</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Верх-Исетский</h3>
-            <p class="dc-desc">Капитальный и дизайнерский ремонт</p>
+            <div class="dc-jk"><b>ЖК:</b> Нагорный, Репин Парк, Белорецкий, Татлин, Русь, Московский квартал, Фламинго</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/zheleznodorozhnyy.html" class="district-card" data-name="железнодорожный">
+        <a href="districts/zheleznodorozhnyy.html" class="district-card" data-search="железнодорожный макаровский ольховский парк мельковский стрелка семь ключей сортировка вокзальный">
+          <div class="dc-bg" style="background-image:url('districts/images/zheleznodorozhnyy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">Вторичка и ЖК</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Железнодорожный</h3>
-            <p class="dc-desc">Вторичный фонд и современные ЖК</p>
+            <div class="dc-jk"><b>ЖК:</b> Макаровский, Ольховский Парк, Мельковский, Стрелка, Семь Ключей, Сортировка</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/kirovskiy.html" class="district-card" data-name="кировский">
+        <a href="districts/kirovskiy.html" class="district-card" data-search="кировский университетский каменный ручей рассветный коперник астон.сезон жби втузгородок шарташ">
+          <div class="dc-bg" style="background-image:url('districts/images/kirovskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">Комплексный</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Кировский</h3>
-            <p class="dc-desc">Комплексный ремонт квартир и студий</p>
+            <div class="dc-jk"><b>ЖК:</b> Университетский, Каменный ручей, Рассветный, Коперник, Астон.Сезон, ЖБИ, Втузгородок</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/leninskiy.html" class="district-card" data-name="ленинский">
+        <a href="districts/leninskiy.html" class="district-card" data-search="ленинский форум-сити александровский сад парус ривьера бажовский юго-западный центр">
+          <div class="dc-bg" style="background-image:url('districts/images/leninskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">Центр и ЮЗ</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Ленинский</h3>
-            <p class="dc-desc">От косметического до ремонта под ключ</p>
+            <div class="dc-jk"><b>ЖК:</b> Форум-Сити, Александровский сад, Парус, Ривьера, Бажовский, Юго-Западный</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/oktyabrskiy.html" class="district-card" data-name="октябрьский">
+        <a href="districts/oktyabrskiy.html" class="district-card" data-search="октябрьский клевер парк парковый квартал бажовский синие камни светлый кольцово лечебный">
+          <div class="dc-bg" style="background-image:url('districts/images/oktyabrskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">ЖК и вторичка</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Октябрьский</h3>
-            <p class="dc-desc">Замер, смета и поэтапная оплата</p>
+            <div class="dc-jk"><b>ЖК:</b> Клевер Парк, Парковый квартал, Светлый, Синие Камни, Бажовский, Кольцово</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/ordzhonikidzevskiy.html" class="district-card" data-name="орджоникидзевский">
+        <a href="districts/ordzhonikidzevskiy.html" class="district-card" data-search="орджоникидзевский изумрудный бор северное сияние калиновский веер парк уралмаш эльмаш">
+          <div class="dc-bg" style="background-image:url('districts/images/ordzhonikidzevskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">Сталинки и ЖК</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Орджоникидзевский</h3>
-            <p class="dc-desc">Черновые и чистовые работы с гарантией</p>
+            <div class="dc-jk"><b>ЖК:</b> Изумрудный бор, Северное сияние, Калиновский, кварталы у Веер Молла, Эльмаш</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/chkalovskiy.html" class="district-card" data-name="чкаловский">
+        <a href="districts/chkalovskiy.html" class="district-card" data-search="чкаловский солнечный просторы уктусский ботанический сад южные кварталы химмаш елизавет">
+          <div class="dc-bg" style="background-image:url('districts/images/chkalovskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-              <span class="dc-badge">Выезд 0 ₽</span>
+              <span class="dc-tag">Новостройки</span>
+              <span class="dc-free">Выезд 0 ₽</span>
             </div>
             <h3 class="dc-title">Чкаловский</h3>
-            <p class="dc-desc">Проверенные мастера и скидки на материалы</p>
+            <div class="dc-jk"><b>ЖК:</b> Солнечный, Просторы, Уктусский, Ботанический сад, Южные кварталы, Химмаш</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
       </div>
     </div>
@@ -476,104 +1030,112 @@
     <div class="district-group" data-group>
       <div class="group-header">
         <h2>Микрорайоны Екатеринбурга</h2>
-        <span>8 микрорайонов</span>
+        <span>Личный контроль прораба</span>
       </div>
 
       <div class="districts-grid">
-        <a href="districts/avtovokzal.html" class="district-card" data-name="автовокзал">
+        <a href="districts/avtovokzal.html" class="district-card" data-search="автовокзал триумф дабл ю w артек чемпион парк южный автовокзал">
+          <div class="dc-bg" style="background-image:url('districts/images/avtovokzal.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Бизнес-ЖК</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">Автовокзал</h3>
-            <p class="dc-desc">Ремонт квартир в новостройках и вторичке</p>
+            <div class="dc-jk"><b>ЖК:</b> Триумф, Дабл Ю (W), Артек, Чемпион Парк, дома на Белинского и Степана Разина</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/botanicheskiy.html" class="district-card" data-name="ботанический">
+        <a href="districts/botanicheskiy.html" class="district-card" data-search="ботанический ботаника южный сад абрикос родонитовая шварца крестинского">
+          <div class="dc-bg" style="background-image:url('districts/images/botanicheskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Вторичный фонд</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">Ботанический</h3>
-            <p class="dc-desc">От косметического обновления до капитального</p>
+            <div class="dc-jk"><b>ЖК и дома:</b> Южный сад, Абрикос, кварталы на Родонитовой, Шварца и Крестинского</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/viz.html" class="district-card" data-name="виз">
+        <a href="districts/viz.html" class="district-card" data-search="виз зеленый остров правобережный адмиральский западный крауля татищева">
+          <div class="dc-bg" style="background-image:url('districts/images/viz.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Новостройки</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">ВИЗ</h3>
-            <p class="dc-desc">Ремонт под ключ с ежедневным фотоотчётом</p>
+            <div class="dc-jk"><b>ЖК:</b> Зелёный остров, Правобережный, Адмиральский, Западный, кварталы на Татищева</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/pionerskiy.html" class="district-card" data-name="пионерский">
+        <a href="districts/pionerskiy.html" class="district-card" data-search="пионерский основе цветной бульвар брусника пионер уральская блюхера">
+          <div class="dc-bg" style="background-image:url('districts/images/pionerskiy.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Вторичка и ЖК</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">Пионерский</h3>
-            <p class="dc-desc">Замена электрики, сантехники и чистовая отделка</p>
+            <div class="dc-jk"><b>ЖК:</b> Основа, Цветной бульвар, Пионер, дома на Блюхера, Уральской и Советской</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/uralmash.html" class="district-card" data-name="уралмаш">
+        <a href="districts/uralmash.html" class="district-card" data-search="уралмаш притяжение уральский калиновский коперник орджоникидзе победы">
+          <div class="dc-bg" style="background-image:url('districts/images/uralmash.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Сталинки и ЖК</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">Уралмаш</h3>
-            <p class="dc-desc">Ремонт в сталинках, хрущёвках и новых ЖК</p>
+            <div class="dc-jk"><b>ЖК и дома:</b> Притяжение, Уральский, кварталы на проспекте Орджоникидзе и бульваре Культуры</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/yug-centr.html" class="district-card" data-name="юг-центр">
+        <a href="districts/yug-centr.html" class="district-card" data-search="юг-центр автовокзал парк столиц артек iсеть фрунзе щорса степана разина">
+          <div class="dc-bg" style="background-image:url('districts/images/yug-centr.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Новостройки</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">Юг-Центр</h3>
-            <p class="dc-desc">Дизайнерский и капитальный ремонт квартир</p>
+            <div class="dc-jk"><b>ЖК:</b> Парк Столиц, ISet (Айсеть), Артек, дома на Фрунзе, Щорса и Степана Разина</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/centr.html" class="district-card" data-name="центр">
+        <a href="districts/centr.html" class="district-card" data-search="центр кандинский тихвин екатерининский парк ленина мамина-сибиряка плотинка">
+          <div class="dc-bg" style="background-image:url('districts/images/centr.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Центр города</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">Центр</h3>
-            <p class="dc-desc">Личный контроль прораба и договор с гарантией</p>
+            <div class="dc-jk"><b>ЖК:</b> Кандинский, Тихвинъ, Екатерининский парк, клубные дома на Ленина и Мамина-Сибиряка</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
 
-        <a href="districts/shirokaya-rechka.html" class="district-card" data-name="широкая речка">
+        <a href="districts/shirokaya-rechka.html" class="district-card" data-search="широкая речка мичуринский на речке смородина хрустальногорский светояр">
+          <div class="dc-bg" style="background-image:url('districts/images/shirokaya-rechka.jpg')"></div>
           <div>
             <div class="dc-top">
-              <div class="dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-              <span class="dc-badge">Микрорайон</span>
+              <span class="dc-tag">Новостройки</span>
+              <span class="dc-free">Микрорайон</span>
             </div>
             <h3 class="dc-title">Широкая Речка</h3>
-            <p class="dc-desc">Ремонт новостроек «под ключ» по фиксированной смете</p>
+            <div class="dc-jk"><b>ЖК:</b> Мичуринский, На Речке, Смородина, Хрустальногорский, Светояр</div>
           </div>
-          <div class="dc-footer"><span>Подробнее</span><span class="dc-arrow">→</span></div>
+          <div class="dc-footer"><span>Условия и цены</span><span class="dc-arrow">→</span></div>
         </a>
       </div>
     </div>
@@ -587,6 +1149,204 @@
       <a href="index.html#form" class="btn">Вызвать на замер</a>
     </div>
 
+    <!-- ===== ИНТЕРАКТИВНАЯ КАРТА МИКРОРАЙОНОВ ЕКАТЕРИНБУРГА ===== -->
+    <section class="ekb-map-section" aria-label="Интерактивная карта микрорайонов Екатеринбурга">
+      <div class="ekb-map-head">
+        <div>
+          <h2>Карта районов и микрорайонов Екатеринбурга</h2>
+          <p>Наведите на любой микрорайон на карте или выберите район сверху — покажу все входящие кварталы.</p>
+        </div>
+      </div>
+
+      <!-- Быстрые вкладки 8 административных районов -->
+      <div class="map-quick-tabs" id="mapQuickTabs">
+        <button type="button" class="map-tab active" data-district="ordzhonikidzevskiy">Орджоникидзевский</button>
+        <button type="button" class="map-tab" data-district="zheleznodorozhnyy">Железнодорожный</button>
+        <button type="button" class="map-tab" data-district="kirovskiy">Кировский</button>
+        <button type="button" class="map-tab" data-district="verh-isetskiy">Верх-Исетский</button>
+        <button type="button" class="map-tab" data-district="leninskiy">Ленинский</button>
+        <button type="button" class="map-tab" data-district="akademicheskiy">Академический</button>
+        <button type="button" class="map-tab" data-district="oktyabrskiy">Октябрьский</button>
+        <button type="button" class="map-tab" data-district="chkalovskiy">Чкаловский</button>
+      </div>
+
+      <div class="ekb-map-layout">
+        <div class="ekb-micros-canvas has-active" id="ekbMicrosCanvas">
+          <img class="bg-ref" src="images/ekb-micros-map.jpg" alt="" onerror="this.style.display='none'">
+
+          <svg viewBox="0 0 1000 1000" role="img" aria-label="Карта микрорайонов Екатеринбурга">
+            <rect class="m-bg" x="0" y="0" width="1000" height="1000"/>
+            <path class="m-road-grid" d="M0,200 L1000,200 M0,400 L1000,400 M0,600 L1000,600 M0,800 L1000,800 M200,0 L200,1000 M400,0 L400,1000 M600,0 L600,1000 M800,0 L800,1000"/>
+            <!-- Верх-Исетский пруд -->
+            <path class="m-water" d="M0,315 Q95,310 175,355 Q235,382 225,425 Q180,455 125,432 Q55,418 0,395 Z"/>
+            <!-- Городской пруд и река Исеть -->
+            <path class="m-water" d="M446,385 L466,385 L468,452 L448,452 Z"/>
+            <path class="m-water" d="M456,452 Q475,540 535,625 Q615,725 695,845 Q735,915 775,1000 L752,1000 Q715,920 676,852 Q595,732 518,632 Q462,545 448,452 Z"/>
+            <!-- Озеро Шарташ -->
+            <path class="m-water" d="M735,235 Q795,222 818,275 Q815,342 765,345 Q718,332 722,275 Z"/>
+
+            <!-- ОРДЖОНИКИДЗЕВСКИЙ -->
+            <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Кирпичный" fill="#b88456" d="M428,32 L462,38 L422,126 L385,120 Z"/>
+            <text class="micro-lbl sm" x="422" y="84" transform="rotate(-62 422 84)">Кирпичный</text>
+            <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Веер" fill="#77b865" d="M462,38 L528,28 L572,72 L538,118 L442,88 Z"/>
+            <text class="micro-lbl" x="506" y="72">Веер</text>
+            <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Калиновский лесопарк" fill="#6b7f76" d="M572,72 L624,52 L636,112 L614,138 L564,126 Z"/>
+            <text class="micro-lbl sm" x="602" y="96">Калиновский</text>
+            <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Белая Башня" fill="#c27a56" d="M352,135 L395,142 L356,216 L325,204 Z"/>
+            <text class="micro-lbl sm" x="358" y="178" transform="rotate(-62 358 178)">Белая Башня</text>
+            <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Уралмаш" fill="#ef7d68" d="M395,142 L442,88 L522,115 L515,212 L365,204 Z"/>
+            <text class="micro-lbl lg" x="454" y="156">Уралмаш</text>
+            <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Эльмаш" fill="#6889e8" d="M522,115 L614,138 L618,218 L515,248 L515,212 Z"/>
+            <text class="micro-lbl lg" x="562" y="178">Эльмаш</text>
+
+            <!-- ЖЕЛЕЗНОДОРОЖНЫЙ -->
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Семь Ключей" fill="#89d478" d="M84,136 L142,126 L204,168 L168,225 L92,165 Z"/>
+            <text class="micro-lbl" x="148" y="172">Семь Ключей</text>
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Сортировка" fill="#8e79a8" d="M168,225 L204,168 L272,216 L246,282 L156,258 Z"/>
+            <text class="micro-lbl" x="214" y="224">Сортировка</text>
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Таганка" fill="#f272d8" d="M246,282 L316,246 L342,272 L318,326 L252,306 Z"/>
+            <text class="micro-lbl" x="296" y="286">Таганка</text>
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Пехота" fill="#f2b263" d="M318,326 L342,272 L378,266 L396,304 L368,332 L322,332 Z"/>
+            <text class="micro-lbl" x="358" y="302">Пехота</text>
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Звёздочка" fill="#b4e386" d="M396,304 L424,274 L486,266 L508,296 L432,316 Z"/>
+            <text class="micro-lbl sm" x="454" y="290">Звёздочка</text>
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Заречный (Ольховский)" fill="#9d856b" d="M312,332 L416,332 L428,392 L348,412 L318,365 Z"/>
+            <text class="micro-lbl sm" x="372" y="368">Заречный</text>
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Вокзальный" fill="#dbe36b" d="M416,332 L488,314 L506,336 L448,396 L428,392 Z"/>
+            <text class="micro-lbl sm" x="458" y="354" transform="rotate(-48 458 354)">Вокзальный</text>
+            <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Мельковский" fill="#e87958" d="M448,396 L506,336 L552,336 L556,384 L456,412 Z"/>
+            <text class="micro-lbl sm" x="504" y="376">Мельковский</text>
+
+            <!-- КИРОВСКИЙ -->
+            <path class="micro-poly" data-district="kirovskiy" data-micro="Авангард" fill="#9ea3b0" d="M515,248 L608,256 L612,286 L512,296 Z"/>
+            <text class="micro-lbl sm" x="564" y="274">Авангард</text>
+            <path class="micro-poly" data-district="kirovskiy" data-micro="Пионерский" fill="#5e7be6" d="M512,296 L632,294 L636,348 L552,348 L506,336 Z"/>
+            <text class="micro-lbl" x="576" y="324">Пионерский</text>
+            <path class="micro-poly" data-district="kirovskiy" data-micro="Западный Шарташ" fill="#e86f58" d="M708,286 L732,196 L782,192 L764,284 L722,306 Z"/>
+            <text class="micro-lbl sm" x="748" y="246" transform="rotate(-68 748 246)">Западный Шарташ</text>
+            <path class="micro-poly" data-district="kirovskiy" data-micro="Северо-восточный Шарташ" fill="#94d8e8" d="M782,192 L826,192 L846,294 L772,304 L764,284 Z"/>
+            <text class="micro-lbl sm" x="802" y="256">Шарташ</text>
+            <path class="micro-poly" data-district="kirovskiy" data-micro="Изоплит" fill="#c2a3d4" d="M846,242 L878,242 L884,296 L846,294 Z"/>
+            <text class="micro-lbl sm" x="865" y="270">Изоплит</text>
+            <path class="micro-poly" data-district="kirovskiy" data-micro="Втузгородок (УРФУ)" fill="#6da6a3" d="M556,348 L678,348 L678,434 L574,434 Z"/>
+            <text class="micro-lbl" x="622" y="392">Втузгородок</text>
+            <path class="micro-poly" data-district="kirovskiy" data-micro="Университетский" fill="#70b8e8" d="M582,434 L678,434 L678,486 L588,486 Z"/>
+            <text class="micro-lbl sm" x="632" y="462">Университетский</text>
+            <path class="micro-poly" data-district="kirovskiy" data-micro="ЖБИ / МЖК" fill="#8e6ce6" d="M678,418 L774,418 L774,486 L678,486 Z"/>
+            <text class="micro-lbl" x="726" y="452">ЖБИ / МЖК</text>
+
+            <!-- ВЕРХ-ИСЕТСКИЙ -->
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Зелёный Остров" fill="#a8d856" d="M158,505 L196,422 L222,428 L208,498 Z"/>
+            <text class="micro-lbl sm" x="188" y="468" transform="rotate(-70 188 468)">Зелёный Остров</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="ВИЗ" fill="#9bc982" d="M256,456 L364,442 L374,504 L264,504 Z"/>
+            <text class="micro-lbl lg" x="316" y="476">ВИЗ</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Центральный Стадион" fill="#8ce070" d="M364,422 L416,422 L438,504 L374,504 Z"/>
+            <text class="micro-lbl sm" x="404" y="468" transform="rotate(64 404 468)">Центр. Стадион</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Мега" fill="#8975d6" d="M168,505 L264,504 L254,562 L212,562 Z"/>
+            <text class="micro-lbl" x="218" y="532">Мега</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Радуга Парк" fill="#c28ad4" d="M264,504 L366,504 L312,608 L242,576 Z"/>
+            <text class="micro-lbl" x="304" y="552" transform="rotate(-34 304 552)">Радуга Парк</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="МедГородок" fill="#8292c4" d="M312,608 L366,542 L414,588 L352,656 Z"/>
+            <text class="micro-lbl" x="358" y="602" transform="rotate(-38 358 602)">МедГородок</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Палникс" fill="#82bd86" d="M8,576 L72,566 L88,656 L18,652 Z"/>
+            <text class="micro-lbl sm" x="48" y="614">Палникс</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Лиственный" fill="#e8e268" d="M98,596 L168,576 L176,632 L114,628 Z"/>
+            <text class="micro-lbl sm" x="142" y="604">Лиственный</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Светлореченский" fill="#e69458" d="M168,576 L212,562 L242,608 L184,654 L176,632 Z"/>
+            <text class="micro-lbl sm" x="204" y="610" transform="rotate(-48 204 610)">Светлореченский</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Широкая Речка" fill="#d88258" d="M126,648 L184,632 L212,664 L132,684 Z"/>
+            <text class="micro-lbl sm" x="168" y="658">Широкая Речка</text>
+            <path class="micro-poly" data-district="verh-isetskiy" data-micro="Мичуринский" fill="#829e68" d="M76,692 L132,684 L164,716 L118,744 Z"/>
+            <text class="micro-lbl sm" x="122" y="714">Мичуринский</text>
+
+            <!-- ЛЕНИНСКИЙ -->
+            <path class="micro-poly" data-district="leninskiy" data-micro="Центр" fill="#b46e68" d="M416,412 L574,412 L588,504 L438,504 Z"/>
+            <text class="micro-lbl lg" x="502" y="462">Центр</text>
+            <path class="micro-poly" data-district="leninskiy" data-micro="Посадский" fill="#8ce0b8" d="M366,504 L438,504 L446,568 L366,568 Z"/>
+            <text class="micro-lbl" x="404" y="538">Посадский</text>
+            <path class="micro-poly" data-district="leninskiy" data-micro="Зелёная роща" fill="#e67868" d="M438,504 L492,504 L504,562 L446,568 Z"/>
+            <text class="micro-lbl sm" x="470" y="536">Зелёная роща</text>
+            <path class="micro-poly" data-district="leninskiy" data-micro="Юго-западный" fill="#687ce6" d="M352,656 L446,568 L474,696 L364,678 Z"/>
+            <text class="micro-lbl" x="416" y="644">Юго-западный</text>
+
+            <!-- АКАДЕМИЧЕСКИЙ -->
+            <path class="micro-poly" data-district="akademicheskiy" data-micro="Краснолесье" fill="#d86856" d="M164,704 L242,644 L334,724 L268,778 Z"/>
+            <text class="micro-lbl" x="242" y="708">Краснолесье</text>
+            <path class="micro-poly" data-district="akademicheskiy" data-micro="Академический (УНЦ)" fill="#b46858" d="M268,778 L334,724 L378,768 L312,818 Z"/>
+            <text class="micro-lbl" x="318" y="772">Академический</text>
+            <path class="micro-poly" data-district="akademicheskiy" data-micro="Совхозный" fill="#58b4a8" d="M242,844 L312,818 L378,818 L402,894 L276,894 Z"/>
+            <text class="micro-lbl" x="328" y="858">Совхозный</text>
+            <path class="micro-poly" data-district="akademicheskiy" data-micro="Солнечный" fill="#5e72e6" d="M276,894 L378,894 L408,948 L332,982 L288,948 Z"/>
+            <text class="micro-lbl" x="344" y="936">Солнечный</text>
+
+            <!-- ОКТЯБРЬСКИЙ -->
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="Парковый" fill="#e67868" d="M532,516 L592,516 L596,554 L536,554 Z"/>
+            <text class="micro-lbl sm" x="564" y="536">Парковый</text>
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="Сибирский" fill="#7ce6b4" d="M588,486 L632,486 L662,538 L612,562 Z"/>
+            <text class="micro-lbl sm" x="622" y="524" transform="rotate(34 622 524)">Сибирский</text>
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="Синие Камни" fill="#82e6d8" d="M648,486 L774,486 L792,542 L674,536 Z"/>
+            <text class="micro-lbl" x="716" y="514">Синие Камни</text>
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="ЛесТех" fill="#88b878" d="M636,542 L704,542 L714,588 L644,588 Z"/>
+            <text class="micro-lbl sm" x="676" y="566">ЛесТех</text>
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="Путёвка" fill="#f272d8" d="M726,542 L808,542 L818,596 L734,586 Z"/>
+            <text class="micro-lbl sm" x="772" y="566">Путёвка</text>
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="Машинный" fill="#d8d468" d="M542,554 L596,554 L616,646 L576,668 Z"/>
+            <text class="micro-lbl sm" x="582" y="612" transform="rotate(64 582 612)">Машинный</text>
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="Лечебный" fill="#e6a868" d="M846,644 L908,644 L908,712 L846,712 Z"/>
+            <text class="micro-lbl sm" x="877" y="678">Лечебный</text>
+            <path class="micro-poly" data-district="oktyabrskiy" data-micro="Компрессорный" fill="#687ce6" d="M908,632 L996,632 L996,746 L908,746 Z"/>
+            <text class="micro-lbl sm" x="952" y="688">Компрессорный</text>
+
+            <!-- ЧКАЛОВСКИЙ -->
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Южный" fill="#f2e678" d="M474,568 L542,568 L566,646 L484,646 Z"/>
+            <text class="micro-lbl" x="518" y="610">Южный</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Ботаника" fill="#e69c58" d="M494,646 L596,646 L596,704 L494,704 Z"/>
+            <text class="micro-lbl" x="544" y="676">Ботаника</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Глобус" fill="#70b4e8" d="M596,676 L646,696 L622,744 L574,724 Z"/>
+            <text class="micro-lbl sm" x="610" y="712">Глобус</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Шишимская горка" fill="#687ce6" d="M542,724 L622,744 L636,778 L556,778 Z"/>
+            <text class="micro-lbl sm" x="588" y="752">Шишимская горка</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="РТИ" fill="#b4d868" d="M474,712 L526,712 L526,808 L474,808 Z"/>
+            <text class="micro-lbl" x="500" y="762">РТИ</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="19-й и 32-й военные городки" fill="#d8b868" d="M378,732 L474,732 L462,844 L388,844 Z"/>
+            <text class="micro-lbl sm" x="426" y="788">Воен. городки</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Никаноровка" fill="#88d868" d="M454,844 L548,844 L548,884 L468,884 Z"/>
+            <text class="micro-lbl sm" x="504" y="866">Никаноровка</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Елизавет" fill="#7c68b8" d="M482,976 L532,884 L582,894 L532,982 Z"/>
+            <text class="micro-lbl" x="532" y="936" transform="rotate(-62 532 936)">Елизавет</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Восточный Уктус" fill="#82c4e8" d="M688,782 L752,782 L764,844 L696,834 Z"/>
+            <text class="micro-lbl sm" x="726" y="812">Вост. Уктус</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Нижнеисетский" fill="#f2e668" d="M668,872 L704,872 L796,956 L768,976 L668,936 Z"/>
+            <text class="micro-lbl sm" x="732" y="934" transform="rotate(24 732 934)">Нижнеисетский</text>
+            <path class="micro-poly" data-district="chkalovskiy" data-micro="Химмаш" fill="#e6a868" d="M732,866 L798,866 L806,924 L742,916 Z"/>
+            <text class="micro-lbl" x="768" y="896">Химмаш</text>
+          </svg>
+        </div>
+
+        <div class="map-info-card" id="mapInfoCard">
+          <div>
+            <span class="mic-badge" id="micBadge">Административный район · Выезд 0 ₽</span>
+            <h3 id="micTitle">Орджоникидзевский район</h3>
+            <div class="mic-selected-micro" id="micSelectedMicro">Выбран район целиком</div>
+            <div class="mic-subtitle">Микрорайоны на карте:</div>
+            <div class="mic-micros" id="micMicros">
+              <span>Уралмаш</span>
+              <span>Эльмаш</span>
+              <span>Веер</span>
+              <span>Белая Башня</span>
+              <span>Кирпичный</span>
+              <span>Калиновский лесопарк</span>
+            </div>
+            <p class="mic-note" id="micNote">Ремонт в сталинках, хрущёвках и новых ЖК (Изумрудный бор, Северное сияние).</p>
+          </div>
+
+          <div class="mic-actions">
+            <a href="districts/ordzhonikidzevskiy.html" id="micLink" class="btn">Перейти на страницу района →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 </main>
 
@@ -597,6 +1357,17 @@
       <div>
         <h4><a href="index.html">ПРОРАБ<span class="logo-dot">.</span><span class="logo-ekb">ЕКБ</span> · Александр</a></h4>
         <p>Частный прораб в Екатеринбурге. Более 3 лет ремонтов под личным руководством. Проверенные мастера, скидки в магазинах, договор и гарантия.</p>
+        <div class="footer-socials">
+          <a href="https://wa.me/79221230234" class="icon-btn wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.93 1.35-.53.05-1.02.24-3.45-.72-2.93-1.15-4.8-4.15-4.95-4.34-.15-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.82 2 .89 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.14.17-.3.37-.43.5-.14.14-.29.29-.12.57.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.45.29.14.46.12.63-.07.17-.19.73-.85.93-1.14.19-.29.39-.24.66-.14.27.1 1.69.8 1.98.94.29.14.48.22.55.34.07.12.07.68-.17 1.36z"/></svg>
+          </a>
+          <a href="https://t.me/The_fabo" class="icon-btn tg" target="_blank" rel="noopener" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M9.04 15.47l-.38 5.34c.54 0 .78-.23 1.06-.5l2.55-2.45 5.28 3.87c.97.53 1.66.25 1.92-.9l3.48-16.32.01-.01c.31-1.43-.52-1.99-1.47-1.63L1.6 9.9C.2 10.45.22 11.25 1.36 11.6l5.11 1.59L18.3 6.1c.56-.37 1.07-.16.65.21L9.04 15.47z"/></svg>
+          </a>
+          <a href="https://max.ru/u/f9LHodD0cOIla8fwUzY-qb4nxfN2PkkKd1sPPFidHCv_dgxbCTTdMzdyMBU" class="icon-btn max" target="_blank" rel="noopener" aria-label="MAX">
+            <img src="images/max-icon.png" alt="MAX">
+          </a>
+        </div>
       </div>
       <div>
         <h4>Контакты</h4>
@@ -613,6 +1384,10 @@
           <a href="index.html#form">Замер и смета</a>
         </p>
       </div>
+      <div>
+        <h4>Районы работы</h4>
+        <p>Академический, Верх-Исетский, Железнодорожный, Кировский, Ленинский, Октябрьский, Орджоникидзевский, Чкаловский, ВИЗ, Уралмаш, Ботанический, Пионерский, Автовокзал, Юг-Центр.</p>
+      </div>
     </div>
     <div class="footer-bottom">
       © 2026 <a href="index.html">ПРОРАБ.ЕКБ</a> · Александр · ИНН 661710520473 · <a href="privacy.html">Политика конфиденциальности</a>
@@ -620,47 +1395,116 @@
   </div>
 </footer>
 
+<!-- ===== FLOATING CONTACTS ===== -->
+<div class="float-contacts">
+  <div class="sub-menu" id="subMenu">
+    <a href="https://wa.me/79221230234" class="wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.93 1.35-.53.05-1.02.24-3.45-.72-2.93-1.15-4.8-4.15-4.95-4.34-.15-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.82 2 .89 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.14.17-.3.37-.43.5-.14.14-.29.29-.12.57.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.45.29.14.46.12.63-.07.17-.19.73-.85.93-1.14.19-.29.39-.24.66-.14.27.1 1.69.8 1.98.94.29.14.48.22.55.34.07.12.07.68-.17 1.36z"/></svg>
+    </a>
+    <a href="https://t.me/The_fabo" class="tg" target="_blank" rel="noopener" aria-label="Telegram">
+      <svg viewBox="0 0 24 24"><path d="M9.04 15.47l-.38 5.34c.54 0 .78-.23 1.06-.5l2.55-2.45 5.28 3.87c.97.53 1.66.25 1.92-.9l3.48-16.32.01-.01c.31-1.43-.52-1.99-1.47-1.63L1.6 9.9C.2 10.45.22 11.25 1.36 11.6l5.11 1.59L18.3 6.1c.56-.37 1.07-.16.65.21L9.04 15.47z"/></svg>
+    </a>
+    <a href="https://max.ru/u/f9LHodD0cOIla8fwUzY-qb4nxfN2PkkKd1sPPFidHCv_dgxbCTTdMzdyMBU" class="max" target="_blank" rel="noopener" aria-label="MAX">
+      <img src="images/max-icon.png" alt="MAX">
+    </a>
+    <a href="tel:+79221230234" class="call" aria-label="Позвонить">
+      <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.85 21 3 13.15 3 3.5a1 1 0 0 1 1-1H7.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
+    </a>
+  </div>
+  <button class="main-btn" id="mainContactBtn" aria-label="Связаться">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+  </button>
+</div>
+
 <script>
-// Мобильное меню
-(function(){
-  var burger = document.getElementById('burgerBtn');
-  var menu = document.getElementById('mobileMenu');
-  var overlay = document.getElementById('mobileMenuOverlay');
-  var closeBtn = document.getElementById('mobileMenuClose');
-  function close() {
-    burger.classList.remove('active');
-    menu.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-  if(burger){
-    burger.addEventListener('click', function(){
-      burger.classList.add('active');
-      menu.classList.add('active');
-      overlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
+document.addEventListener('DOMContentLoaded', function() {
+  var mainBtn = document.getElementById('mainContactBtn');
+  var subMenu = document.getElementById('subMenu');
+  if (mainBtn && subMenu) {
+    mainBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      mainBtn.classList.toggle('open');
+      subMenu.classList.toggle('active');
+    });
+    document.addEventListener('click', function(e) {
+      if (!mainBtn.contains(e.target) && !subMenu.contains(e.target)) {
+        mainBtn.classList.remove('open');
+        subMenu.classList.remove('active');
+      }
     });
   }
-  if(closeBtn) closeBtn.addEventListener('click', close);
-  if(overlay) overlay.addEventListener('click', close);
-})();
 
-// Живой поиск по районам
+  var burgerBtn = document.getElementById('burgerBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+  var mobileMenuClose = document.getElementById('mobileMenuClose');
+  var mobileLinks = document.querySelectorAll('.mobile-link');
+
+  function closeMobileMenu() {
+    burgerBtn.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    mobileMenuOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (burgerBtn && mobileMenu && mobileMenuOverlay) {
+    burgerBtn.addEventListener('click', function() {
+      if (mobileMenu.classList.contains('active')) closeMobileMenu();
+      else {
+        burgerBtn.classList.add('active');
+        mobileMenu.classList.add('active');
+        mobileMenuOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+    if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
+    mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    mobileLinks.forEach(function(link){ link.addEventListener('click', closeMobileMenu); });
+  }
+
+  var districtsNav = document.getElementById('districtsNav');
+  if (districtsNav) {
+    var trigger = districtsNav.querySelector('a[aria-haspopup]');
+    if (trigger) {
+      trigger.addEventListener('click', function(e) {
+        if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+          e.preventDefault();
+          var opened = districtsNav.classList.toggle('open');
+          trigger.setAttribute('aria-expanded', opened ? 'true' : 'false');
+        }
+      });
+      document.addEventListener('click', function(e) {
+        if (!districtsNav.contains(e.target)) {
+          districtsNav.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  }
+});
+
+/* ===== ЖИВОЙ ПОИСК ПО РАЙОНАМ И ЖК ===== */
 (function(){
   var input = document.getElementById('districtSearch');
+  var clearBtn = document.getElementById('searchClear');
   var cards = document.querySelectorAll('.district-card');
   var groups = document.querySelectorAll('[data-group]');
   var empty = document.getElementById('emptySearch');
+  var quickSpans = document.querySelectorAll('.search-hint span[data-quick]');
 
   if(!input) return;
 
-  input.addEventListener('input', function(){
-    var q = this.value.trim().toLowerCase();
+  function runSearch() {
+    var q = input.value.trim().toLowerCase();
     var totalVisible = 0;
 
+    if (clearBtn) {
+      clearBtn.classList.toggle('visible', q.length > 0);
+    }
+
     cards.forEach(function(card){
-      var name = card.getAttribute('data-name') || '';
-      var match = name.indexOf(q) !== -1;
+      var text = (card.getAttribute('data-search') || '') + ' ' + card.textContent.toLowerCase();
+      var match = text.indexOf(q) !== -1;
       card.style.display = match ? 'flex' : 'none';
       if(match) totalVisible++;
     });
@@ -671,8 +1515,192 @@
     });
 
     empty.style.display = totalVisible === 0 ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', runSearch);
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function(){
+      input.value = '';
+      runSearch();
+      input.focus();
+    });
+  }
+
+  quickSpans.forEach(function(sp){
+    sp.addEventListener('click', function(){
+      input.value = sp.getAttribute('data-quick');
+      runSearch();
+    });
   });
 })();
+
+/* ===== ИНТЕРАКТИВНАЯ КАРТА МИКРОРАЙОНОВ ЕКАТЕРИНБУРГА ===== */
+(function(){
+  var EKB_MAP_DATA = {
+    'ordzhonikidzevskiy': {
+      title: 'Орджоникидзевский район',
+      micros: ['Уралмаш', 'Эльмаш', 'Веер', 'Белая Башня', 'Кирпичный', 'Калиновский лесопарк'],
+      note: 'Ремонт в сталинках, хрущёвках и новых ЖК (Изумрудный бор, Северное сияние).',
+      url: 'districts/ordzhonikidzevskiy.html'
+    },
+    'zheleznodorozhnyy': {
+      title: 'Железнодорожный район',
+      micros: ['Семь Ключей', 'Сортировка', 'Таганка', 'Пехота', 'Звёздочка', 'Заречный (Ольховский)', 'Вокзальный', 'Мельковский'],
+      note: 'Работаем как в старом фонде, так и в новых комплексах (Макаровский, Ольховский Парк).',
+      url: 'districts/zheleznodorozhnyy.html'
+    },
+    'kirovskiy': {
+      title: 'Кировский район',
+      micros: ['Пионерский', 'Втузгородок (УРФУ)', 'Университетский', 'ЖБИ / МЖК', 'Авангард', 'Западный Шарташ', 'Северо-восточный Шарташ', 'Изоплит'],
+      note: 'Полная замена электрики, сантехники и отделка под ключ (Университетский, Рассветный).',
+      url: 'districts/kirovskiy.html'
+    },
+    'verh-isetskiy': {
+      title: 'Верх-Исетский район',
+      micros: ['ВИЗ', 'Зелёный Остров', 'Центральный Стадион', 'Мега', 'Радуга Парк', 'МедГородок', 'Широкая Речка', 'Мичуринский', 'Палникс', 'Лиственный', 'Светлореченский'],
+      note: 'Отделка квартир в новостройках у пруда и на Широкой Речке с ежедневным фотоотчётом.',
+      url: 'districts/verh-isetskiy.html'
+    },
+    'leninskiy': {
+      title: 'Ленинский район',
+      micros: ['Центр', 'Посадский', 'Зелёная роща', 'Юго-западный'],
+      note: 'Капитальный и дизайнерский ремонт в центре и на Юго-Западе по фиксированной смете.',
+      url: 'districts/leninskiy.html'
+    },
+    'akademicheskiy': {
+      title: 'Академический район',
+      micros: ['Академический (УНЦ)', 'Краснолесье', 'Совхозный', 'Солнечный'],
+      note: 'Специализируемся на сдаче новостроек под ключ (Преображенский, Близкий, Первый Академ).',
+      url: 'districts/akademicheskiy.html'
+    },
+    'oktyabrskiy': {
+      title: 'Октябрьский район',
+      micros: ['Парковый', 'Сибирский', 'Синие Камни', 'ЛесТех', 'Путёвка', 'Машинный', 'Лечебный', 'Компрессорный'],
+      note: 'Ремонт в ЖК Клевер Парк, Парковый квартал, Светлый и выезд в Кольцово без доплат.',
+      url: 'districts/oktyabrskiy.html'
+    },
+    'chkalovskiy': {
+      title: 'Чкаловский район',
+      micros: ['Южный', 'Ботаника', 'Глобус', 'Шишимская горка', 'РТИ', '19-й и 32-й военные городки', 'Никаноровка', 'Елизавет', 'Восточный Уктус', 'Нижнеисетский', 'Химмаш'],
+      note: 'Новостройки Солнечного и Уктуса, бизнес-ЖК Автовокзала и вторичный фонд Ботаники.',
+      url: 'districts/chkalovskiy.html'
+    }
+  };
+
+  var canvas = document.getElementById('ekbMicrosCanvas');
+  var polys = document.querySelectorAll('.micro-poly');
+  var tabs = document.querySelectorAll('.map-tab');
+  var titleEl = document.getElementById('micTitle');
+  var selMicroEl = document.getElementById('micSelectedMicro');
+  var microsEl = document.getElementById('micMicros');
+  var noteEl = document.getElementById('micNote');
+  var linkEl = document.getElementById('micLink');
+
+  if (!polys.length || !titleEl) return;
+
+  var activeDistrict = 'ordzhonikidzevskiy'; // Какой район сейчас жестко выбран
+  var activeMicro = null;
+
+  function renderCard(districtKey, microName, isLocked) {
+    var data = EKB_MAP_DATA[districtKey];
+    if (!data) return;
+
+    canvas.classList.add('has-active');
+
+    polys.forEach(function(p){
+      var inDist = p.getAttribute('data-district') === districtKey;
+      var isHov = microName && p.getAttribute('data-micro') === microName;
+      p.classList.toggle('in-district', inDist);
+      p.classList.toggle('is-hovered', Boolean(isHov));
+    });
+
+    tabs.forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-district') === districtKey);
+    });
+
+    titleEl.textContent = data.title;
+    selMicroEl.textContent = microName ? ('Микрорайон: ' + microName) : (isLocked ? 'Район зафиксирован кликом' : 'Административный район');
+    noteEl.textContent = data.note;
+    linkEl.href = data.url;
+    
+    microsEl.innerHTML = data.micros.map(function(m){
+      var cls = (microName && m === microName) ? ' class="active-chip"' : '';
+      return '<span' + cls + '>' + m + '</span>';
+    }).join('');
+  }
+
+  // Первичная отрисовка (Орджоникидзевский по умолчанию)
+  renderCard(activeDistrict, null, true);
+
+  polys.forEach(function(poly){
+    var distKey = poly.getAttribute('data-district');
+    var microName = poly.getAttribute('data-micro');
+
+    // КЛИК ЖЕСТКО ФИКСИРУЕТ РАЙОН
+    poly.addEventListener('click', function(e){
+      e.stopPropagation();
+      activeDistrict = distKey;
+      activeMicro = microName;
+      renderCard(activeDistrict, activeMicro, true);
+    });
+
+    // НАВЕДЕНИЕ МЫШИ ТОЛЬКО ПОДСВЕЧИВАЕТ ПРЕВЬЮ
+    poly.addEventListener('mouseenter', function(){
+      renderCard(distKey, microName, false);
+    });
+  });
+
+  // Когда курсор уходит с самой карты — возвращаем отображение к зафиксированному кликом району
+  canvas.addEventListener('mouseleave', function(){
+    renderCard(activeDistrict, activeMicro, true);
+  });
+
+  tabs.forEach(function(tab){
+    var distKey = tab.getAttribute('data-district');
+    tab.addEventListener('click', function(){
+      activeDistrict = distKey;
+      activeMicro = null;
+      renderCard(activeDistrict, null, true);
+    });
+  });
+})();
+
+
+/* ===== ГАРАНТИРОВАННАЯ ПОДСТАНОВКА ФОТО ДЛЯ КАРТОЧЕК РАЙОНОВ ===== */
+(function(){
+  var DISTRICT_IMAGES = {
+    // Административные районы (8)
+    'districts/akademicheskiy.html': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+    'districts/verh-isetskiy.html': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    'districts/zheleznodorozhnyy.html': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+    'districts/kirovskiy.html': 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80',
+    'districts/leninskiy.html': 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800&q=80',
+    'districts/oktyabrskiy.html': 'https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=800&q=80',
+    'districts/ordzhonikidzevskiy.html': 'https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=80',
+    'districts/chkalovskiy.html': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
+
+    // Микрорайоны (8)
+    'districts/avtovokzal.html': 'https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=800&q=80',
+    'districts/botanicheskiy.html': 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
+    'districts/viz.html': 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=800&q=80',
+    'districts/pionerskiy.html': 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80',
+    'districts/uralmash.html': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+    'districts/yug-centr.html': 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80',
+    'districts/centr.html': 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=800&q=80',
+    'districts/shirokaya-rechka.html': 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'
+  };
+
+  document.querySelectorAll('.district-card').forEach(function(card){
+    var href = card.getAttribute('href');
+    var bg = card.querySelector('.dc-bg');
+    if (bg && DISTRICT_IMAGES[href]) {
+      bg.style.backgroundImage = "url('" + DISTRICT_IMAGES[href] + "')";
+    }
+  });
+})();
+
+
 </script>
 </body>
 </html>
