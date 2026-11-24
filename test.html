@@ -416,8 +416,8 @@
     width: calc(100% - 40px);max-width: var(--maxw);height: 1px;background: rgba(0, 0, 0, 0.12);
   }
   .about-flex {display: flex;flex-wrap: wrap;gap: 40px;align-items: flex-start;}
-  .about-photo {flex: 0 0 150px;height: 150px;border-radius: var(--radius);overflow: hidden;box-shadow: 0 20px 50px rgba(0,0,0,.15);background: var(--dark);}
-  .about-photo img {width: 100%;height: 100%;object-fit: cover;display: block;}
+  .about-photo {flex: 0 0 260px;height: 350px;border-radius: var(--radius);overflow: hidden;box-shadow: 0 20px 50px rgba(0,0,0,.15);background: var(--dark);}
+  .about-photo img {width: 100%;height: 100%;object-fit: cover;transform: scale(1.15);transform-origin: center top;object-position: center top;display: block;}
   .about-text {flex: 1;min-width: 280px;}
   .about-text p {font-size: 16px;color: var(--text);margin-bottom: 16px;}
   .about-facts{display:grid;grid-template-columns: repeat(4, 1fr);gap: 14px;margin-top: 22px;width: 100%;}
@@ -438,9 +438,15 @@
   }
   @keyframes fadeIn {from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); }}
 
-  @media(max-width: 960px){
+@media(max-width: 960px){
     .about-flex {display: flow-root;gap: 0;}
-    .about-photo {float: left;width: 110px;height: 110px;margin: 5px 15px 10px 0;flex: none;}
+    .about-photo {
+      float: left;
+      width: 130px;
+      height: 175px;
+      margin: 4px 16px 10px 0;
+      flex: none;
+    }
     .about-text {display: inline;min-width: 0;}
     .about-text p {margin-bottom: 16px;}
     .about-facts {clear: both;margin-top: 20px;grid-template-columns: repeat(2, 1fr);}
