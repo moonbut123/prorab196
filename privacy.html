@@ -537,5 +537,167 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<!-- ===== COOKIE TOAST ===== -->
+<style>
+  .cookie-toast {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 9999;
+    max-width: 520px;
+    width: calc(100% - 104px); /* не перекрывает плавающую кнопку связи справа */
+    background: var(--dark, #1c2331);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(24px);
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .cookie-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .cookie-toast-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 13px 16px 15px;
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+  .cookie-toast-text {
+    color: #e5e7eb;
+  }
+  .cookie-toast-text a {
+    color: var(--accent, #f5a623);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cookie-toast-text a:hover {
+    color: #fff;
+  }
+  .cookie-toast-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .cookie-toast-ok {
+    background: transparent;
+    border: 1px solid var(--accent, #f5a623);
+    color: var(--accent, #f5a623);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 5px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .cookie-toast-ok:hover {
+    background: var(--accent, #f5a623);
+    color: var(--dark, #1c2331);
+  }
+  .cookie-toast-close {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+    transition: 0.2s;
+  }
+  .cookie-toast-close:hover {
+    color: #fff;
+  }
+  .cookie-toast-progress {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .cookie-toast-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent, #f5a623);
+  }
+  @media (max-width: 600px) {
+    .cookie-toast {
+      left: 12px;
+      right: 12px;
+      bottom: 86px; /* поднимаем над плавающей кнопкой мессенджеров на мобильном */
+      width: auto;
+      max-width: none;
+    }
+    .cookie-toast-body {
+      padding: 12px 14px 14px;
+      font-size: 13px;
+    }
+  }
+</style>
+
+<div class="cookie-toast" id="cookieToast" role="region" aria-label="Уведомление об использовании cookie">
+  <div class="cookie-toast-body">
+    <div class="cookie-toast-text">
+      Мы используем куки-файлы. <a href="privacy.html">Соглашение об использовании</a>
+    </div>
+    <div class="cookie-toast-actions">
+      <button type="button" class="cookie-toast-ok" id="cookieToastOk">ОК</button>
+      <button type="button" class="cookie-toast-close" id="cookieToastClose" aria-label="Закрыть">&times;</button>
+    </div>
+  </div>
+  <div class="cookie-toast-progress">
+    <div class="cookie-toast-bar" id="cookieToastBar"></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const STORAGE_KEY = 'prorab196_cookie_accepted';
+  if (localStorage.getItem(STORAGE_KEY)) return;
+
+  const toast = document.getElementById('cookieToast');
+  const bar = document.getElementById('cookieToastBar');
+  const btnOk = document.getElementById('cookieToastOk');
+  const btnClose = document.getElementById('cookieToastClose');
+  const DURATION = 8000; // время показа в мс (8 секунд)
+
+  let timerId = null;
+
+  function hideToast(saveConsent) {
+    if (saveConsent) {
+      localStorage.setItem(STORAGE_KEY, '1');
+    }
+    toast.classList.remove('show');
+    clearTimeout(timerId);
+    setTimeout(function() {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 400);
+  }
+
+  // Показываем с небольшой задержкой после загрузки страницы
+  setTimeout(function() {
+    toast.classList.add('show');
+    // Запускаем плавное заполнение полоски
+    requestAnimationFrame(function() {
+      bar.style.transition = `width ${DURATION}ms linear`;
+      bar.style.width = '100%';
+    });
+    timerId = setTimeout(function() {
+      hideToast(true);
+    }, DURATION);
+  }, 600);
+
+  btnOk.addEventListener('click', function() { hideToast(true); });
+  btnClose.addEventListener('click', function() { hideToast(true); });
+});
+</script>
+  
 </body>
 </html>
