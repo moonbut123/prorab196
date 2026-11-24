@@ -559,5 +559,33 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+document.addEventListener('copy', function(e) {
+  // Не мешаем копированию из полей ввода и модального окна MAX
+  const activeTag = document.activeElement ? document.activeElement.tagName : '';
+  if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+
+  const selection = window.getSelection();
+  const selectedText = selection.toString().trim();
+
+  // Добавляем источник, только если скопировано больше 20 символов (чтобы не цеплять клики по телефону)
+  if (selectedText.length < 20) return;
+
+  const pageUrl = window.location.href;
+  const plainText = `Источник: ${pageUrl}\n\n${selectedText}`;
+
+  // Сохраняем также HTML-версию со ссылкой (для вставки в Word, почту, мессенджеры)
+  const container = document.createElement('div');
+  for (let i = 0; i < selection.rangeCount; i++) {
+    container.appendChild(selection.getRangeAt(i).cloneContents());
+  }
+  const htmlText = `<p>Источник: <a href="${pageUrl}">${pageUrl}</a></p>${container.innerHTML}`;
+
+  e.clipboardData.setData('text/plain', plainText);
+  e.clipboardData.setData('text/html', htmlText);
+  e.preventDefault();
+});
+</script>
+  
 </body>
 </html>
