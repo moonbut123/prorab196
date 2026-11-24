@@ -417,7 +417,7 @@
   }
   .about-flex {display: flex;flex-wrap: wrap;gap: 40px;align-items: flex-start;}
   .about-photo {flex: 0 0 260px;height: 350px;border-radius: var(--radius);overflow: hidden;box-shadow: 0 20px 50px rgba(0,0,0,.15);background: var(--dark);}
-  .about-photo img {width: 100%;height: 100%;object-fit: cover;transform: scale(1.15);transform-origin: center top;object-position: center top;display: block;}
+  .about-photo img {width: 100%;height: 100%;object-fit: cover;transform: scale(1.15);object-position: center top;display: block;}
   .about-text {flex: 1;min-width: 280px;}
   .about-text p {font-size: 16px;color: var(--text);margin-bottom: 16px;}
   .about-facts{display:grid;grid-template-columns: repeat(4, 1fr);gap: 14px;margin-top: 22px;width: 100%;}
@@ -1391,6 +1391,220 @@
     }
   }
 
+/* ===== ИНТЕРАКТИВНАЯ КАРТА МИКРОРАЙОНОВ И РАЙОНОВ ЕКАТЕРИНБУРГА ===== */
+  .ekb-map-wrap-section {
+    background: var(--bg-main);
+    position: relative;
+  }
+  .ekb-map-wrap-section::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: var(--maxw);
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .ekb-map-head {
+    margin-bottom: 20px;
+  }
+  .ekb-map-head .section-title {
+    margin-bottom: 6px;
+  }
+  .ekb-map-head .section-sub {
+    margin-bottom: 0;
+  }
+
+  /* Быстрые кнопки выбора района прямо над картой */
+  .map-quick-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .map-tab {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .18s ease;
+  }
+  .map-tab:hover {
+    border-color: var(--accent);
+    color: var(--dark);
+  }
+  .map-tab.active {
+    background: var(--dark);
+    border-color: var(--dark);
+    color: var(--accent);
+  }
+
+  .ekb-map-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  /* Контейнер квадратной карты микрорайонов */
+  .ekb-micros-canvas {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    background: #dce8d4;
+  }
+  .ekb-micros-canvas img.bg-ref {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .ekb-micros-canvas svg {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Подложка ландшафта */
+  .m-bg { fill: #dce8d4; }
+  .m-road-grid { fill: none; stroke: rgba(255,255,255,0.45); stroke-width: 1.5; pointer-events: none; }
+  .m-water { fill: #98cde6; stroke: #7dbad9; stroke-width: 1; pointer-events: none; }
+
+  /* Полигоны микрорайонов */
+  .micro-poly {
+    stroke: #3b424c;
+    stroke-width: 1.3;
+    stroke-linejoin: round;
+    cursor: pointer;
+    opacity: 0.78;
+    transition: opacity .18s ease, stroke .18s ease, stroke-width .18s ease, filter .18s ease;
+  }
+  .micro-poly:hover {
+    opacity: 0.96;
+    stroke: #111827;
+    stroke-width: 2.4;
+    filter: brightness(1.06);
+  }
+  .ekb-micros-canvas.has-active .micro-poly {
+    opacity: 0.42;
+  }
+  .ekb-micros-canvas.has-active .micro-poly.in-district {
+    opacity: 0.90;
+    stroke: #1c2331;
+    stroke-width: 2;
+  }
+  .ekb-micros-canvas.has-active .micro-poly.is-hovered {
+    opacity: 1;
+    stroke: #f5a623;
+    stroke-width: 3;
+  }
+
+  /* Подписи микрорайонов прямо на полигонах */
+  .micro-lbl {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    fill: #1c2331;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: rgba(255,255,255,0.82);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+  }
+  .micro-lbl.sm { font-size: 9px; }
+  .micro-lbl.lg { font-size: 13.5px; font-weight: 800; }
+
+  /* ИНФО-ПАНЕЛЬ СПРАВА ОТ КАРТЫ */
+  .map-info-card {
+    background: var(--dark);
+    color: #fff;
+    border-radius: 16px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .mic-badge {
+    display: inline-block;
+    background: rgba(245,166,35,0.18);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .map-info-card h3 {
+    font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 6px;
+  }
+  .mic-selected-micro {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 14px;
+    min-height: 20px;
+  }
+  .mic-subtitle {
+    font-size: 12px; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; margin-bottom: 8px;
+  }
+  .mic-micros {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .mic-micros span {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #f3f4f6;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 7px;
+    transition: all .15s;
+  }
+  .mic-micros span.active-chip {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--dark);
+    font-weight: 700;
+  }
+  .mic-note {
+    font-size: 13px;
+    color: #b9c0cf;
+    line-height: 1.45;
+  }
+  .mic-actions {
+    padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .mic-actions .btn {
+    padding: 12px 20px; font-size: 14px; width: 100%;
+  }
+
+  @media (max-width: 960px) {
+    .ekb-map-layout { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .ekb-map-wrap-section::after { width: calc(100% - 32px); }
+    .map-info-card { padding: 20px; }
+  }
+
 </style>
 </head>
 <body>
@@ -2210,6 +2424,204 @@
   </div>
 </section>
 
+<!-- ===== ИНТЕРАКТИВНАЯ КАРТА МИКРОРАЙОНОВ ЕКАТЕРИНБУРГА ===== -->
+<section class="section ekb-map-wrap-section" id="districts" aria-label="Интерактивная карта микрорайонов Екатеринбурга">
+  <div class="wrap">
+    <div class="ekb-map-head">
+      <h2 class="section-title">Карта районов и микрорайонов Екатеринбурга</h2>
+      <p class="section-sub">Наведите на любой микрорайон на карте или выберите район сверху — покажу все входящие кварталы.</p>
+    </div>
+
+    <!-- Быстрые вкладки 8 административных районов -->
+    <div class="map-quick-tabs" id="mapQuickTabs">
+      <button type="button" class="map-tab active" data-district="ordzhonikidzevskiy">Орджоникидзевский</button>
+      <button type="button" class="map-tab" data-district="zheleznodorozhnyy">Железнодорожный</button>
+      <button type="button" class="map-tab" data-district="kirovskiy">Кировский</button>
+      <button type="button" class="map-tab" data-district="verh-isetskiy">Верх-Исетский</button>
+      <button type="button" class="map-tab" data-district="leninskiy">Ленинский</button>
+      <button type="button" class="map-tab" data-district="akademicheskiy">Академический</button>
+      <button type="button" class="map-tab" data-district="oktyabrskiy">Октябрьский</button>
+      <button type="button" class="map-tab" data-district="chkalovskiy">Чкаловский</button>
+    </div>
+
+    <div class="ekb-map-layout">
+      <div class="ekb-micros-canvas has-active" id="ekbMicrosCanvas">
+        <img class="bg-ref" src="images/ekb-micros-map.jpg" alt="" onerror="this.style.display='none'">
+
+        <svg viewBox="0 0 1000 1000" role="img" aria-label="Карта микрорайонов Екатеринбурга">
+          <rect class="m-bg" x="0" y="0" width="1000" height="1000"/>
+          <path class="m-road-grid" d="M0,200 L1000,200 M0,400 L1000,400 M0,600 L1000,600 M0,800 L1000,800 M200,0 L200,1000 M400,0 L400,1000 M600,0 L600,1000 M800,0 L800,1000"/>
+          <!-- Верх-Исетский пруд -->
+          <path class="m-water" d="M0,315 Q95,310 175,355 Q235,382 225,425 Q180,455 125,432 Q55,418 0,395 Z"/>
+          <!-- Городской пруд и река Исеть -->
+          <path class="m-water" d="M446,385 L466,385 L468,452 L448,452 Z"/>
+          <path class="m-water" d="M456,452 Q475,540 535,625 Q615,725 695,845 Q735,915 775,1000 L752,1000 Q715,920 676,852 Q595,732 518,632 Q462,545 448,452 Z"/>
+          <!-- Озеро Шарташ -->
+          <path class="m-water" d="M735,235 Q795,222 818,275 Q815,342 765,345 Q718,332 722,275 Z"/>
+
+          <!-- ОРДЖОНИКИДЗЕВСКИЙ -->
+          <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Кирпичный" fill="#b88456" d="M428,32 L462,38 L422,126 L385,120 Z"/>
+          <text class="micro-lbl sm" x="422" y="84" transform="rotate(-62 422 84)">Кирпичный</text>
+          <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Веер" fill="#77b865" d="M462,38 L528,28 L572,72 L538,118 L442,88 Z"/>
+          <text class="micro-lbl" x="506" y="72">Веер</text>
+          <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Калиновский лесопарк" fill="#6b7f76" d="M572,72 L624,52 L636,112 L614,138 L564,126 Z"/>
+          <text class="micro-lbl sm" x="602" y="96">Калиновский</text>
+          <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Белая Башня" fill="#c27a56" d="M352,135 L395,142 L356,216 L325,204 Z"/>
+          <text class="micro-lbl sm" x="358" y="178" transform="rotate(-62 358 178)">Белая Башня</text>
+          <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Уралмаш" fill="#ef7d68" d="M395,142 L442,88 L522,115 L515,212 L365,204 Z"/>
+          <text class="micro-lbl lg" x="454" y="156">Уралмаш</text>
+          <path class="micro-poly in-district" data-district="ordzhonikidzevskiy" data-micro="Эльмаш" fill="#6889e8" d="M522,115 L614,138 L618,218 L515,248 L515,212 Z"/>
+          <text class="micro-lbl lg" x="562" y="178">Эльмаш</text>
+
+          <!-- ЖЕЛЕЗНОДОРОЖНЫЙ -->
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Семь Ключей" fill="#89d478" d="M84,136 L142,126 L204,168 L168,225 L92,165 Z"/>
+          <text class="micro-lbl" x="148" y="172">Семь Ключей</text>
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Сортировка" fill="#8e79a8" d="M168,225 L204,168 L272,216 L246,282 L156,258 Z"/>
+          <text class="micro-lbl" x="214" y="224">Сортировка</text>
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Таганка" fill="#f272d8" d="M246,282 L316,246 L342,272 L318,326 L252,306 Z"/>
+          <text class="micro-lbl" x="296" y="286">Таганка</text>
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Пехота" fill="#f2b263" d="M318,326 L342,272 L378,266 L396,304 L368,332 L322,332 Z"/>
+          <text class="micro-lbl" x="358" y="302">Пехота</text>
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Звёздочка" fill="#b4e386" d="M396,304 L424,274 L486,266 L508,296 L432,316 Z"/>
+          <text class="micro-lbl sm" x="454" y="290">Звёздочка</text>
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Заречный (Ольховский)" fill="#9d856b" d="M312,332 L416,332 L428,392 L348,412 L318,365 Z"/>
+          <text class="micro-lbl sm" x="372" y="368">Заречный</text>
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Вокзальный" fill="#dbe36b" d="M416,332 L488,314 L506,336 L448,396 L428,392 Z"/>
+          <text class="micro-lbl sm" x="458" y="354" transform="rotate(-48 458 354)">Вокзальный</text>
+          <path class="micro-poly" data-district="zheleznodorozhnyy" data-micro="Мельковский" fill="#e87958" d="M448,396 L506,336 L552,336 L556,384 L456,412 Z"/>
+          <text class="micro-lbl sm" x="504" y="376">Мельковский</text>
+
+          <!-- КИРОВСКИЙ -->
+          <path class="micro-poly" data-district="kirovskiy" data-micro="Авангард" fill="#9ea3b0" d="M515,248 L608,256 L612,286 L512,296 Z"/>
+          <text class="micro-lbl sm" x="564" y="274">Авангард</text>
+          <path class="micro-poly" data-district="kirovskiy" data-micro="Пионерский" fill="#5e7be6" d="M512,296 L632,294 L636,348 L552,348 L506,336 Z"/>
+          <text class="micro-lbl" x="576" y="324">Пионерский</text>
+          <path class="micro-poly" data-district="kirovskiy" data-micro="Западный Шарташ" fill="#e86f58" d="M708,286 L732,196 L782,192 L764,284 L722,306 Z"/>
+          <text class="micro-lbl sm" x="748" y="246" transform="rotate(-68 748 246)">Западный Шарташ</text>
+          <path class="micro-poly" data-district="kirovskiy" data-micro="Северо-восточный Шарташ" fill="#94d8e8" d="M782,192 L826,192 L846,294 L772,304 L764,284 Z"/>
+          <text class="micro-lbl sm" x="802" y="256">Шарташ</text>
+          <path class="micro-poly" data-district="kirovskiy" data-micro="Изоплит" fill="#c2a3d4" d="M846,242 L878,242 L884,296 L846,294 Z"/>
+          <text class="micro-lbl sm" x="865" y="270">Изоплит</text>
+          <path class="micro-poly" data-district="kirovskiy" data-micro="Втузгородок (УРФУ)" fill="#6da6a3" d="M556,348 L678,348 L678,434 L574,434 Z"/>
+          <text class="micro-lbl" x="622" y="392">Втузгородок</text>
+          <path class="micro-poly" data-district="kirovskiy" data-micro="Университетский" fill="#70b8e8" d="M582,434 L678,434 L678,486 L588,486 Z"/>
+          <text class="micro-lbl sm" x="632" y="462">Университетский</text>
+          <path class="micro-poly" data-district="kirovskiy" data-micro="ЖБИ / МЖК" fill="#8e6ce6" d="M678,418 L774,418 L774,486 L678,486 Z"/>
+          <text class="micro-lbl" x="726" y="452">ЖБИ / МЖК</text>
+
+          <!-- ВЕРХ-ИСЕТСКИЙ -->
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Зелёный Остров" fill="#a8d856" d="M158,505 L196,422 L222,428 L208,498 Z"/>
+          <text class="micro-lbl sm" x="188" y="468" transform="rotate(-70 188 468)">Зелёный Остров</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="ВИЗ" fill="#9bc982" d="M256,456 L364,442 L374,504 L264,504 Z"/>
+          <text class="micro-lbl lg" x="316" y="476">ВИЗ</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Центральный Стадион" fill="#8ce070" d="M364,422 L416,422 L438,504 L374,504 Z"/>
+          <text class="micro-lbl sm" x="404" y="468" transform="rotate(64 404 468)">Центр. Стадион</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Мега" fill="#8975d6" d="M168,505 L264,504 L254,562 L212,562 Z"/>
+          <text class="micro-lbl" x="218" y="532">Мега</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Радуга Парк" fill="#c28ad4" d="M264,504 L366,504 L312,608 L242,576 Z"/>
+          <text class="micro-lbl" x="304" y="552" transform="rotate(-34 304 552)">Радуга Парк</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="МедГородок" fill="#8292c4" d="M312,608 L366,542 L414,588 L352,656 Z"/>
+          <text class="micro-lbl" x="358" y="602" transform="rotate(-38 358 602)">МедГородок</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Палникс" fill="#82bd86" d="M8,576 L72,566 L88,656 L18,652 Z"/>
+          <text class="micro-lbl sm" x="48" y="614">Палникс</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Лиственный" fill="#e8e268" d="M98,596 L168,576 L176,632 L114,628 Z"/>
+          <text class="micro-lbl sm" x="142" y="604">Лиственный</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Светлореченский" fill="#e69458" d="M168,576 L212,562 L242,608 L184,654 L176,632 Z"/>
+          <text class="micro-lbl sm" x="204" y="610" transform="rotate(-48 204 610)">Светлореченский</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Широкая Речка" fill="#d88258" d="M126,648 L184,632 L212,664 L132,684 Z"/>
+          <text class="micro-lbl sm" x="168" y="658">Широкая Речка</text>
+          <path class="micro-poly" data-district="verh-isetskiy" data-micro="Мичуринский" fill="#829e68" d="M76,692 L132,684 L164,716 L118,744 Z"/>
+          <text class="micro-lbl sm" x="122" y="714">Мичуринский</text>
+
+          <!-- ЛЕНИНСКИЙ -->
+          <path class="micro-poly" data-district="leninskiy" data-micro="Центр" fill="#b46e68" d="M416,412 L574,412 L588,504 L438,504 Z"/>
+          <text class="micro-lbl lg" x="502" y="462">Центр</text>
+          <path class="micro-poly" data-district="leninskiy" data-micro="Посадский" fill="#8ce0b8" d="M366,504 L438,504 L446,568 L366,568 Z"/>
+          <text class="micro-lbl" x="404" y="538">Посадский</text>
+          <path class="micro-poly" data-district="leninskiy" data-micro="Зелёная роща" fill="#e67868" d="M438,504 L492,504 L504,562 L446,568 Z"/>
+          <text class="micro-lbl sm" x="470" y="536">Зелёная роща</text>
+          <path class="micro-poly" data-district="leninskiy" data-micro="Юго-западный" fill="#687ce6" d="M352,656 L446,568 L474,696 L364,678 Z"/>
+          <text class="micro-lbl" x="416" y="644">Юго-западный</text>
+
+          <!-- АКАДЕМИЧЕСКИЙ -->
+          <path class="micro-poly" data-district="akademicheskiy" data-micro="Краснолесье" fill="#d86856" d="M164,704 L242,644 L334,724 L268,778 Z"/>
+          <text class="micro-lbl" x="242" y="708">Краснолесье</text>
+          <path class="micro-poly" data-district="akademicheskiy" data-micro="Академический (УНЦ)" fill="#b46858" d="M268,778 L334,724 L378,768 L312,818 Z"/>
+          <text class="micro-lbl" x="318" y="772">Академический</text>
+          <path class="micro-poly" data-district="akademicheskiy" data-micro="Совхозный" fill="#58b4a8" d="M242,844 L312,818 L378,818 L402,894 L276,894 Z"/>
+          <text class="micro-lbl" x="328" y="858">Совхозный</text>
+          <path class="micro-poly" data-district="akademicheskiy" data-micro="Солнечный" fill="#5e72e6" d="M276,894 L378,894 L408,948 L332,982 L288,948 Z"/>
+          <text class="micro-lbl" x="344" y="936">Солнечный</text>
+
+          <!-- ОКТЯБРЬСКИЙ -->
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="Парковый" fill="#e67868" d="M532,516 L592,516 L596,554 L536,554 Z"/>
+          <text class="micro-lbl sm" x="564" y="536">Парковый</text>
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="Сибирский" fill="#7ce6b4" d="M588,486 L632,486 L662,538 L612,562 Z"/>
+          <text class="micro-lbl sm" x="622" y="524" transform="rotate(34 622 524)">Сибирский</text>
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="Синие Камни" fill="#82e6d8" d="M648,486 L774,486 L792,542 L674,536 Z"/>
+          <text class="micro-lbl" x="716" y="514">Синие Камни</text>
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="ЛесТех" fill="#88b878" d="M636,542 L704,542 L714,588 L644,588 Z"/>
+          <text class="micro-lbl sm" x="676" y="566">ЛесТех</text>
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="Путёвка" fill="#f272d8" d="M726,542 L808,542 L818,596 L734,586 Z"/>
+          <text class="micro-lbl sm" x="772" y="566">Путёвка</text>
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="Машинный" fill="#d8d468" d="M542,554 L596,554 L616,646 L576,668 Z"/>
+          <text class="micro-lbl sm" x="582" y="612" transform="rotate(64 582 612)">Машинный</text>
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="Лечебный" fill="#e6a868" d="M846,644 L908,644 L908,712 L846,712 Z"/>
+          <text class="micro-lbl sm" x="877" y="678">Лечебный</text>
+          <path class="micro-poly" data-district="oktyabrskiy" data-micro="Компрессорный" fill="#687ce6" d="M908,632 L996,632 L996,746 L908,746 Z"/>
+          <text class="micro-lbl sm" x="952" y="688">Компрессорный</text>
+
+          <!-- ЧКАЛОВСКИЙ -->
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Южный" fill="#f2e678" d="M474,568 L542,568 L566,646 L484,646 Z"/>
+          <text class="micro-lbl" x="518" y="610">Южный</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Ботаника" fill="#e69c58" d="M494,646 L596,646 L596,704 L494,704 Z"/>
+          <text class="micro-lbl" x="544" y="676">Ботаника</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Глобус" fill="#70b4e8" d="M596,676 L646,696 L622,744 L574,724 Z"/>
+          <text class="micro-lbl sm" x="610" y="712">Глобус</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Шишимская горка" fill="#687ce6" d="M542,724 L622,744 L636,778 L556,778 Z"/>
+          <text class="micro-lbl sm" x="588" y="752">Шишимская горка</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="РТИ" fill="#b4d868" d="M474,712 L526,712 L526,808 L474,808 Z"/>
+          <text class="micro-lbl" x="500" y="762">РТИ</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="19-й и 32-й военные городки" fill="#d8b868" d="M378,732 L474,732 L462,844 L388,844 Z"/>
+          <text class="micro-lbl sm" x="426" y="788">Воен. городки</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Никаноровка" fill="#88d868" d="M454,844 L548,844 L548,884 L468,884 Z"/>
+          <text class="micro-lbl sm" x="504" y="866">Никаноровка</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Елизавет" fill="#7c68b8" d="M482,976 L532,884 L582,894 L532,982 Z"/>
+          <text class="micro-lbl" x="532" y="936" transform="rotate(-62 532 936)">Елизавет</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Восточный Уктус" fill="#82c4e8" d="M688,782 L752,782 L764,844 L696,834 Z"/>
+          <text class="micro-lbl sm" x="726" y="812">Вост. Уктус</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Нижнеисетский" fill="#f2e668" d="M668,872 L704,872 L796,956 L768,976 L668,936 Z"/>
+          <text class="micro-lbl sm" x="732" y="934" transform="rotate(24 732 934)">Нижнеисетский</text>
+          <path class="micro-poly" data-district="chkalovskiy" data-micro="Химмаш" fill="#e6a868" d="M732,866 L798,866 L806,924 L742,916 Z"/>
+          <text class="micro-lbl" x="768" y="896">Химмаш</text>
+        </svg>
+      </div>
+
+      <div class="map-info-card" id="mapInfoCard">
+        <div>
+          <span class="mic-badge" id="micBadge">Административный район · Выезд 0 ₽</span>
+          <h3 id="micTitle">Орджоникидзевский район</h3>
+          <div class="mic-selected-micro" id="micSelectedMicro">Выбран район целиком</div>
+          <div class="mic-subtitle">Микрорайоны на карте:</div>
+          <div class="mic-micros" id="micMicros">
+            <span>Уралмаш</span>
+            <span>Эльмаш</span>
+            <span>Веер</span>
+            <span>Белая Башня</span>
+            <span>Кирпичный</span>
+            <span>Калиновский лесопарк</span>
+          </div>
+          <p class="mic-note" id="micNote">Ремонт в сталинках, хрущёвках и новых ЖК (Изумрудный бор, Северное сияние).</p>
+        </div>
+
+        <div class="mic-actions">
+          <a href="districts/ordzhonikidzevskiy.html" id="micLink" class="btn">Перейти на страницу района →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== FAQ ===== -->
 <section class="section faq-section">
   <div class="wrap">
@@ -2844,19 +3256,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Клик по району → подставить в форму + скролл
-  document.querySelectorAll('[data-district]').forEach(function(link) {
-    link.addEventListener('click', function() {
-      var name = link.getAttribute('data-district');
-      selectDistrict(name);
-      if (mobileMenu && mobileMenu.classList.contains('active')) closeMobileMenu();
-      setTimeout(function() {
-        var formSection = document.getElementById('form');
-        if (formSection) formSection.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }, 100);
-    });
-  });
-});
+
 
 /* ===== КАЛЬКУЛЯТОР ОРИЕНТИРОВОЧНОЙ СТОИМОСТИ ===== */
 (function(){
@@ -3822,5 +4222,134 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <!-- === КОНЕЦ БЛОКА EXIT-INTENT POPUP === -->
     
+<script>
+/* ===== ИНТЕРАКТИВНАЯ КАРТА МИКРОРАЙОНОВ ЕКАТЕРИНБУРГА ===== */
+(function(){
+  var EKB_MAP_DATA = {
+    'ordzhonikidzevskiy': {
+      title: 'Орджоникидзевский район',
+      micros: ['Уралмаш', 'Эльмаш', 'Веер', 'Белая Башня', 'Кирпичный', 'Калиновский лесопарк'],
+      note: 'Ремонт в сталинках, хрущёвках и новых ЖК (Изумрудный бор, Северное сияние).',
+      url: 'districts/ordzhonikidzevskiy.html'
+    },
+    'zheleznodorozhnyy': {
+      title: 'Железнодорожный район',
+      micros: ['Семь Ключей', 'Сортировка', 'Таганка', 'Пехота', 'Звёздочка', 'Заречный (Ольховский)', 'Вокзальный', 'Мельковский'],
+      note: 'Работаем как в старом фонде, так и в новых комплексах (Макаровский, Ольховский Парк).',
+      url: 'districts/zheleznodorozhnyy.html'
+    },
+    'kirovskiy': {
+      title: 'Кировский район',
+      micros: ['Пионерский', 'Втузгородок (УРФУ)', 'Университетский', 'ЖБИ / МЖК', 'Авангард', 'Западный Шарташ', 'Северо-восточный Шарташ', 'Изоплит'],
+      note: 'Полная замена электрики, сантехники и отделка под ключ (Университетский, Рассветный).',
+      url: 'districts/kirovskiy.html'
+    },
+    'verh-isetskiy': {
+      title: 'Верх-Исетский район',
+      micros: ['ВИЗ', 'Зелёный Остров', 'Центральный Стадион', 'Мега', 'Радуга Парк', 'МедГородок', 'Широкая Речка', 'Мичуринский', 'Палникс', 'Лиственный', 'Светлореченский'],
+      note: 'Отделка квартир в новостройках у пруда и на Широкой Речке с ежедневным фотоотчётом.',
+      url: 'districts/verh-isetskiy.html'
+    },
+    'leninskiy': {
+      title: 'Ленинский район',
+      micros: ['Центр', 'Посадский', 'Зелёная роща', 'Юго-западный'],
+      note: 'Капитальный и дизайнерский ремонт в центре и на Юго-Западе по фиксированной смете.',
+      url: 'districts/leninskiy.html'
+    },
+    'akademicheskiy': {
+      title: 'Академический район',
+      micros: ['Академический (УНЦ)', 'Краснолесье', 'Совхозный', 'Солнечный'],
+      note: 'Специализируемся на сдаче новостроек под ключ (Преображенский, Близкий, Первый Академ).',
+      url: 'districts/akademicheskiy.html'
+    },
+    'oktyabrskiy': {
+      title: 'Октябрьский район',
+      micros: ['Парковый', 'Сибирский', 'Синие Камни', 'ЛесТех', 'Путёвка', 'Машинный', 'Лечебный', 'Компрессорный'],
+      note: 'Ремонт в ЖК Клевер Парк, Парковый квартал, Светлый и выезд в Кольцово без доплат.',
+      url: 'districts/oktyabrskiy.html'
+    },
+    'chkalovskiy': {
+      title: 'Чкаловский район',
+      micros: ['Южный', 'Ботаника', 'Глобус', 'Шишимская горка', 'РТИ', '19-й и 32-й военные городки', 'Никаноровка', 'Елизавет', 'Восточный Уктус', 'Нижнеисетский', 'Химмаш'],
+      note: 'Новостройки Солнечного и Уктуса, бизнес-ЖК Автовокзала и вторичный фонд Ботаники.',
+      url: 'districts/chkalovskiy.html'
+    }
+  };
+
+  var canvas = document.getElementById('ekbMicrosCanvas');
+  var polys = document.querySelectorAll('.micro-poly');
+  var tabs = document.querySelectorAll('.map-tab');
+  var titleEl = document.getElementById('micTitle');
+  var selMicroEl = document.getElementById('micSelectedMicro');
+  var microsEl = document.getElementById('micMicros');
+  var noteEl = document.getElementById('micNote');
+  var linkEl = document.getElementById('micLink');
+
+  if (!polys.length || !titleEl) return;
+
+  var activeDistrict = 'ordzhonikidzevskiy';
+  var activeMicro = null;
+
+  function renderCard(districtKey, microName, isLocked) {
+    var data = EKB_MAP_DATA[districtKey];
+    if (!data) return;
+
+    canvas.classList.add('has-active');
+
+    polys.forEach(function(p){
+      var inDist = p.getAttribute('data-district') === districtKey;
+      var isHov = microName && p.getAttribute('data-micro') === microName;
+      p.classList.toggle('in-district', inDist);
+      p.classList.toggle('is-hovered', Boolean(isHov));
+    });
+
+    tabs.forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-district') === districtKey);
+    });
+
+    titleEl.textContent = data.title;
+    selMicroEl.textContent = microName ? ('Микрорайон: ' + microName) : (isLocked ? 'Район зафиксирован кликом' : 'Административный район');
+    noteEl.textContent = data.note;
+    linkEl.href = data.url;
+    
+    microsEl.innerHTML = data.micros.map(function(m){
+      var cls = (microName && m === microName) ? ' class="active-chip"' : '';
+      return '<span' + cls + '>' + m + '</span>';
+    }).join('');
+  }
+
+  renderCard(activeDistrict, null, true);
+
+  polys.forEach(function(poly){
+    var distKey = poly.getAttribute('data-district');
+    var microName = poly.getAttribute('data-micro');
+
+    poly.addEventListener('click', function(e){
+      e.stopPropagation();
+      activeDistrict = distKey;
+      activeMicro = microName;
+      renderCard(activeDistrict, activeMicro, true);
+    });
+
+    poly.addEventListener('mouseenter', function(){
+      renderCard(distKey, microName, false);
+    });
+  });
+
+  canvas.addEventListener('mouseleave', function(){
+    renderCard(activeDistrict, activeMicro, true);
+  });
+
+  tabs.forEach(function(tab){
+    var distKey = tab.getAttribute('data-district');
+    tab.addEventListener('click', function(){
+      activeDistrict = distKey;
+      activeMicro = null;
+      renderCard(activeDistrict, null, true);
+    });
+  });
+})();
+</script>	
+	
 </body>
 </html>
