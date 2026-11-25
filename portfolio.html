@@ -1542,6 +1542,12 @@ body.modal-open .scroll-top-btn {
   </div>
 </div>
 
+<button type="button" id="scrollTopBtn" class="scroll-top-btn" aria-label="Наверх" title="Наверх">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+</button>
+  
 <footer class="footer">
   <div class="container footer-inner">
     <span>© 2026 Прораб Екб · Ремонт квартир и санузлов в Екатеринбурге</span>
@@ -2803,6 +2809,19 @@ document.addEventListener('keydown', (e) => {
 
 initAuth();
 loadPortfolio();
+
+// Кнопка "Наверх"
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+if (scrollTopBtn) {
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', window.scrollY > 450);
+  }, { passive: true });
+
+  scrollTopBtn.onclick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+}  
+  
 </script>
 </body>
 </html>
