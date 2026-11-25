@@ -576,7 +576,7 @@ button, input, select, textarea { font-family: inherit; }
 .gallery-grid {
   columns: 3 310px;
   column-gap: 20px;
-  padding-bottom: 56px;
+  padding-bottom: 16px;
 }
 .photo-card {
   break-inside: avoid;
@@ -774,6 +774,92 @@ button, input, select, textarea { font-family: inherit; }
   color: #fff;
 }
 
+/* ===== ПАГИНАЦИЯ + ЗАГРУЗИТЬ ЕЩЁ ===== */
+.pagination-bar {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0 56px;
+}
+.pagination-bar.visible {
+  display: flex;
+}
+.pagination-status {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+.btn-load-more {
+  background: var(--bg-dark);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background .2s, transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 14px rgba(18, 21, 26, 0.14);
+}
+.btn-load-more:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(232, 104, 32, 0.3);
+}
+.page-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.page-btn {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 11px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: .15s;
+}
+.page-btn:hover:not(:disabled):not(.active) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.page-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(232, 104, 32, 0.3);
+}
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.page-ellipsis {
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 0 4px;
+  user-select: none;
+}
+
 .empty-state {
   text-align: center;
   padding: 54px 20px;
@@ -840,7 +926,7 @@ button, input, select, textarea { font-family: inherit; }
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: none; /* Позволяет обрабатывать щипок двумя пальцами на iPhone */
+  touch-action: none;
 }
 #lbMediaSlot {
   width: 100%;
@@ -888,7 +974,6 @@ button, input, select, textarea { font-family: inherit; }
   z-index: 8;
 }
 
-/* Панель кнопок масштаба (+ / - / 100%) */
 .lb-zoom-controls {
   position: absolute;
   bottom: 14px;
@@ -1131,6 +1216,7 @@ button, input, select, textarea { font-family: inherit; }
   .btn-calc-short { display: inline; }
   .search-box { max-width: 100%; min-width: 100%; }
   .preview-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .btn-load-more { width: 100%; }
 }
 @media (min-width: 561px) {
   .btn-calc-short { display: none; }
@@ -1275,6 +1361,16 @@ button, input, select, textarea { font-family: inherit; }
 
   <!-- ЖИВАЯ КАСКАДНАЯ ГАЛЕРЕЯ -->
   <section id="galleryGrid" class="gallery-grid"></section>
+
+  <!-- ПАГИНАЦИЯ И КНОПКА ЗАГРУЗИТЬ ЕЩЁ -->
+  <nav class="pagination-bar" id="paginationBar" aria-label="Навигация по страницам портфолио">
+    <div class="pagination-status" id="paginationStatus"></div>
+    <div class="pagination-controls">
+      <button type="button" class="btn-load-more" id="loadMoreBtn">Загрузить ещё</button>
+      <div class="page-numbers" id="pageNumbers"></div>
+    </div>
+  </nav>
+
   <div id="emptyState" class="empty-state" style="display:none;">
     <h3>По выбранной комбинации фильтров работ пока нет</h3>
     <p style="color: var(--text-muted); margin: 8px 0 16px;">Попробуйте снять один из выбранных хэштегов или сбросить фильтры.</p>
@@ -1344,7 +1440,7 @@ button, input, select, textarea { font-family: inherit; }
   </div>
 </div>
 
-<!-- ЛАЙТБОКС (ЕДИНЫЙ РАЗМЕР НА IPHONE + ЗУМ ФОТО + СВАЙПЫ + КЛИКАБЕЛЬНЫЕ ТЕГИ) -->
+<!-- ЛАЙТБОКС -->
 <div class="modal-backdrop lightbox-backdrop" id="lightboxModal">
   <div class="lightbox-box">
     <button class="lb-close" id="lbClose" type="button" title="Закрыть (Esc)">✕</button>
@@ -1393,7 +1489,7 @@ button, input, select, textarea { font-family: inherit; }
 // ВСТАВЬ СВОИ ДАННЫЕ ИЗ SUPABASE
 // =========================================================
 const SUPABASE_URL = 'https://wdjktxbzaflztbymglun.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkamt0eGJ6YWZsenRieW1nbHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1OTgwNTQsImV4cCI6MjExMTE3NDA1NH0.fwARQ3fAMXa5URnk1gnVWl9PlbdUJ2qz18EtEPdg5DM';
+const SUPABASE_ANON_KEY = 'ВСТАВЬ_СВОЙ_КЛЮЧ_eyJhbGci...';
 // =========================================================
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1406,6 +1502,9 @@ const DEFAULT_CATEGORIES = [
   'Демонтаж и черновые'
 ];
 
+// Настройка лимита карточек на одной странице
+const ITEMS_PER_PAGE = 12;
+
 let allItems = [];
 let filteredItems = [];
 let selectedFiles = [];
@@ -1416,6 +1515,10 @@ let searchQuery = '';
 let lightboxIndex = 0;
 let cloudExpanded = false;
 
+// Состояние пагинации (страницы + кнопка "Загрузить ещё")
+let startPage = 1;
+let endPage = 1;
+
 const galleryGrid = document.getElementById('galleryGrid');
 const emptyState = document.getElementById('emptyState');
 const totalCountEl = document.getElementById('totalCount');
@@ -1425,6 +1528,16 @@ const adminPanel = document.getElementById('adminPanel');
 const authBtn = document.getElementById('authBtn');
 const loginModal = document.getElementById('loginModal');
 const editModal = document.getElementById('editModal');
+
+const paginationBar = document.getElementById('paginationBar');
+const paginationStatus = document.getElementById('paginationStatus');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+const pageNumbers = document.getElementById('pageNumbers');
+
+function resetPagination() {
+  startPage = 1;
+  endPage = 1;
+}
 
 function parseCategories(str) {
   if (!str) return [];
@@ -1452,6 +1565,7 @@ function toggleTagFilter(tag) {
   } else {
     activeTags.add(tag);
   }
+  resetPagination();
   buildHashtagCloud();
   applyFilters();
 }
@@ -1461,6 +1575,7 @@ function jumpToSingleTag(tag) {
   activeCategory = 'all';
   activeTags.clear();
   activeTags.add(tag);
+  resetPagination();
   buildCategoryTabs();
   buildHashtagCloud();
   applyFilters();
@@ -1709,6 +1824,7 @@ document.getElementById('uploadForm').onsubmit = async (e) => {
     document.getElementById('uploadForm').reset();
     selectedFiles = [];
     renderPreviews();
+    resetPagination();
     await loadPortfolio();
     setTimeout(() => {
       statusEl.textContent = '';
@@ -1806,6 +1922,7 @@ function buildHashtagCloud() {
     clearTagsBtn.textContent = `✕ Сбросить теги (${activeTags.size})`;
     clearTagsBtn.onclick = () => {
       activeTags.clear();
+      resetPagination();
       buildHashtagCloud();
       applyFilters();
     };
@@ -1866,7 +1983,7 @@ function buildQuickPicks() {
   renderChips('quickTagsEdit', recentTags, 'editTags', ' ');
 }
 
-// 5. Фильтрация и отрисовка карточек
+// 5. Фильтрация и отрисовка карточек с лимитом + пагинацией + "Загрузить ещё"
 function applyFilters() {
   const q = searchQuery.toLowerCase().trim();
 
@@ -1893,16 +2010,110 @@ function applyFilters() {
   renderGallery();
 }
 
+function goToPage(page) {
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
+  const target = Math.max(1, Math.min(totalPages, page));
+  startPage = target;
+  endPage = target;
+  renderGallery();
+  const filterBar = document.getElementById('filterBar');
+  if (filterBar) {
+    filterBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+loadMoreBtn.onclick = () => {
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
+  if (endPage < totalPages) {
+    endPage += 1;
+    renderGallery();
+  }
+};
+
+function renderPaginationControls(totalItems, totalPages, startIndex, endIndex) {
+  if (totalItems <= ITEMS_PER_PAGE) {
+    paginationBar.classList.remove('visible');
+    return;
+  }
+
+  paginationBar.classList.add('visible');
+  paginationStatus.textContent = `Показано ${startIndex + 1}–${endIndex} из ${totalItems}`;
+
+  const remaining = totalItems - endIndex;
+  if (remaining > 0) {
+    const nextBatch = Math.min(ITEMS_PER_PAGE, remaining);
+    loadMoreBtn.style.display = 'inline-flex';
+    loadMoreBtn.textContent = `Загрузить ещё (${nextBatch})`;
+  } else {
+    loadMoreBtn.style.display = 'none';
+  }
+
+  // Построение кнопок страниц: ‹ 1 2 3 ... N ›
+  pageNumbers.innerHTML = '';
+
+  const prevPageBtn = document.createElement('button');
+  prevPageBtn.type = 'button';
+  prevPageBtn.className = 'page-btn';
+  prevPageBtn.textContent = '‹';
+  prevPageBtn.title = 'Предыдущая страница';
+  prevPageBtn.disabled = startPage <= 1;
+  prevPageBtn.onclick = () => goToPage(startPage - 1);
+  pageNumbers.appendChild(prevPageBtn);
+
+  const pagesToDraw = new Set([1, totalPages]);
+  for (let p = startPage - 1; p <= endPage + 1; p++) {
+    if (p >= 1 && p <= totalPages) pagesToDraw.add(p);
+  }
+  const sortedPages = [...pagesToDraw].sort((a, b) => a - b);
+
+  let lastDrawn = 0;
+  sortedPages.forEach(p => {
+    if (p - lastDrawn > 1) {
+      const dots = document.createElement('span');
+      dots.className = 'page-ellipsis';
+      dots.textContent = '…';
+      pageNumbers.appendChild(dots);
+    }
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'page-btn' + (p >= startPage && p <= endPage ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => goToPage(p);
+    pageNumbers.appendChild(btn);
+    lastDrawn = p;
+  });
+
+  const nextPageBtn = document.createElement('button');
+  nextPageBtn.type = 'button';
+  nextPageBtn.className = 'page-btn';
+  nextPageBtn.textContent = '›';
+  nextPageBtn.title = 'Следующая страница';
+  nextPageBtn.disabled = endPage >= totalPages;
+  nextPageBtn.onclick = () => goToPage(endPage + 1);
+  pageNumbers.appendChild(nextPageBtn);
+}
+
 function renderGallery() {
   galleryGrid.innerHTML = '';
 
   if (!filteredItems.length) {
     emptyState.style.display = 'block';
+    paginationBar.classList.remove('visible');
     return;
   }
   emptyState.style.display = 'none';
 
-  filteredItems.forEach((item, idx) => {
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
+  if (startPage > totalPages) startPage = totalPages;
+  if (endPage > totalPages) endPage = totalPages;
+  if (endPage < startPage) endPage = startPage;
+
+  const startIndex = (startPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(filteredItems.length, endPage * ITEMS_PER_PAGE);
+  const pageItems = filteredItems.slice(startIndex, endIndex);
+
+  pageItems.forEach((item, localIdx) => {
+    const globalIdx = startIndex + localIdx;
     const card = document.createElement('article');
     card.className = 'photo-card';
     const isVid = isVideoItem(item);
@@ -1951,7 +2162,7 @@ function renderGallery() {
       : '';
 
     card.innerHTML = `
-      <div class="photo-wrap" data-idx="${idx}">
+      <div class="photo-wrap" data-idx="${globalIdx}">
         ${adminBtnsHtml}
         ${mediaHtml}
       </div>
@@ -1966,7 +2177,7 @@ function renderGallery() {
 
     card.querySelector('.photo-wrap').onclick = (e) => {
       if (e.target.closest('.card-admin-actions')) return;
-      openLightbox(idx);
+      openLightbox(globalIdx);
     };
 
     const descMoreBtn = card.querySelector('.desc-more-btn');
@@ -2011,6 +2222,8 @@ function renderGallery() {
 
     galleryGrid.appendChild(card);
   });
+
+  renderPaginationControls(filteredItems.length, totalPages, startIndex, endIndex);
 }
 
 // 6. Редактирование карточки
@@ -2069,6 +2282,7 @@ catTabs.onclick = (e) => {
   document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   activeCategory = btn.dataset.cat;
+  resetPagination();
   applyFilters();
 };
 
@@ -2077,12 +2291,14 @@ const searchClear = document.getElementById('searchClear');
 searchInput.oninput = () => {
   searchQuery = searchInput.value;
   searchClear.classList.toggle('visible', searchQuery.length > 0);
+  resetPagination();
   applyFilters();
 };
 searchClear.onclick = () => {
   searchInput.value = '';
   searchQuery = '';
   searchClear.classList.remove('visible');
+  resetPagination();
   applyFilters();
 };
 document.getElementById('resetFiltersBtn').onclick = () => {
@@ -2091,6 +2307,7 @@ document.getElementById('resetFiltersBtn').onclick = () => {
   searchQuery = '';
   searchInput.value = '';
   searchClear.classList.remove('visible');
+  resetPagination();
   buildCategoryTabs();
   buildHashtagCloud();
   applyFilters();
@@ -2190,7 +2407,6 @@ lbZoomLevel.onclick = (e) => {
   resetZoom(true);
 };
 
-// Колёсико мыши на ПК для плавного приближения
 lbMediaContainer.addEventListener('wheel', (e) => {
   const img = lbMediaSlot.querySelector('img');
   if (!img) return;
@@ -2199,9 +2415,7 @@ lbMediaContainer.addEventListener('wheel', (e) => {
   setZoomAroundPoint(zoomScale * factor, e.clientX, e.clientY, false);
 }, { passive: false });
 
-// Перетаскивание увеличенного фото мышью на ПК + двойной клик
 let isMouseDragging = false;
-let mouseMoved = false;
 let dragStartX = 0;
 let dragStartY = 0;
 let dragStartTx = 0;
@@ -2212,7 +2426,6 @@ lbMediaContainer.addEventListener('mousedown', (e) => {
   if (!img || zoomScale <= 1.01 || e.button !== 0) return;
   e.preventDefault();
   isMouseDragging = true;
-  mouseMoved = false;
   dragStartX = e.clientX;
   dragStartY = e.clientY;
   dragStartTx = zoomTx;
@@ -2224,7 +2437,6 @@ window.addEventListener('mousemove', (e) => {
   if (!isMouseDragging) return;
   const dx = e.clientX - dragStartX;
   const dy = e.clientY - dragStartY;
-  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) mouseMoved = true;
   zoomTx = dragStartTx + dx;
   zoomTy = dragStartTy + dy;
   applyZoomTransform(false);
@@ -2247,8 +2459,7 @@ lbMediaContainer.addEventListener('dblclick', (e) => {
   }
 });
 
-// Жесты на iPhone / Android: щипок двумя пальцами (pinch), перетаскивание 1 пальцем, двойной тап и свайп
-let touchMode = 'none'; // 'swipe' | 'pan' | 'pinch'
+let touchMode = 'none';
 let touchStartX = 0;
 let touchStartY = 0;
 let panStartTx = 0;
@@ -2284,7 +2495,6 @@ lbMediaContainer.addEventListener('touchstart', (e) => {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
 
-    // Проверка двойного тапа по фото
     if (img) {
       const now = Date.now();
       if (now - lastTapTime < 280) {
@@ -2365,6 +2575,17 @@ lbMediaContainer.addEventListener('touchend', (e) => {
   touchMode = 'none';
 }, { passive: true });
 
+function syncGalleryPageWithLightbox(idx) {
+  const targetPage = Math.floor(idx / ITEMS_PER_PAGE) + 1;
+  if (targetPage < startPage) {
+    startPage = targetPage;
+    renderGallery();
+  } else if (targetPage > endPage) {
+    endPage = targetPage;
+    renderGallery();
+  }
+}
+
 function openLightbox(idx) {
   lightboxIndex = idx;
   updateLightbox();
@@ -2382,12 +2603,14 @@ function closeLightbox() {
 function showPrevItem() {
   if (!filteredItems.length) return;
   lightboxIndex = (lightboxIndex - 1 + filteredItems.length) % filteredItems.length;
+  syncGalleryPageWithLightbox(lightboxIndex);
   updateLightbox();
 }
 
 function showNextItem() {
   if (!filteredItems.length) return;
   lightboxIndex = (lightboxIndex + 1) % filteredItems.length;
+  syncGalleryPageWithLightbox(lightboxIndex);
   updateLightbox();
 }
 
@@ -2455,7 +2678,6 @@ lightboxModal.onclick = (e) => {
   if (e.target === lightboxModal) closeLightbox();
 };
 
-// Управление стрелками, + / - и Esc на ПК
 document.addEventListener('keydown', (e) => {
   if (!lightboxModal.classList.contains('open')) return;
   if (editModal.classList.contains('open')) return;
