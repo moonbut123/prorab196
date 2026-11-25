@@ -451,14 +451,11 @@ button, input, select, textarea { font-family: inherit; }
 }
 .cat-tabs {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 2px;
   max-width: 100%;
 }
-.cat-tabs::-webkit-scrollbar { display: none; }
 .cat-tab {
   padding: 7px 15px;
   border-radius: 99px;
@@ -481,6 +478,34 @@ button, input, select, textarea { font-family: inherit; }
 .cat-tab.video-tab.active {
   background: var(--accent);
   border-color: var(--accent);
+}
+.cat-toggle-btn {
+  padding: 7px 14px;
+  border-radius: 99px;
+  border: 1px dashed var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: .15s;
+}
+.cat-toggle-btn:hover {
+  background: var(--accent-soft);
+}
+
+@media (max-width: 860px) {
+  .cat-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-toggle-btn { display: none; }
 }
 .search-box {
   position: relative;
