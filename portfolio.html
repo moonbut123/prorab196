@@ -132,8 +132,9 @@ button, input, select, textarea { font-family: inherit; }
   transition: .2s;
   white-space: nowrap;
 }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-accent { background: var(--accent); color: #fff; }
-.btn-accent:hover { background: var(--accent-hover); }
+.btn-accent:hover:not(:disabled) { background: var(--accent-hover); }
 .btn-ghost-dark {
   background: rgba(255,255,255,.08);
   color: #d5dae2;
@@ -222,7 +223,7 @@ button, input, select, textarea { font-family: inherit; }
   color: #b4bcc8;
 }
 
-/* ===== ПАНЕЛЬ АДМИНА ===== */
+/* ===== ПАНЕЛЬ АДМИНА И УЛУЧШЕННЫЙ ЗАГРУЗЧИК ===== */
 .admin-panel {
   display: none;
   background: #fff;
@@ -304,18 +305,132 @@ button, input, select, textarea { font-family: inherit; }
   color: var(--accent);
   background: var(--accent-soft);
 }
-.file-drop {
-  display: block;
+
+/* Визуальная зона загрузки и превью */
+.uploader-zone {
   border: 2px dashed #cbd2df;
-  border-radius: var(--radius-sm);
-  padding: 14px;
+  border-radius: var(--radius);
+  padding: 24px 16px;
   text-align: center;
   cursor: pointer;
-  background: var(--bg-soft);
-  transition: .2s;
-  font-size: 13px;
+  background: linear-gradient(180deg, #fafbfc 0%, #f3f5f8 100%);
+  transition: all .2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-.file-drop:hover { border-color: var(--accent); background: var(--accent-soft); }
+.uploader-zone:hover, .uploader-zone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.uploader-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  font-size: 22px;
+}
+.uploader-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+}
+.uploader-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.preview-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #e9ecf1;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.preview-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(20, 23, 28, 0.82);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.preview-remove:hover { background: #dc2626; }
+.preview-size {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: rgba(20, 23, 28, 0.72);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.preview-add-more {
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  border: 2px dashed #cbd2df;
+  background: var(--bg-soft);
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: .15s;
+}
+.preview-add-more:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.progress-wrap {
+  display: none;
+  width: 100%;
+  background: #e5e7eb;
+  border-radius: 99px;
+  height: 8px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.progress-wrap.active { display: block; }
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), #ff8a3d);
+  transition: width .25s ease;
+}
 .upload-status {
   font-size: 13px;
   font-weight: 600;
@@ -492,8 +607,8 @@ button, input, select, textarea { font-family: inherit; }
 .btn-card-action {
   border: none;
   border-radius: 6px;
-  padding: 5px 8px;
-  font-size: 11px;
+  padding: 6px 9px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,.3);
@@ -675,6 +790,7 @@ button, input, select, textarea { font-family: inherit; }
   .btn-calc-full { display: none; }
   .btn-calc-short { display: inline; }
   .search-box { max-width: 100%; min-width: 100%; }
+  .preview-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
 }
 @media (min-width: 481px) {
   .btn-calc-short { display: none; }
@@ -744,6 +860,20 @@ button, input, select, textarea { font-family: inherit; }
     </div>
 
     <form id="uploadForm">
+      <!-- Визуальный выбор и превью фотографий -->
+      <div class="field" style="margin-bottom: 16px;">
+        <label>Фотографии объекта *</label>
+        <input type="file" id="workFiles" accept="image/*" multiple style="display:none;">
+        
+        <div class="uploader-zone" id="uploaderZone">
+          <div class="uploader-icon">📸</div>
+          <div class="uploader-title">Выбрать фото из галереи или перетащить сюда</div>
+          <div class="uploader-sub">Можно выбрать сразу несколько снимков · Автосжатие в WebP без потери качества</div>
+        </div>
+
+        <div class="preview-grid" id="previewGrid" style="display:none;"></div>
+      </div>
+
       <div class="admin-grid">
         <div class="field">
           <label>Название / суть работы *</label>
@@ -773,12 +903,8 @@ button, input, select, textarea { font-family: inherit; }
         <textarea id="workDescription" placeholder="Сделали разводку коллекторного узла, собрали короб под инсталляцию, уложили крупноформатный керамогранит с запилом под 45°..."></textarea>
       </div>
 
-      <div class="field" style="margin-top: 12px;">
-        <label>Фотографии (можно выбрать пачкой — сожмутся в WebP автоматически) *</label>
-        <label class="file-drop" id="fileDropLabel">
-          <input type="file" id="workFiles" accept="image/*" multiple required style="display:none;">
-          <span id="fileDropText">Нажмите, чтобы выбрать фото с телефона или ПК</span>
-        </label>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar" id="progressBar"></div>
       </div>
 
       <div style="margin-top: 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
@@ -868,10 +994,10 @@ button, input, select, textarea { font-family: inherit; }
         <input type="text" id="editTags">
         <div class="quick-picks" id="quickTagsEdit"></div>
       </div>
-      <p id="editStatus" style="color:var(--accent); font-size:13px; font-weight:600; margin-bottom:10px;"></p>
+      <p id="editStatus" style="color:#dc2626; font-size:13px; font-weight:600; margin-bottom:10px;"></p>
       <div style="display:flex; gap:10px; justify-content:flex-end;">
         <button type="button" id="closeEditBtn" class="btn btn-outline">Отмена</button>
-        <button type="submit" class="btn btn-accent">Сохранить</button>
+        <button type="submit" id="editSaveBtn" class="btn btn-accent">Сохранить</button>
       </div>
     </form>
   </div>
@@ -932,6 +1058,7 @@ const DEFAULT_CATEGORIES = [
 
 let allItems = [];
 let filteredItems = [];
+let selectedFiles = []; // Массив выбранных файлов до загрузки
 let currentUser = null;
 let activeCategory = 'all';
 let activeTag = '';
@@ -948,17 +1075,11 @@ const authBtn = document.getElementById('authBtn');
 const loginModal = document.getElementById('loginModal');
 const editModal = document.getElementById('editModal');
 
-// Разбор категорий из строки (поддержка нескольких через запятую)
 function parseCategories(str) {
   if (!str) return [];
-  return [...new Set(
-    str.split(',')
-      .map(s => s.trim())
-      .filter(Boolean)
-  )];
+  return [...new Set(str.split(',').map(s => s.trim()).filter(Boolean))];
 }
 
-// Разбор хэштегов из строки
 function parseHashtags(str) {
   if (!str) return [];
   return [...new Set(
@@ -1015,7 +1136,92 @@ document.getElementById('logoutBtn').onclick = async () => {
   await sb.auth.signOut();
 };
 
-// 2. Сжатие фото в WebP
+// 2. Визуальный выбор файлов, Drag-and-Drop и превью
+const workFilesInput = document.getElementById('workFiles');
+const uploaderZone = document.getElementById('uploaderZone');
+const previewGrid = document.getElementById('previewGrid');
+
+uploaderZone.onclick = () => workFilesInput.click();
+
+uploaderZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploaderZone.classList.add('dragover');
+});
+uploaderZone.addEventListener('dragleave', () => {
+  uploaderZone.classList.remove('dragover');
+});
+uploaderZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploaderZone.classList.remove('dragover');
+  if (e.dataTransfer.files?.length) {
+    addFilesToSelection(e.dataTransfer.files);
+  }
+});
+
+workFilesInput.onchange = () => {
+  if (workFilesInput.files?.length) {
+    addFilesToSelection(workFilesInput.files);
+    workFilesInput.value = '';
+  }
+};
+
+function addFilesToSelection(fileList) {
+  const newFiles = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  selectedFiles = [...selectedFiles, ...newFiles];
+  renderPreviews();
+}
+
+function renderPreviews() {
+  if (!selectedFiles.length) {
+    uploaderZone.style.display = 'flex';
+    previewGrid.style.display = 'none';
+    previewGrid.innerHTML = '';
+    return;
+  }
+
+  uploaderZone.style.display = 'none';
+  previewGrid.style.display = 'grid';
+  previewGrid.innerHTML = '';
+
+  selectedFiles.forEach((file, index) => {
+    const item = document.createElement('div');
+    item.className = 'preview-item';
+
+    const img = document.createElement('img');
+    const url = URL.createObjectURL(file);
+    img.src = url;
+    img.onload = () => URL.revokeObjectURL(url);
+
+    const sizeBadge = document.createElement('span');
+    sizeBadge.className = 'preview-size';
+    sizeBadge.textContent = (file.size / 1024 / 1024).toFixed(1) + ' МБ';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'preview-remove';
+    removeBtn.textContent = '✕';
+    removeBtn.title = 'Убрать фото';
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      selectedFiles.splice(index, 1);
+      renderPreviews();
+    };
+
+    item.appendChild(img);
+    item.appendChild(sizeBadge);
+    item.appendChild(removeBtn);
+    previewGrid.appendChild(item);
+  });
+
+  // Плитка "+ Добавить ещё"
+  const addMore = document.createElement('div');
+  addMore.className = 'preview-add-more';
+  addMore.innerHTML = '<span style="font-size:22px; line-height:1;">+</span><span>Добавить ещё</span>';
+  addMore.onclick = () => workFilesInput.click();
+  previewGrid.appendChild(addMore);
+}
+
+// Сжатие фото в WebP
 function compressImageToWebP(file, maxWidth = 1600, quality = 0.82) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -1042,21 +1248,16 @@ function compressImageToWebP(file, maxWidth = 1600, quality = 0.82) {
   });
 }
 
-const workFilesInput = document.getElementById('workFiles');
-workFilesInput.onchange = () => {
-  const count = workFilesInput.files.length;
-  document.getElementById('fileDropText').textContent = count
-    ? `Выбрано файлов: ${count} шт.`
-    : 'Нажмите, чтобы выбрать фото с телефона или ПК';
-};
-
 // 3. Публикация новых фото
 document.getElementById('uploadForm').onsubmit = async (e) => {
   e.preventDefault();
   if (!currentUser) return;
 
-  const files = Array.from(workFilesInput.files);
-  if (!files.length) return;
+  const statusEl = document.getElementById('uploadStatus');
+  if (!selectedFiles.length) {
+    statusEl.textContent = 'Сначала выберите хотя бы одно фото!';
+    return;
+  }
 
   const title = document.getElementById('workTitle').value.trim();
   const cats = parseCategories(document.getElementById('workCategory').value);
@@ -1065,14 +1266,18 @@ document.getElementById('uploadForm').onsubmit = async (e) => {
   const description = document.getElementById('workDescription').value.trim();
   const hashtags = parseHashtags(document.getElementById('workTags').value);
 
-  const statusEl = document.getElementById('uploadStatus');
   const submitBtn = document.getElementById('uploadSubmitBtn');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
+
   submitBtn.disabled = true;
+  progressWrap.classList.add('active');
+  progressBar.style.width = '5%';
 
   try {
-    for (let i = 0; i < files.length; i++) {
-      statusEl.textContent = `Сжимаем и загружаем фото ${i + 1} из ${files.length}...`;
-      const webpBlob = await compressImageToWebP(files[i]);
+    for (let i = 0; i < selectedFiles.length; i++) {
+      statusEl.textContent = `Сжимаем и загружаем фото ${i + 1} из ${selectedFiles.length}...`;
+      const webpBlob = await compressImageToWebP(selectedFiles[i]);
       const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.webp`;
 
       const { error: uploadError } = await sb.storage
@@ -1094,13 +1299,20 @@ document.getElementById('uploadForm').onsubmit = async (e) => {
         hashtags
       });
       if (dbError) throw dbError;
+
+      progressBar.style.width = Math.round(((i + 1) / selectedFiles.length) * 100) + '%';
     }
 
     statusEl.textContent = 'Готово! Фото опубликованы.';
     document.getElementById('uploadForm').reset();
-    document.getElementById('fileDropText').textContent = 'Нажмите, чтобы выбрать фото с телефона или ПК';
+    selectedFiles = [];
+    renderPreviews();
     await loadPortfolio();
-    setTimeout(() => { statusEl.textContent = ''; }, 3000);
+    setTimeout(() => {
+      statusEl.textContent = '';
+      progressWrap.classList.remove('active');
+      progressBar.style.width = '0%';
+    }, 2500);
   } catch (err) {
     console.error(err);
     statusEl.textContent = 'Ошибка при загрузке: ' + err.message;
@@ -1129,7 +1341,6 @@ async function loadPortfolio() {
   applyFilters();
 }
 
-// Собираем вкладки категорий динамически из базы + базовые
 function buildCategoryTabs() {
   const catSet = new Set(DEFAULT_CATEGORIES);
   allItems.forEach(item => {
@@ -1146,7 +1357,6 @@ function buildCategoryTabs() {
   });
 }
 
-// Облако тегов в фильтре
 function buildHashtagCloud() {
   const counts = {};
   allItems.forEach(item => {
@@ -1174,7 +1384,6 @@ function buildHashtagCloud() {
   });
 }
 
-// Быстрые кнопки выбора категорий и последних хэштегов в формах загрузки и редактирования
 function buildQuickPicks() {
   const catSet = new Set(DEFAULT_CATEGORIES);
   const recentTags = [];
@@ -1335,16 +1544,29 @@ document.getElementById('editForm').onsubmit = async (e) => {
   const district = document.getElementById('editDistrict').value.trim();
   const hashtags = parseHashtags(document.getElementById('editTags').value);
   const statusEl = document.getElementById('editStatus');
+  const saveBtn = document.getElementById('editSaveBtn');
 
-  statusEl.textContent = 'Сохраняем...';
+  saveBtn.disabled = true;
+  statusEl.style.color = 'var(--accent)';
+  statusEl.textContent = 'Сохраняем изменения...';
 
-  const { error } = await sb
+  const { data, error } = await sb
     .from('portfolio_items')
     .update({ title, description, category, district, hashtags })
-    .eq('id', id);
+    .eq('id', id)
+    .select();
+
+  saveBtn.disabled = false;
 
   if (error) {
-    statusEl.textContent = 'Ошибка: ' + error.message;
+    statusEl.style.color = '#dc2626';
+    statusEl.textContent = 'Ошибка Supabase: ' + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    statusEl.style.color = '#dc2626';
+    statusEl.textContent = 'Нет прав на обновление (выполни SQL-политику UPDATE в Supabase).';
     return;
   }
 
