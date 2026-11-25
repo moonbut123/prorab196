@@ -597,7 +597,7 @@ button, input, select, textarea { font-family: inherit; }
 }
 .tag-toggle-btn:hover { background: var(--accent-soft); }
 
-/* ===== ЖИВАЯ КАСКАДНАЯ ЛЕНТА НА СТРАНИЦЕ (MASONRY) ===== */
+/* ===== ЖИВАЯ КАСКАДНАЯ ЛЕНТА НА СТРАНИЦЕ (GRID) ===== */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -813,6 +813,7 @@ button, input, select, textarea { font-family: inherit; }
   align-items: center;
   gap: 14px;
   padding: 12px 0 56px;
+  overflow-anchor: none;
 }
 .pagination-bar.visible {
   display: flex;
@@ -1254,13 +1255,6 @@ button, input, select, textarea { font-family: inherit; }
   .btn-calc-short { display: none; }
 }
 
-.gallery-grid {
-  overflow-anchor: none;
-}
-.pagination-bar {
-  overflow-anchor: none;
-}
-
 /* ===== КНОПКА "НАВЕРХ" ===== */
 .scroll-top-btn {
   position: fixed;
@@ -1313,7 +1307,6 @@ body.modal-open .scroll-top-btn {
     background: rgba(18, 21, 26, 0.65);
   }
 }
-  
 </style>
 </head>
 <body>
@@ -1613,6 +1606,7 @@ let activeTags = new Set();
 let searchQuery = '';
 let lightboxIndex = 0;
 let cloudExpanded = false;
+let catsExpanded = false;
 
 // Состояние пагинации (страницы + кнопка "Загрузить ещё")
 let startPage = 1;
@@ -1966,6 +1960,17 @@ function buildCategoryTabs() {
     if (isVideoItem(item)) hasVideos = true;
   });
 
+  const allCats = [...catSet];
+  const isMobile = window.innerWidth <= 860;
+  const visibleLimit = 5;
+
+  let catsToShow = (isMobile || catsExpanded) ? allCats : allCats.slice(0, visibleLimit);
+  if (!isMobile && !catsExpanded && activeCategory !== 'all' && activeCategory !== '__video__') {
+    if (allCats.includes(activeCategory) && !catsToShow.includes(activeCategory)) {
+      catsToShow = [...catsToShow, activeCategory];
+    }
+  }
+
   catTabs.innerHTML = `<button class="cat-tab ${activeCategory === 'all' ? 'active' : ''}" data-cat="all">Все работы</button>`;
 
   if (hasVideos) {
@@ -1976,13 +1981,27 @@ function buildCategoryTabs() {
     catTabs.appendChild(vBtn);
   }
 
-  catSet.forEach(cat => {
+  catsToShow.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'cat-tab' + (activeCategory === cat ? ' active' : '');
     btn.dataset.cat = cat;
     btn.textContent = cat;
     catTabs.appendChild(btn);
   });
+
+  if (!isMobile && allCats.length > visibleLimit) {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'cat-toggle-btn';
+    toggleBtn.textContent = catsExpanded
+      ? 'Свернуть ↑'
+      : `Все категории (${allCats.length}) ↓`;
+    toggleBtn.onclick = () => {
+      catsExpanded = !catsExpanded;
+      buildCategoryTabs();
+    };
+    catTabs.appendChild(toggleBtn);
+  }
 }
 
 function buildHashtagCloud() {
@@ -2832,6 +2851,15 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+let lastIsMobileView = window.innerWidth <= 860;
+window.addEventListener('resize', () => {
+  const nowIsMobile = window.innerWidth <= 860;
+  if (nowIsMobile !== lastIsMobileView) {
+    lastIsMobileView = nowIsMobile;
+    buildCategoryTabs();
+  }
+});
+
 initAuth();
 loadPortfolio();
 
@@ -2845,8 +2873,7 @@ if (scrollTopBtn) {
   scrollTopBtn.onclick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-}  
-  
+}
 </script>
 </body>
 </html>
