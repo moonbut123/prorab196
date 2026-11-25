@@ -1235,6 +1235,59 @@ button, input, select, textarea { font-family: inherit; }
 .pagination-bar {
   overflow-anchor: none;
 }
+
+/* ===== КНОПКА "НАВЕРХ" ===== */
+.scroll-top-btn {
+  position: fixed;
+  right: 20px;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(18, 21, 26, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  border: 1.5px solid rgba(232, 104, 32, 0.75);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 85;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px);
+  transition: opacity .22s ease, transform .22s ease, visibility .22s, background .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.scroll-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.scroll-top-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.scroll-top-btn:active {
+  transform: scale(0.94);
+}
+/* Прячем, когда открыт полноэкранный просмотр фото/видео */
+body.modal-open .scroll-top-btn {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .scroll-top-btn {
+    right: 12px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 42px;
+    height: 42px;
+    background: rgba(18, 21, 26, 0.65);
+  }
+}
   
 </style>
 </head>
