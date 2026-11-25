@@ -1883,7 +1883,7 @@
         <a href="portfolio.html" aria-haspopup="true" aria-expanded="false">Примеры работ</a>
         <div class="portfolio-dropdown" role="menu">
           <a href="#portfolio" role="menuitem">Избранное на странице</a>
-          <a href="/portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
+          <a href="portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
         </div>
       </div>
       <a href="#reviews">Отзывы</a>
@@ -3380,12 +3380,13 @@ function selectDistrict(name) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Плавающая кнопка связи
+  // 1. Плавающая кнопка связи (ТГ / WhatsApp / MAX / Звонок)
   var mainBtn = document.getElementById('mainContactBtn');
   var subMenu = document.getElementById('subMenu');
   if (mainBtn && subMenu) {
     mainBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       mainBtn.classList.toggle('open');
       subMenu.classList.toggle('active');
     });
@@ -3397,7 +3398,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Мобильное меню (только открытие/закрытие — свайп отдельно)
+  // 2. Мобильное меню (бургер)
   var burgerBtn = document.getElementById('burgerBtn');
   var mobileMenu = document.getElementById('mobileMenu');
   var mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
@@ -3405,18 +3406,25 @@ document.addEventListener('DOMContentLoaded', function() {
   var mobileLinks = document.querySelectorAll('.mobile-link');
 
   function closeMobileMenu() {
-    burgerBtn.classList.remove('active');
-    mobileMenu.classList.remove('active');
-    mobileMenuOverlay.classList.remove('active');
+    if (burgerBtn) burgerBtn.classList.remove('active');
+    if (mobileMenu) {
+      mobileMenu.classList.remove('active');
+      mobileMenu.style.transform = '';
+      mobileMenu.style.transition = '';
+    }
+    if (mobileMenuOverlay) {
+      mobileMenuOverlay.classList.remove('active');
+      mobileMenuOverlay.style.opacity = '';
+    }
     document.body.style.overflow = '';
-    mobileMenu.style.transform = '';
-    mobileMenu.style.transition = '';
   }
 
   if (burgerBtn && mobileMenu && mobileMenuOverlay) {
-    burgerBtn.addEventListener('click', function() {
-      if (mobileMenu.classList.contains('active')) closeMobileMenu();
-      else {
+    burgerBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (mobileMenu.classList.contains('active')) {
+        closeMobileMenu();
+      } else {
         burgerBtn.classList.add('active');
         mobileMenu.classList.add('active');
         mobileMenuOverlay.classList.add('active');
@@ -3425,10 +3433,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
     mobileMenuOverlay.addEventListener('click', closeMobileMenu);
-    mobileLinks.forEach(function(link){ link.addEventListener('click', closeMobileMenu); });
+    mobileLinks.forEach(function(link) {
+      link.addEventListener('click', closeMobileMenu);
+    });
   }
 
-// Выпадающие меню в шапке (Районы и Примеры работ) для тач-устройств
+  // 3. Выпадающие меню в шапке (Районы и Примеры работ) для тач-устройств
   ['districtsNav', 'portfolioNav'].forEach(function(navId) {
     var navItem = document.getElementById(navId);
     if (!navItem) return;
@@ -3457,13 +3467,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+});
 
 /* ===== КАЛЬКУЛЯТОР ОРИЕНТИРОВОЧНОЙ СТОИМОСТИ ===== */
-
-
-
-/* ===== КАЛЬКУЛЯТОР ОРИЕНТИРОВОЧНОЙ СТОИМОСТИ ===== */
-(function(){
+(function() {
   var PRICES = {
     cosmetic: 5500,
     capital:  8500,
@@ -3478,11 +3485,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (!typeSelect || !areaInput || !resultEl || !boxEl) return;
 
-  function formatMoney(n){
+  function formatMoney(n) {
     return n.toLocaleString('ru-RU') + ' ₽';
   }
 
-  function recalc(){
+  function recalc() {
     var type = typeSelect.value;
     var area = parseFloat(areaInput.value);
 
@@ -3505,12 +3512,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   typeSelect.addEventListener('change', recalc);
   areaInput.addEventListener('input', recalc);
-
   recalc();
 })();
 
 /* ===== ЗАКРЫТИЕ МОБИЛЬНОГО МЕНЮ СВАЙПОМ ВПРАВО ===== */
-(function(){
+(function() {
   var mobileMenu = document.getElementById('mobileMenu');
   var mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
   var burgerBtn = document.getElementById('burgerBtn');
@@ -3520,17 +3526,19 @@ document.addEventListener('DOMContentLoaded', function() {
   var isSwiping = false, isHorizontal = false;
   var MENU_WIDTH = 0;
 
-  function closeMenu(){
+  function closeMenu() {
     mobileMenu.classList.remove('active');
-    if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+    if (mobileMenuOverlay) {
+      mobileMenuOverlay.classList.remove('active');
+      mobileMenuOverlay.style.opacity = '';
+    }
     if (burgerBtn) burgerBtn.classList.remove('active');
     document.body.style.overflow = '';
     mobileMenu.style.transform = '';
     mobileMenu.style.transition = '';
-    if (mobileMenuOverlay) mobileMenuOverlay.style.opacity = '';
   }
 
-  mobileMenu.addEventListener('touchstart', function(e){
+  mobileMenu.addEventListener('touchstart', function(e) {
     if (!mobileMenu.classList.contains('active')) return;
     if (e.touches.length !== 1) return;
 
@@ -3540,11 +3548,10 @@ document.addEventListener('DOMContentLoaded', function() {
     isSwiping = true;
     isHorizontal = false;
     MENU_WIDTH = mobileMenu.offsetWidth;
-
     mobileMenu.style.transition = 'none';
   }, { passive: true });
 
-  mobileMenu.addEventListener('touchmove', function(e){
+  mobileMenu.addEventListener('touchmove', function(e) {
     if (!isSwiping) return;
 
     currentX = e.touches[0].clientX;
@@ -3562,19 +3569,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var progress = Math.min(dx / MENU_WIDTH, 1);
         mobileMenuOverlay.style.opacity = String(1 - progress * 0.5);
       }
-    }
-    else if (isHorizontal && dx < 0) {
+    } else if (isHorizontal && dx < 0) {
       if (e.cancelable) e.preventDefault();
       mobileMenu.style.transform = 'translateX(0)';
     }
   }, { passive: false });
 
-  mobileMenu.addEventListener('touchend', function(){
+  mobileMenu.addEventListener('touchend', function() {
     if (!isSwiping) return;
     isSwiping = false;
 
     var dx = currentX - startX;
-
     mobileMenu.style.transition = '';
     if (mobileMenuOverlay) mobileMenuOverlay.style.opacity = '';
 
@@ -3583,11 +3588,10 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       mobileMenu.style.transform = '';
     }
-
     isHorizontal = false;
   });
 
-  mobileMenu.addEventListener('touchcancel', function(){
+  mobileMenu.addEventListener('touchcancel', function() {
     isSwiping = false;
     isHorizontal = false;
     mobileMenu.style.transition = '';
