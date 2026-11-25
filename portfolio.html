@@ -2024,10 +2024,27 @@ function goToPage(page) {
 
 loadMoreBtn.onclick = () => {
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
-  if (endPage < totalPages) {
-    endPage += 1;
-    renderGallery();
-  }
+  if (endPage >= totalPages) return;
+
+  const firstNewIndex = endPage * ITEMS_PER_PAGE;
+  const prevScrollY = window.scrollY;
+
+  endPage += 1;
+  renderGallery();
+
+  // Не даём мобильному браузеру утянуть экран вниз вслед за кнопкой
+  window.scrollTo({ top: prevScrollY, behavior: 'instant' });
+
+  // Плавно подводим к первой из только что подгруженных карточек
+  requestAnimationFrame(() => {
+    const firstNewWrap = galleryGrid.querySelector(`.photo-wrap[data-idx="${firstNewIndex}"]`);
+    const firstNewCard = firstNewWrap ? firstNewWrap.closest('.photo-card') : null;
+    if (firstNewCard) {
+      const headerOffset = 76; // высота закреплённой шапки
+      const targetTop = firstNewCard.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+    }
+  });
 };
 
 function renderPaginationControls(totalItems, totalPages, startIndex, endIndex) {
