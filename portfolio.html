@@ -2068,6 +2068,69 @@ loadMoreBtn.onclick = () => {
   }
 };
 
+function renderPaginationControls(totalItems, totalPages, startIndex, endIndex) {
+  if (totalItems <= ITEMS_PER_PAGE) {
+    paginationBar.classList.remove('visible');
+    return;
+  }
+
+  paginationBar.classList.add('visible');
+  paginationStatus.textContent = `Показано ${startIndex + 1}–${endIndex} из ${totalItems}`;
+
+  const remaining = totalItems - endIndex;
+  if (remaining > 0) {
+    const nextBatch = Math.min(ITEMS_PER_PAGE, remaining);
+    loadMoreBtn.style.display = 'inline-flex';
+    loadMoreBtn.textContent = `Загрузить ещё (${nextBatch})`;
+  } else {
+    loadMoreBtn.style.display = 'none';
+  }
+
+  // Построение кнопок страниц: ‹ 1 2 3 ... N ›
+  pageNumbers.innerHTML = '';
+
+  const prevPageBtn = document.createElement('button');
+  prevPageBtn.type = 'button';
+  prevPageBtn.className = 'page-btn';
+  prevPageBtn.textContent = '‹';
+  prevPageBtn.title = 'Предыдущая страница';
+  prevPageBtn.disabled = startPage <= 1;
+  prevPageBtn.onclick = () => goToPage(startPage - 1);
+  pageNumbers.appendChild(prevPageBtn);
+
+  const pagesToDraw = new Set([1, totalPages]);
+  for (let p = startPage - 1; p <= endPage + 1; p++) {
+    if (p >= 1 && p <= totalPages) pagesToDraw.add(p);
+  }
+  const sortedPages = [...pagesToDraw].sort((a, b) => a - b);
+
+  let lastDrawn = 0;
+  sortedPages.forEach(p => {
+    if (p - lastDrawn > 1) {
+      const dots = document.createElement('span');
+      dots.className = 'page-ellipsis';
+      dots.textContent = '…';
+      pageNumbers.appendChild(dots);
+    }
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'page-btn' + (p >= startPage && p <= endPage ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => goToPage(p);
+    pageNumbers.appendChild(btn);
+    lastDrawn = p;
+  });
+
+  const nextPageBtn = document.createElement('button');
+  nextPageBtn.type = 'button';
+  nextPageBtn.className = 'page-btn';
+  nextPageBtn.textContent = '›';
+  nextPageBtn.title = 'Следующая страница';
+  nextPageBtn.disabled = endPage >= totalPages;
+  nextPageBtn.onclick = () => goToPage(endPage + 1);
+  pageNumbers.appendChild(nextPageBtn);
+}
+  
 function createPhotoCard(item, globalIdx) {
   const card = document.createElement('article');
   card.className = 'photo-card';
