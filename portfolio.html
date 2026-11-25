@@ -544,7 +544,22 @@ button, input, select, textarea { font-family: inherit; }
   transition: .15s;
 }
 .tag-chip:hover { background: var(--accent-soft); color: var(--accent); }
-.tag-chip.active { background: var(--accent); color: #fff; }
+.tag-chip.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(232, 104, 32, .3);
+}
+.tag-clear-btn {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  cursor: pointer;
+}
+.tag-clear-btn:hover { background: #fecaca; }
 .tag-toggle-btn {
   font-size: 12px;
   font-weight: 600;
@@ -579,7 +594,6 @@ button, input, select, textarea { font-family: inherit; }
   box-shadow: var(--shadow-hover);
 }
 
-/* Естественные пропорции фото/видео в общей ленте */
 .photo-wrap {
   position: relative;
   cursor: zoom-in;
@@ -740,6 +754,10 @@ button, input, select, textarea { font-family: inherit; }
 .photo-tag:hover {
   background: var(--accent-soft);
   color: var(--accent);
+}
+.photo-tag.active-tag {
+  background: var(--accent);
+  color: #fff;
 }
 .photo-tag-expand {
   font-size: 11.5px;
@@ -906,6 +924,21 @@ button, input, select, textarea { font-family: inherit; }
   margin-bottom: 14px;
   white-space: pre-line;
 }
+.lb-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .14);
+  padding: 4px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: .15s;
+}
+.lb-tag:hover, .lb-tag.active-tag {
+  background: var(--accent);
+  border-color: var(--accent);
+}
 .lb-close {
   position: absolute;
   top: 12px;
@@ -945,7 +978,6 @@ button, input, select, textarea { font-family: inherit; }
   .nav { display: none; }
   .mobile-subnav { display: block; }
 
-  /* На iPhone/смартфоне открытая карточка всегда стандартного размера на 1 экран (100dvh) */
   .lightbox-box {
     grid-template-columns: 1fr;
     grid-template-rows: 43dvh 1fr;
@@ -1002,7 +1034,6 @@ button, input, select, textarea { font-family: inherit; }
     font-size: 13px;
     margin-bottom: 10px;
   }
-  /* Кнопка "Хочу такой же ремонт" всегда закреплена внизу с учётом нижней шторки Safari */
   .lightbox-footer-cta {
     padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
   }
@@ -1069,7 +1100,7 @@ button, input, select, textarea { font-family: inherit; }
     <div>
       <span class="eyebrow">Реальные объекты в Екатеринбурге</span>
       <h1>Портфолио выполненных работ</h1>
-      <p>Фото и видеообзоры с наших действующих и сданных объектов без рендеров и стоков. Фильтруйте по видам работ или нажимайте на #хэштеги.</p>
+      <p>Фото и видеообзоры с наших действующих и сданных объектов без рендеров и стоков. Выбирайте один или несколько #хэштегов для точного подбора.</p>
     </div>
     <div class="hero-stats">
       <div><strong id="totalCount">0</strong><span>материалов</span></div>
@@ -1142,7 +1173,7 @@ button, input, select, textarea { font-family: inherit; }
   </section>
 
   <!-- ФИЛЬТРЫ И ПОИСК -->
-  <section class="filter-bar">
+  <section class="filter-bar" id="filterBar">
     <div class="filter-top">
       <div class="cat-tabs" id="catTabs">
         <button class="cat-tab active" data-cat="all">Все работы</button>
@@ -1156,7 +1187,7 @@ button, input, select, textarea { font-family: inherit; }
 
     <div class="hashtag-cloud-wrap">
       <div class="hashtag-cloud" id="hashtagCloud">
-        <span class="hashtag-cloud-label">Популярные теги:</span>
+        <span class="hashtag-cloud-label">Теги (можно несколько):</span>
       </div>
     </div>
   </section>
@@ -1164,8 +1195,8 @@ button, input, select, textarea { font-family: inherit; }
   <!-- ЖИВАЯ КАСКАДНАЯ ГАЛЕРЕЯ -->
   <section id="galleryGrid" class="gallery-grid"></section>
   <div id="emptyState" class="empty-state" style="display:none;">
-    <h3>По вашему запросу работы пока не найдены</h3>
-    <p style="color: var(--text-muted); margin: 8px 0 16px;">Попробуйте сбросить фильтр или выбрать другой хэштег.</p>
+    <h3>По выбранной комбинации фильтров работ пока нет</h3>
+    <p style="color: var(--text-muted); margin: 8px 0 16px;">Попробуйте снять один из выбранных хэштегов или сбросить фильтры.</p>
     <button type="button" id="resetFiltersBtn" class="btn btn-accent">Показать все работы</button>
   </div>
 
@@ -1232,7 +1263,7 @@ button, input, select, textarea { font-family: inherit; }
   </div>
 </div>
 
-<!-- ЛАЙТБОКС (ЕДИНЫЙ РАЗМЕР НА IPHONE + СВАЙПЫ + СТРЕЛКИ ПК) -->
+<!-- ЛАЙТБОКС (ЕДИНЫЙ РАЗМЕР НА IPHONE + СВАЙПЫ + КЛИКАБЕЛЬНЫЕ ТЕГИ) -->
 <div class="modal-backdrop lightbox-backdrop" id="lightboxModal">
   <div class="lightbox-box">
     <button class="lb-close" id="lbClose" type="button" title="Закрыть (Esc)">✕</button>
@@ -1292,7 +1323,7 @@ let filteredItems = [];
 let selectedFiles = [];
 let currentUser = null;
 let activeCategory = 'all';
-let activeTag = '';
+let activeTags = new Set(); // Мультивыбор тегов
 let searchQuery = '';
 let lightboxIndex = 0;
 let cloudExpanded = false;
@@ -1325,6 +1356,30 @@ function parseHashtags(str) {
 function isVideoItem(item) {
   if (item.media_type === 'video') return true;
   return /\.(mp4|mov|webm|m4v)(\?|$)/i.test(item.image_url || '');
+}
+
+function toggleTagFilter(tag) {
+  if (activeTags.has(tag)) {
+    activeTags.delete(tag);
+  } else {
+    activeTags.add(tag);
+  }
+  buildHashtagCloud();
+  applyFilters();
+}
+
+function jumpToSingleTag(tag) {
+  closeLightbox();
+  activeCategory = 'all';
+  activeTags.clear();
+  activeTags.add(tag);
+  buildCategoryTabs();
+  buildHashtagCloud();
+  applyFilters();
+  const filterBar = document.getElementById('filterBar');
+  if (filterBar) {
+    filterBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // 1. Авторизация
@@ -1635,24 +1690,40 @@ function buildHashtagCloud() {
     });
   });
 
-  const sortedTags = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const visibleLimit = 7;
+  // Выбранные теги всегда показываем первыми, чтобы их было удобно снять
+  const sortedTags = Object.entries(counts).sort((a, b) => {
+    const aActive = activeTags.has(a[0]) ? 1 : 0;
+    const bActive = activeTags.has(b[0]) ? 1 : 0;
+    if (aActive !== bActive) return bActive - aActive;
+    return b[1] - a[1];
+  });
+
+  const visibleLimit = Math.max(7, activeTags.size + 3);
   const tagsToShow = cloudExpanded ? sortedTags : sortedTags.slice(0, visibleLimit);
 
-  hashtagCloud.innerHTML = '<span class="hashtag-cloud-label">Теги:</span>';
+  hashtagCloud.innerHTML = '<span class="hashtag-cloud-label">Теги (можно несколько):</span>';
 
   tagsToShow.forEach(([tag, count]) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'tag-chip' + (activeTag === tag ? ' active' : '');
+    btn.className = 'tag-chip' + (activeTags.has(tag) ? ' active' : '');
     btn.textContent = `${tag} · ${count}`;
-    btn.onclick = () => {
-      activeTag = activeTag === tag ? '' : tag;
+    btn.onclick = () => toggleTagFilter(tag);
+    hashtagCloud.appendChild(btn);
+  });
+
+  if (activeTags.size > 0) {
+    const clearTagsBtn = document.createElement('button');
+    clearTagsBtn.type = 'button';
+    clearTagsBtn.className = 'tag-clear-btn';
+    clearTagsBtn.textContent = `✕ Сбросить теги (${activeTags.size})`;
+    clearTagsBtn.onclick = () => {
+      activeTags.clear();
       buildHashtagCloud();
       applyFilters();
     };
-    hashtagCloud.appendChild(btn);
-  });
+    hashtagCloud.appendChild(clearTagsBtn);
+  }
 
   if (sortedTags.length > visibleLimit) {
     const toggleBtn = document.createElement('button');
@@ -1714,17 +1785,23 @@ function applyFilters() {
 
   filteredItems = allItems.filter(item => {
     const itemCats = parseCategories(item.category);
+    const itemTags = item.hashtags || [];
+
     const matchCat =
       activeCategory === 'all' ||
       (activeCategory === '__video__' ? isVideoItem(item) : itemCats.includes(activeCategory));
-    const matchTag = !activeTag || (item.hashtags || []).includes(activeTag);
+
+    // Проверяем, что в карточке есть ВСЕ выбранные в поиске теги
+    const matchTags = activeTags.size === 0 || [...activeTags].every(t => itemTags.includes(t));
+
     const matchQuery = !q ||
       item.title.toLowerCase().includes(q) ||
       (item.description || '').toLowerCase().includes(q) ||
       (item.district || '').toLowerCase().includes(q) ||
       item.category.toLowerCase().includes(q) ||
-      (item.hashtags || []).some(t => t.includes(q));
-    return matchCat && matchTag && matchQuery;
+      itemTags.some(t => t.includes(q));
+
+    return matchCat && matchTags && matchQuery;
   });
 
   renderGallery();
@@ -1770,12 +1847,12 @@ function renderGallery() {
     const hiddenTags = tags.slice(maxVisibleTags);
 
     let tagsHtml = visibleTags
-      .map(t => `<span class="photo-tag" data-tag="${t}">${t}</span>`)
+      .map(t => `<span class="photo-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}">${t}</span>`)
       .join('');
 
     if (hiddenTags.length > 0) {
       tagsHtml += hiddenTags
-        .map(t => `<span class="photo-tag hidden-tag" data-tag="${t}" style="display:none;">${t}</span>`)
+        .map(t => `<span class="photo-tag hidden-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}" style="display:none;">${t}</span>`)
         .join('');
       tagsHtml += `<button type="button" class="photo-tag-expand">+${hiddenTags.length} ещё</button>`;
     }
@@ -1827,11 +1904,9 @@ function renderGallery() {
 
     card.querySelectorAll('.photo-tag').forEach(tagEl => {
       tagEl.onclick = () => {
-        const clickedTag = tagEl.dataset.tag;
-        activeTag = activeTag === clickedTag ? '' : clickedTag;
-        buildHashtagCloud();
-        applyFilters();
-        window.scrollTo({ top: 180, behavior: 'smooth' });
+        toggleTagFilter(tagEl.dataset.tag);
+        const filterBar = document.getElementById('filterBar');
+        if (filterBar) filterBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
     });
 
@@ -1926,7 +2001,7 @@ searchClear.onclick = () => {
 };
 document.getElementById('resetFiltersBtn').onclick = () => {
   activeCategory = 'all';
-  activeTag = '';
+  activeTags.clear();
   searchQuery = '';
   searchInput.value = '';
   searchClear.classList.remove('visible');
@@ -1935,7 +2010,7 @@ document.getElementById('resetFiltersBtn').onclick = () => {
   applyFilters();
 };
 
-// 7. Лайтбокс + свайпы на смартфоне + стрелки клавиатуры на ПК
+// 7. Лайтбокс + свайпы + кликабельные теги внутри карточки
 const lightboxModal = document.getElementById('lightboxModal');
 const lbMediaSlot = document.getElementById('lbMediaSlot');
 const lbMediaContainer = document.getElementById('lbMediaContainer');
@@ -1992,9 +2067,15 @@ function updateLightbox() {
     descWrap.style.display = 'none';
   }
 
-  document.getElementById('lbTags').innerHTML = (item.hashtags || [])
-    .map(t => `<span class="photo-tag" style="background:rgba(255,255,255,.1); color:#fff;">${t}</span>`)
+  const lbTagsEl = document.getElementById('lbTags');
+  lbTagsEl.innerHTML = (item.hashtags || [])
+    .map(t => `<button type="button" class="lb-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}">${t}</button>`)
     .join('');
+
+  // Клик по тегу внутри открытой карточки переводит на все работы с этим тегом
+  lbTagsEl.querySelectorAll('.lb-tag').forEach(btn => {
+    btn.onclick = () => jumpToSingleTag(btn.dataset.tag);
+  });
 
   const lbEditBtn = document.getElementById('lbEditBtn');
   if (currentUser) {
@@ -2028,7 +2109,6 @@ lbMediaContainer.addEventListener('touchend', (e) => {
   const dx = e.changedTouches[0].clientX - touchStartX;
   const dy = e.changedTouches[0].clientY - touchStartY;
 
-  // Срабатывает только если свайп преимущественно горизонтальный и длиннее 45px
   if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
     if (dx < 0) showNextItem();
     else showPrevItem();
