@@ -1615,6 +1615,133 @@
     .map-info-card { padding: 20px; }
   }
 
+/* Шапка секции "Примеры работ" с кнопкой "Всё портфолио" */
+.portfolio-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.portfolio-head-left {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.portfolio-head-left .section-title {
+  margin-bottom: 8px;
+}
+.portfolio-head-left .section-sub {
+  margin-bottom: 0;
+}
+.btn-all-portfolio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--dark);
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .2s, color .2s, transform .2s, box-shadow .2s;
+  box-shadow: 0 6px 18px rgba(28, 35, 49, 0.14);
+}
+.btn-all-portfolio:hover {
+  background: var(--accent);
+  color: var(--dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(245, 166, 35, 0.35);
+}
+.btn-all-portfolio span {
+  transition: transform .2s;
+}
+.btn-all-portfolio:hover span {
+  transform: translateX(3px);
+}
+@media (max-width: 640px) {
+  .portfolio-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .btn-all-portfolio {
+    width: 100%;
+    padding: 12px 18px;
+    font-size: 14px;
+  }
+}
+
+/* Выпадающее меню для "Примеры работ" в шапке */
+.portfolio-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: #1c2331;
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px;
+  min-width: 245px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease, visibility .18s;
+  z-index: 120;
+}
+.portfolio-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  height: 12px;
+}
+.nav-item-dropdown:hover .portfolio-dropdown,
+.nav-item-dropdown.open .portfolio-dropdown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.portfolio-dropdown a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 13px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #cfd6e3;
+  white-space: nowrap;
+  transition: background .18s, color .18s, transform .15s;
+  border: 1px solid transparent;
+}
+.portfolio-dropdown a:hover {
+  background: #252f42;
+  color: var(--accent);
+  border-color: rgba(245, 166, 35, 0.45);
+  transform: translateX(2px);
+}
+.portfolio-dropdown a.all-portfolio-item {
+  background: rgba(245, 166, 35, 0.12);
+  color: var(--accent);
+  border-color: rgba(245, 166, 35, 0.35);
+}
+.portfolio-dropdown a.all-portfolio-item:hover {
+  background: var(--accent);
+  color: var(--dark);
+}
+
 </style>
 
 <script type="application/ld+json">
@@ -1752,7 +1879,13 @@
         </div>
       </div>
 
-      <a href="#portfolio">Примеры работ</a>
+<div class="nav-item-dropdown" id="portfolioNav">
+        <a href="portfolio.html" aria-haspopup="true" aria-expanded="false">Примеры работ</a>
+        <div class="portfolio-dropdown" role="menu">
+          <a href="#portfolio" role="menuitem">Избранное на странице</a>
+          <a href="/portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
+        </div>
+      </div>
       <a href="#reviews">Отзывы</a>
       <a href="#guarantee">Гарантия</a>
     </nav>
@@ -1815,7 +1948,13 @@
     </div>
   </details>
 
-  <a href="#portfolio" class="mobile-link">Примеры работ</a>
+<details class="mobile-districts">
+    <summary>Примеры работ</summary>
+    <div class="mobile-districts-list">
+      <a href="#portfolio" class="mobile-link">На странице</a>
+      <a href="portfolio.html" class="mobile-link" style="background: rgba(245,166,35,0.14); color: var(--accent); border-color: rgba(245,166,35,0.4);">Всё портфолио →</a>
+    </div>
+  </details>
   <a href="#reviews" class="mobile-link">Отзывы</a>
   <a href="#guarantee" class="mobile-link">Гарантия</a>
 
@@ -1961,9 +2100,15 @@
 <!-- ===== PORTFOLIO ===== -->
 <section class="section portfolio" id="portfolio">
   <div class="wrap">
-    <h2 class="section-title">Примеры работ</h2>
-    <p class="section-sub">Свайпните большое фото, чтобы пролистать галерею. Клик по нему откроет фото на весь экран.</p>
-
+    <div class="portfolio-head">
+      <div class="portfolio-head-left">
+        <h2 class="section-title">Примеры работ</h2>
+        <p class="section-sub">Свайпните большое фото, чтобы пролистать галерею. Клик по нему откроет фото на весь экран.</p>
+      </div>
+      <a href="portfolio.html" class="btn-all-portfolio">
+        Всё портфолио <span>→</span>
+      </a>
+    </div>
     <div class="portfolio-grid" id="portfolioGrid">
 
       <!-- Карточка 1 -->
@@ -2735,7 +2880,13 @@
       <div>
         <h4>Разделы</h4>
         <p>
-          <a href="#portfolio">Примеры работ</a><br>
+<div class="nav-item-dropdown" id="portfolioNav">
+        <a href="portfolio.html" aria-haspopup="true" aria-expanded="false">Примеры работ</a>
+        <div class="portfolio-dropdown" role="menu">
+          <a href="#portfolio" role="menuitem">Избранное на странице</a>
+          <a href="portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
+        </div>
+      </div>
           <a href="#reviews">Отзывы</a><br>
           <a href="#form">Замер и смета</a><br>
           <a href="#form">Задать вопрос</a>
@@ -3277,33 +3428,35 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileLinks.forEach(function(link){ link.addEventListener('click', closeMobileMenu); });
   }
 
-  // Выпадающее меню районов (тач-устройства)
-  var districtsNav = document.getElementById('districtsNav');
-  if (districtsNav) {
-    var trigger = districtsNav.querySelector('a[aria-haspopup]');
-    if (trigger) {
-      trigger.addEventListener('click', function(e) {
-        if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
-          e.preventDefault();
-          var opened = districtsNav.classList.toggle('open');
-          trigger.setAttribute('aria-expanded', opened ? 'true' : 'false');
-        }
-      });
-      document.addEventListener('click', function(e) {
-        if (!districtsNav.contains(e.target)) {
-          districtsNav.classList.remove('open');
-          trigger.setAttribute('aria-expanded', 'false');
-        }
-      });
-document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          districtsNav.classList.remove('open');
-          trigger.setAttribute('aria-expanded', 'false');
-        }
-      });
-    }
-  }
-});
+// Выпадающие меню в шапке (Районы и Примеры работ) для тач-устройств
+  ['districtsNav', 'portfolioNav'].forEach(function(navId) {
+    var navItem = document.getElementById(navId);
+    if (!navItem) return;
+    var trigger = navItem.querySelector('a[aria-haspopup]');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', function(e) {
+      if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+        e.preventDefault();
+        var opened = navItem.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', opened ? 'true' : 'false');
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!navItem.contains(e.target)) {
+        navItem.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        navItem.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
 
 /* ===== КАЛЬКУЛЯТОР ОРИЕНТИРОВОЧНОЙ СТОИМОСТИ ===== */
 
