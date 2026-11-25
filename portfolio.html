@@ -1169,14 +1169,20 @@ button, input, select, textarea { font-family: inherit; }
 
   .lightbox-box {
     grid-template-columns: 1fr;
-    grid-template-rows: 62dvh 1fr;
+    grid-template-rows: 74dvh 1fr;
     height: 100dvh;
     max-height: 100dvh;
     border-radius: 0;
   }
   .lightbox-media-wrap {
-    height: 62dvh;
+    height: 74dvh;
     padding-top: env(safe-area-inset-top, 0px);
+  }
+  .lightbox-media-wrap img,
+  .lightbox-media-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
   .lb-counter {
     top: calc(10px + env(safe-area-inset-top, 0px));
@@ -2072,10 +2078,39 @@ function buildQuickPicks() {
     });
   });
 
-  const renderChips = (containerId, items, targetInputId, separator) => {
+  const renderChips = (containerId, items, targetInputId, separator, withEmptyHash = false) => {
     const box = document.getElementById(containerId);
     if (!box) return;
     box.innerHTML = '';
+
+    if (withEmptyHash) {
+      const hashBtn = document.createElement('button');
+      hashBtn.type = 'button';
+      hashBtn.className = 'quick-pick-btn';
+      hashBtn.style.borderColor = 'var(--accent)';
+      hashBtn.style.color = 'var(--accent)';
+      hashBtn.style.background = 'var(--accent-soft)';
+      hashBtn.textContent = '+ #';
+      hashBtn.title = 'Вставить пустой # и сразу вводить тег';
+      hashBtn.onclick = () => {
+        const input = document.getElementById(targetInputId);
+        const raw = input.value;
+        if (!raw.trim()) {
+          input.value = '#';
+        } else if (raw.endsWith('#')) {
+          // уже стоит # в конце
+        } else if (/\s$/.test(raw)) {
+          input.value = raw + '#';
+        } else {
+          input.value = raw + ' #';
+        }
+        input.focus();
+        const len = input.value.length;
+        input.setSelectionRange(len, len);
+      };
+      box.appendChild(hashBtn);
+    }
+
     items.slice(0, 12).forEach(val => {
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -2086,6 +2121,13 @@ function buildQuickPicks() {
         const current = input.value.trim();
         if (!current) {
           input.value = val;
+        } else if (current.endsWith('#')) {
+          const base = current.slice(0, -1).trim();
+          if (!base.toLowerCase().includes(val.toLowerCase())) {
+            input.value = base ? (base + separator + val) : val;
+          } else {
+            input.value = base;
+          }
         } else if (!current.toLowerCase().includes(val.toLowerCase())) {
           input.value = current + separator + val;
         }
@@ -2095,10 +2137,10 @@ function buildQuickPicks() {
   };
 
   const catsArr = [...catSet];
-  renderChips('quickCatsUpload', catsArr, 'workCategory', ', ');
-  renderChips('quickCatsEdit', catsArr, 'editCategory', ', ');
-  renderChips('quickTagsUpload', recentTags, 'workTags', ' ');
-  renderChips('quickTagsEdit', recentTags, 'editTags', ' ');
+  renderChips('quickCatsUpload', catsArr, 'workCategory', ', ', false);
+  renderChips('quickCatsEdit', catsArr, 'editCategory', ', ', false);
+  renderChips('quickTagsUpload', recentTags, 'workTags', ' ', true);
+  renderChips('quickTagsEdit', recentTags, 'editTags', ' ', true);
 }
 
 // 5. Фильтрация и отрисовка карточек с лимитом + пагинацией + "Загрузить ещё"
