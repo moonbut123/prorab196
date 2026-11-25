@@ -810,7 +810,7 @@ button, input, select, textarea { font-family: inherit; }
 .modal-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
 .modal-card .field { margin-bottom: 12px; }
 
-/* ===== ЛАЙТБОКС (ЕДИНЫЙ РАЗМЕР НА IPHONE + СВАЙПЫ + СТРЕЛКИ ПК) ===== */
+/* ===== ЛАЙТБОКС + ЗУМ ФОТО (IPHONE + ПК) ===== */
 .lightbox-backdrop {
   padding: 0;
 }
@@ -837,8 +837,10 @@ button, input, select, textarea { font-family: inherit; }
   justify-content: center;
   height: 82vh;
   position: relative;
+  overflow: hidden;
   user-select: none;
-  touch-action: pan-y;
+  -webkit-user-select: none;
+  touch-action: none; /* Позволяет обрабатывать щипок двумя пальцами на iPhone */
 }
 #lbMediaSlot {
   width: 100%;
@@ -846,14 +848,32 @@ button, input, select, textarea { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
-.lightbox-media-wrap img, .lightbox-media-wrap video {
+.lightbox-media-wrap img {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transform-origin: center center;
+  will-change: transform;
+  cursor: zoom-in;
+}
+.lightbox-media-wrap img.is-zoomed {
+  cursor: grab;
+}
+.lightbox-media-wrap img.is-grabbing {
+  cursor: grabbing;
+}
+.lightbox-media-wrap video {
   max-height: 100%;
   max-width: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
 }
+
 .lb-counter {
   position: absolute;
   top: 14px;
@@ -865,8 +885,55 @@ button, input, select, textarea { font-family: inherit; }
   font-weight: 600;
   padding: 5px 11px;
   border-radius: 99px;
-  z-index: 6;
+  z-index: 8;
 }
+
+/* Панель кнопок масштаба (+ / - / 100%) */
+.lb-zoom-controls {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(18, 21, 26, 0.78);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, .15);
+  padding: 4px;
+  border-radius: 99px;
+  z-index: 8;
+}
+.lb-zoom-controls.hidden {
+  display: none;
+}
+.lb-zoom-btn {
+  background: transparent;
+  color: #fff;
+  border: none;
+  height: 28px;
+  min-width: 28px;
+  padding: 0 8px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background .15s;
+}
+.lb-zoom-btn:hover {
+  background: rgba(255, 255, 255, .18);
+}
+.lb-zoom-level {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d5dae2;
+  padding: 0 6px;
+  min-width: 40px;
+  text-align: center;
+  cursor: pointer;
+}
+
 .lb-swipe-hint {
   display: none;
 }
@@ -883,12 +950,16 @@ button, input, select, textarea { font-family: inherit; }
   border-radius: 50%;
   font-size: 24px;
   cursor: pointer;
-  z-index: 6;
+  z-index: 8;
   display: grid;
   place-items: center;
-  transition: background .15s;
+  transition: background .15s, opacity .2s;
 }
 .lb-nav:hover { background: var(--accent); }
+.lb-nav.hidden-when-zoomed {
+  opacity: 0;
+  pointer-events: none;
+}
 .lb-prev { left: 14px; }
 .lb-next { right: 14px; }
 
@@ -1000,6 +1071,16 @@ button, input, select, textarea { font-family: inherit; }
     height: 36px;
     font-size: 20px;
     background: rgba(18, 21, 26, 0.55);
+  }
+  .lb-zoom-controls {
+    bottom: 8px;
+    left: 10px;
+    padding: 3px;
+  }
+  .lb-zoom-btn {
+    height: 26px;
+    min-width: 26px;
+    font-size: 13px;
   }
   .lb-swipe-hint {
     display: block;
@@ -1263,7 +1344,7 @@ button, input, select, textarea { font-family: inherit; }
   </div>
 </div>
 
-<!-- ЛАЙТБОКС (ЕДИНЫЙ РАЗМЕР НА IPHONE + СВАЙПЫ + КЛИКАБЕЛЬНЫЕ ТЕГИ) -->
+<!-- ЛАЙТБОКС (ЕДИНЫЙ РАЗМЕР НА IPHONE + ЗУМ ФОТО + СВАЙПЫ + КЛИКАБЕЛЬНЫЕ ТЕГИ) -->
 <div class="modal-backdrop lightbox-backdrop" id="lightboxModal">
   <div class="lightbox-box">
     <button class="lb-close" id="lbClose" type="button" title="Закрыть (Esc)">✕</button>
@@ -1272,7 +1353,14 @@ button, input, select, textarea { font-family: inherit; }
       <button class="lb-nav lb-prev" id="lbPrev" type="button" title="Назад (←)">‹</button>
       <div id="lbMediaSlot"></div>
       <button class="lb-nav lb-next" id="lbNext" type="button" title="Вперёд (→)">›</button>
-      <span class="lb-swipe-hint">← свайп →</span>
+
+      <div class="lb-zoom-controls" id="lbZoomControls">
+        <button type="button" class="lb-zoom-btn" id="lbZoomOut" title="Уменьшить">−</button>
+        <span class="lb-zoom-level" id="lbZoomLevel" title="Сбросить масштаб">100%</span>
+        <button type="button" class="lb-zoom-btn" id="lbZoomIn" title="Приблизить">+</button>
+      </div>
+
+      <span class="lb-swipe-hint" id="lbSwipeHint">щипок — зум · свайп</span>
     </div>
     <div class="lightbox-info">
       <div class="lightbox-scroll-body">
@@ -1323,7 +1411,7 @@ let filteredItems = [];
 let selectedFiles = [];
 let currentUser = null;
 let activeCategory = 'all';
-let activeTags = new Set(); // Мультивыбор тегов
+let activeTags = new Set();
 let searchQuery = '';
 let lightboxIndex = 0;
 let cloudExpanded = false;
@@ -1690,7 +1778,6 @@ function buildHashtagCloud() {
     });
   });
 
-  // Выбранные теги всегда показываем первыми, чтобы их было удобно снять
   const sortedTags = Object.entries(counts).sort((a, b) => {
     const aActive = activeTags.has(a[0]) ? 1 : 0;
     const bActive = activeTags.has(b[0]) ? 1 : 0;
@@ -1791,7 +1878,6 @@ function applyFilters() {
       activeCategory === 'all' ||
       (activeCategory === '__video__' ? isVideoItem(item) : itemCats.includes(activeCategory));
 
-    // Проверяем, что в карточке есть ВСЕ выбранные в поиске теги
     const matchTags = activeTags.size === 0 || [...activeTags].every(t => itemTags.includes(t));
 
     const matchQuery = !q ||
@@ -2010,11 +2096,274 @@ document.getElementById('resetFiltersBtn').onclick = () => {
   applyFilters();
 };
 
-// 7. Лайтбокс + свайпы + кликабельные теги внутри карточки
+// 7. Лайтбокс + ЗУМ (щипок на iPhone, колёсико мыши и кнопки на ПК) + свайпы
 const lightboxModal = document.getElementById('lightboxModal');
 const lbMediaSlot = document.getElementById('lbMediaSlot');
 const lbMediaContainer = document.getElementById('lbMediaContainer');
 const lbCounter = document.getElementById('lbCounter');
+const lbPrevBtn = document.getElementById('lbPrev');
+const lbNextBtn = document.getElementById('lbNext');
+const lbZoomControls = document.getElementById('lbZoomControls');
+const lbZoomLevel = document.getElementById('lbZoomLevel');
+const lbSwipeHint = document.getElementById('lbSwipeHint');
+
+let zoomScale = 1;
+let zoomTx = 0;
+let zoomTy = 0;
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 4;
+
+function clampPan(img) {
+  if (!img || zoomScale <= 1) {
+    zoomTx = 0;
+    zoomTy = 0;
+    return;
+  }
+  const rect = lbMediaContainer.getBoundingClientRect();
+  const baseW = img.offsetWidth || rect.width;
+  const baseH = img.offsetHeight || rect.height;
+  const maxX = Math.max(0, (baseW * zoomScale - rect.width) / 2);
+  const maxY = Math.max(0, (baseH * zoomScale - rect.height) / 2);
+  zoomTx = Math.max(-maxX, Math.min(maxX, zoomTx));
+  zoomTy = Math.max(-maxY, Math.min(maxY, zoomTy));
+}
+
+function applyZoomTransform(smooth = false) {
+  const img = lbMediaSlot.querySelector('img');
+  if (!img) return;
+  clampPan(img);
+  img.style.transition = smooth ? 'transform 0.22s ease' : 'none';
+  img.style.transform = `translate3d(${zoomTx}px, ${zoomTy}px, 0) scale(${zoomScale})`;
+  img.classList.toggle('is-zoomed', zoomScale > 1.01);
+
+  lbZoomLevel.textContent = Math.round(zoomScale * 100) + '%';
+  const isZoomed = zoomScale > 1.01;
+  lbPrevBtn.classList.toggle('hidden-when-zoomed', isZoomed);
+  lbNextBtn.classList.toggle('hidden-when-zoomed', isZoomed);
+  if (lbSwipeHint) {
+    lbSwipeHint.textContent = isZoomed ? 'двигайте фото · двойной тап' : 'щипок — зум · свайп';
+  }
+}
+
+function resetZoom(smooth = false) {
+  zoomScale = 1;
+  zoomTx = 0;
+  zoomTy = 0;
+  applyZoomTransform(smooth);
+}
+
+function setZoomAroundPoint(newScale, clientX, clientY, smooth = false) {
+  const img = lbMediaSlot.querySelector('img');
+  if (!img) return;
+
+  const clampedScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newScale));
+  if (clampedScale <= 1.02) {
+    resetZoom(smooth);
+    return;
+  }
+
+  const rect = lbMediaContainer.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = clientX - cx;
+  const dy = clientY - cy;
+
+  const ratio = clampedScale / zoomScale;
+  zoomTx = dx - (dx - zoomTx) * ratio;
+  zoomTy = dy - (dy - zoomTy) * ratio;
+  zoomScale = clampedScale;
+  applyZoomTransform(smooth);
+}
+
+document.getElementById('lbZoomIn').onclick = (e) => {
+  e.stopPropagation();
+  const rect = lbMediaContainer.getBoundingClientRect();
+  setZoomAroundPoint(zoomScale + 0.6, rect.left + rect.width / 2, rect.top + rect.height / 2, true);
+};
+document.getElementById('lbZoomOut').onclick = (e) => {
+  e.stopPropagation();
+  const rect = lbMediaContainer.getBoundingClientRect();
+  setZoomAroundPoint(zoomScale - 0.6, rect.left + rect.width / 2, rect.top + rect.height / 2, true);
+};
+lbZoomLevel.onclick = (e) => {
+  e.stopPropagation();
+  resetZoom(true);
+};
+
+// Колёсико мыши на ПК для плавного приближения
+lbMediaContainer.addEventListener('wheel', (e) => {
+  const img = lbMediaSlot.querySelector('img');
+  if (!img) return;
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.22 : 0.82;
+  setZoomAroundPoint(zoomScale * factor, e.clientX, e.clientY, false);
+}, { passive: false });
+
+// Перетаскивание увеличенного фото мышью на ПК + двойной клик
+let isMouseDragging = false;
+let mouseMoved = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragStartTx = 0;
+let dragStartTy = 0;
+
+lbMediaContainer.addEventListener('mousedown', (e) => {
+  const img = lbMediaSlot.querySelector('img');
+  if (!img || zoomScale <= 1.01 || e.button !== 0) return;
+  e.preventDefault();
+  isMouseDragging = true;
+  mouseMoved = false;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  dragStartTx = zoomTx;
+  dragStartTy = zoomTy;
+  img.classList.add('is-grabbing');
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isMouseDragging) return;
+  const dx = e.clientX - dragStartX;
+  const dy = e.clientY - dragStartY;
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) mouseMoved = true;
+  zoomTx = dragStartTx + dx;
+  zoomTy = dragStartTy + dy;
+  applyZoomTransform(false);
+});
+
+window.addEventListener('mouseup', () => {
+  if (!isMouseDragging) return;
+  isMouseDragging = false;
+  const img = lbMediaSlot.querySelector('img');
+  if (img) img.classList.remove('is-grabbing');
+});
+
+lbMediaContainer.addEventListener('dblclick', (e) => {
+  const img = lbMediaSlot.querySelector('img');
+  if (!img || e.target.closest('button') || e.target.closest('.lb-zoom-controls')) return;
+  if (zoomScale > 1.05) {
+    resetZoom(true);
+  } else {
+    setZoomAroundPoint(2.5, e.clientX, e.clientY, true);
+  }
+});
+
+// Жесты на iPhone / Android: щипок двумя пальцами (pinch), перетаскивание 1 пальцем, двойной тап и свайп
+let touchMode = 'none'; // 'swipe' | 'pan' | 'pinch'
+let touchStartX = 0;
+let touchStartY = 0;
+let panStartTx = 0;
+let panStartTy = 0;
+let pinchStartDist = 0;
+let pinchStartScale = 1;
+let pinchStartTx = 0;
+let pinchStartTy = 0;
+let pinchMidX = 0;
+let pinchMidY = 0;
+let lastTapTime = 0;
+
+function getTouchDistance(t1, t2) {
+  return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+
+lbMediaContainer.addEventListener('touchstart', (e) => {
+  if (e.target.closest('button') || e.target.closest('.lb-zoom-controls')) return;
+  const img = lbMediaSlot.querySelector('img');
+
+  if (e.touches.length === 2 && img) {
+    touchMode = 'pinch';
+    pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+    pinchStartScale = zoomScale;
+    pinchStartTx = zoomTx;
+    pinchStartTy = zoomTy;
+    pinchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    pinchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    return;
+  }
+
+  if (e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+
+    // Проверка двойного тапа по фото
+    if (img) {
+      const now = Date.now();
+      if (now - lastTapTime < 280) {
+        lastTapTime = 0;
+        if (zoomScale > 1.05) {
+          resetZoom(true);
+        } else {
+          setZoomAroundPoint(2.5, touchStartX, touchStartY, true);
+        }
+        touchMode = 'none';
+        return;
+      }
+      lastTapTime = now;
+    }
+
+    if (img && zoomScale > 1.01) {
+      touchMode = 'pan';
+      panStartTx = zoomTx;
+      panStartTy = zoomTy;
+    } else {
+      touchMode = 'swipe';
+    }
+  }
+}, { passive: true });
+
+lbMediaContainer.addEventListener('touchmove', (e) => {
+  const img = lbMediaSlot.querySelector('img');
+
+  if (touchMode === 'pinch' && e.touches.length === 2 && img) {
+    e.preventDefault();
+    const dist = getTouchDistance(e.touches[0], e.touches[1]);
+    const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+    const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, pinchStartScale * (dist / pinchStartDist)));
+    const rect = lbMediaContainer.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    const dx = pinchMidX - cx;
+    const dy = pinchMidY - cy;
+    const ratio = newScale / pinchStartScale;
+
+    zoomScale = newScale;
+    zoomTx = dx - (dx - pinchStartTx) * ratio + (midX - pinchMidX);
+    zoomTy = dy - (dy - pinchStartTy) * ratio + (midY - pinchMidY);
+    applyZoomTransform(false);
+    return;
+  }
+
+  if (touchMode === 'pan' && e.touches.length === 1 && img) {
+    e.preventDefault();
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    zoomTx = panStartTx + dx;
+    zoomTy = panStartTy + dy;
+    applyZoomTransform(false);
+  }
+}, { passive: false });
+
+lbMediaContainer.addEventListener('touchend', (e) => {
+  if (!lightboxModal.classList.contains('open')) return;
+
+  if (touchMode === 'pinch') {
+    if (zoomScale < 1.05) resetZoom(true);
+    touchMode = 'none';
+    return;
+  }
+
+  if (touchMode === 'swipe' && e.changedTouches.length === 1 && zoomScale <= 1.01) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+      if (dx < 0) showNextItem();
+      else showPrevItem();
+    }
+  }
+  touchMode = 'none';
+}, { passive: true });
 
 function openLightbox(idx) {
   lightboxIndex = idx;
@@ -2026,6 +2375,7 @@ function openLightbox(idx) {
 function closeLightbox() {
   lightboxModal.classList.remove('open');
   document.body.classList.remove('modal-open');
+  resetZoom(false);
   lbMediaSlot.innerHTML = '';
 }
 
@@ -2045,12 +2395,24 @@ function updateLightbox() {
   const item = filteredItems[lightboxIndex];
   if (!item) return;
 
-  lbCounter.textContent = `${lightboxIndex + 1} / ${filteredItems.length}`;
+  zoomScale = 1;
+  zoomTx = 0;
+  zoomTy = 0;
+  lbPrevBtn.classList.remove('hidden-when-zoomed');
+  lbNextBtn.classList.remove('hidden-when-zoomed');
 
-  if (isVideoItem(item)) {
+  lbCounter.textContent = `${lightboxIndex + 1} / ${filteredItems.length}`;
+  const isVid = isVideoItem(item);
+
+  if (isVid) {
     lbMediaSlot.innerHTML = `<video src="${item.image_url}" controls autoplay playsinline></video>`;
+    lbZoomControls.classList.add('hidden');
+    if (lbSwipeHint) lbSwipeHint.textContent = '← свайп →';
   } else {
-    lbMediaSlot.innerHTML = `<img src="${item.image_url}" alt="${item.title}">`;
+    lbMediaSlot.innerHTML = `<img src="${item.image_url}" alt="${item.title}" draggable="false">`;
+    lbZoomControls.classList.remove('hidden');
+    lbZoomLevel.textContent = '100%';
+    if (lbSwipeHint) lbSwipeHint.textContent = 'щипок — зум · свайп';
   }
 
   document.getElementById('lbCategories').innerHTML = parseCategories(item.category)
@@ -2072,7 +2434,6 @@ function updateLightbox() {
     .map(t => `<button type="button" class="lb-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}">${t}</button>`)
     .join('');
 
-  // Клик по тегу внутри открытой карточки переводит на все работы с этим тегом
   lbTagsEl.querySelectorAll('.lb-tag').forEach(btn => {
     btn.onclick = () => jumpToSingleTag(btn.dataset.tag);
   });
@@ -2087,35 +2448,14 @@ function updateLightbox() {
 }
 
 document.getElementById('lbClose').onclick = closeLightbox;
-document.getElementById('lbPrev').onclick = showPrevItem;
-document.getElementById('lbNext').onclick = showNextItem;
+lbPrevBtn.onclick = showPrevItem;
+lbNextBtn.onclick = showNextItem;
 
 lightboxModal.onclick = (e) => {
   if (e.target === lightboxModal) closeLightbox();
 };
 
-// Свайпы пальцем на iPhone / Android
-let touchStartX = 0;
-let touchStartY = 0;
-
-lbMediaContainer.addEventListener('touchstart', (e) => {
-  if (e.touches.length !== 1) return;
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-}, { passive: true });
-
-lbMediaContainer.addEventListener('touchend', (e) => {
-  if (!lightboxModal.classList.contains('open')) return;
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-
-  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
-    if (dx < 0) showNextItem();
-    else showPrevItem();
-  }
-}, { passive: true });
-
-// Управление стрелками и Esc на ПК
+// Управление стрелками, + / - и Esc на ПК
 document.addEventListener('keydown', (e) => {
   if (!lightboxModal.classList.contains('open')) return;
   if (editModal.classList.contains('open')) return;
@@ -2126,9 +2466,21 @@ document.addEventListener('keydown', (e) => {
   } else if (e.key === 'ArrowRight') {
     e.preventDefault();
     showNextItem();
+  } else if (e.key === '+' || e.key === '=') {
+    e.preventDefault();
+    const rect = lbMediaContainer.getBoundingClientRect();
+    setZoomAroundPoint(zoomScale + 0.5, rect.left + rect.width / 2, rect.top + rect.height / 2, true);
+  } else if (e.key === '-') {
+    e.preventDefault();
+    const rect = lbMediaContainer.getBoundingClientRect();
+    setZoomAroundPoint(zoomScale - 0.5, rect.left + rect.width / 2, rect.top + rect.height / 2, true);
+  } else if (e.key === '0') {
+    e.preventDefault();
+    resetZoom(true);
   } else if (e.key === 'Escape') {
     e.preventDefault();
-    closeLightbox();
+    if (zoomScale > 1.05) resetZoom(true);
+    else closeLightbox();
   }
 });
 
