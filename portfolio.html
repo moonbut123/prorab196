@@ -574,24 +574,31 @@ button, input, select, textarea { font-family: inherit; }
 
 /* ===== ЖИВАЯ КАСКАДНАЯ ЛЕНТА НА СТРАНИЦЕ (MASONRY) ===== */
 .gallery-grid {
-  columns: 3 310px;
-  column-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
   padding-bottom: 16px;
+  overflow-anchor: none;
+}
+@media (max-width: 960px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .photo-card {
-  break-inside: avoid;
   background: #fff;
   border-radius: var(--radius);
   overflow: hidden;
-  margin-bottom: 20px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   transition: transform .25s ease, box-shadow .25s ease;
   position: relative;
-}
-.photo-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
 }
 
 .photo-wrap {
@@ -2034,88 +2041,141 @@ loadMoreBtn.onclick = () => {
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
   if (endPage >= totalPages) return;
 
-  const firstNewIndex = endPage * ITEMS_PER_PAGE;
-  const prevScrollY = window.scrollY;
-
+  const prevEndIndex = Math.min(filteredItems.length, endPage * ITEMS_PER_PAGE);
   endPage += 1;
-  renderGallery();
+  const newEndIndex = Math.min(filteredItems.length, endPage * ITEMS_PER_PAGE);
 
-  // Не даём мобильному браузеру утянуть экран вниз вслед за кнопкой
-  window.scrollTo({ top: prevScrollY, behavior: 'instant' });
+  // Дописываем ТОЛЬКО новые карточки, не трогая уже загруженные сверху
+  const newItems = filteredItems.slice(prevEndIndex, newEndIndex);
+  let firstNewCard = null;
 
-  // Плавно подводим к первой из только что подгруженных карточек
-  requestAnimationFrame(() => {
-    const firstNewWrap = galleryGrid.querySelector(`.photo-wrap[data-idx="${firstNewIndex}"]`);
-    const firstNewCard = firstNewWrap ? firstNewWrap.closest('.photo-card') : null;
-    if (firstNewCard) {
-      const headerOffset = 76; // высота закреплённой шапки
+  newItems.forEach((item, idx) => {
+    const globalIdx = prevEndIndex + idx;
+    const card = createPhotoCard(item, globalIdx);
+    if (!firstNewCard) firstNewCard = card;
+    galleryGrid.appendChild(card);
+  });
+
+  const startIndex = (startPage - 1) * ITEMS_PER_PAGE;
+  renderPaginationControls(filteredItems.length, totalPages, startIndex, newEndIndex);
+
+  if (firstNewCard) {
+    requestAnimationFrame(() => {
+      const headerOffset = 76;
       const targetTop = firstNewCard.getBoundingClientRect().top + window.scrollY - headerOffset;
       window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
-    }
-  });
+    });
+  }
 };
 
-function renderPaginationControls(totalItems, totalPages, startIndex, endIndex) {
-  if (totalItems <= ITEMS_PER_PAGE) {
-    paginationBar.classList.remove('visible');
-    return;
+function createPhotoCard(item, globalIdx) {
+  const card = document.createElement('article');
+  card.className = 'photo-card';
+  const isVid = isVideoItem(item);
+
+  const catsList = parseCategories(item.category);
+  const kickerHtml = catsList.join(' <span class="card-kicker-dot">•</span> ');
+
+  const mediaHtml = isVid
+    ? `<video src="${item.image_url}#t=0.1" preload="metadata" muted playsinline></video>
+       <div class="video-play-overlay"><div class="video-play-circle">▶</div></div>
+       <span class="video-pill">ВИДЕО</span>`
+    : `<img src="${item.image_url}" alt="${item.title}" loading="lazy">`;
+
+  let descHtml = '';
+  if (item.description && item.description.trim()) {
+    const isLong = item.description.length > 130 || item.description.split('\n').length > 3;
+    descHtml = `
+      <div class="photo-desc-box">
+        <div class="photo-desc-text ${isLong ? 'clamped' : ''}">${item.description}</div>
+        ${isLong ? '<button type="button" class="desc-more-btn">Читать полностью ↓</button>' : ''}
+      </div>
+    `;
   }
 
-  paginationBar.classList.add('visible');
-  paginationStatus.textContent = `Показано ${startIndex + 1}–${endIndex} из ${totalItems}`;
+  const tags = item.hashtags || [];
+  const maxVisibleTags = 3;
+  const visibleTags = tags.slice(0, maxVisibleTags);
+  const hiddenTags = tags.slice(maxVisibleTags);
 
-  const remaining = totalItems - endIndex;
-  if (remaining > 0) {
-    const nextBatch = Math.min(ITEMS_PER_PAGE, remaining);
-    loadMoreBtn.style.display = 'inline-flex';
-    loadMoreBtn.textContent = `Загрузить ещё (${nextBatch})`;
-  } else {
-    loadMoreBtn.style.display = 'none';
+  let tagsHtml = visibleTags
+    .map(t => `<span class="photo-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}">${t}</span>`)
+    .join('');
+
+  if (hiddenTags.length > 0) {
+    tagsHtml += hiddenTags
+      .map(t => `<span class="photo-tag hidden-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}" style="display:none;">${t}</span>`)
+      .join('');
+    tagsHtml += `<button type="button" class="photo-tag-expand">+${hiddenTags.length} ещё</button>`;
   }
 
-  // Построение кнопок страниц: ‹ 1 2 3 ... N ›
-  pageNumbers.innerHTML = '';
+  const adminBtnsHtml = currentUser
+    ? `<div class="card-admin-actions">
+         <button type="button" class="btn-card-action btn-edit-card">✏️ Ред.</button>
+         <button type="button" class="btn-card-action btn-delete-card">✕</button>
+       </div>`
+    : '';
 
-  const prevPageBtn = document.createElement('button');
-  prevPageBtn.type = 'button';
-  prevPageBtn.className = 'page-btn';
-  prevPageBtn.textContent = '‹';
-  prevPageBtn.title = 'Предыдущая страница';
-  prevPageBtn.disabled = startPage <= 1;
-  prevPageBtn.onclick = () => goToPage(startPage - 1);
-  pageNumbers.appendChild(prevPageBtn);
+  card.innerHTML = `
+    <div class="photo-wrap" data-idx="${globalIdx}">
+      ${adminBtnsHtml}
+      ${mediaHtml}
+    </div>
+    <div class="photo-body">
+      ${kickerHtml ? `<div class="card-kicker">${kickerHtml}</div>` : ''}
+      <div class="photo-title">${item.title}</div>
+      ${item.district ? `<div class="photo-district">📍 ${item.district}</div>` : ''}
+      ${descHtml}
+      ${tags.length ? `<div class="photo-tags">${tagsHtml}</div>` : ''}
+    </div>
+  `;
 
-  const pagesToDraw = new Set([1, totalPages]);
-  for (let p = startPage - 1; p <= endPage + 1; p++) {
-    if (p >= 1 && p <= totalPages) pagesToDraw.add(p);
+  card.querySelector('.photo-wrap').onclick = (e) => {
+    if (e.target.closest('.card-admin-actions')) return;
+    openLightbox(globalIdx);
+  };
+
+  const descMoreBtn = card.querySelector('.desc-more-btn');
+  if (descMoreBtn) {
+    descMoreBtn.onclick = () => {
+      const textEl = card.querySelector('.photo-desc-text');
+      const isClamped = textEl.classList.toggle('clamped');
+      descMoreBtn.textContent = isClamped ? 'Читать полностью ↓' : 'Свернуть ↑';
+    };
   }
-  const sortedPages = [...pagesToDraw].sort((a, b) => a - b);
 
-  let lastDrawn = 0;
-  sortedPages.forEach(p => {
-    if (p - lastDrawn > 1) {
-      const dots = document.createElement('span');
-      dots.className = 'page-ellipsis';
-      dots.textContent = '…';
-      pageNumbers.appendChild(dots);
-    }
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'page-btn' + (p >= startPage && p <= endPage ? ' active' : '');
-    btn.textContent = p;
-    btn.onclick = () => goToPage(p);
-    pageNumbers.appendChild(btn);
-    lastDrawn = p;
+  const expandTagsBtn = card.querySelector('.photo-tag-expand');
+  if (expandTagsBtn) {
+    expandTagsBtn.onclick = () => {
+      const hiddenEls = card.querySelectorAll('.hidden-tag');
+      const isCollapsed = hiddenEls[0].style.display === 'none';
+      hiddenEls.forEach(el => { el.style.display = isCollapsed ? 'inline-block' : 'none'; });
+      expandTagsBtn.textContent = isCollapsed ? 'Свернуть' : `+${hiddenTags.length} ещё`;
+    };
+  }
+
+  card.querySelectorAll('.photo-tag').forEach(tagEl => {
+    tagEl.onclick = () => {
+      toggleTagFilter(tagEl.dataset.tag);
+      const filterBar = document.getElementById('filterBar');
+      if (filterBar) filterBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
   });
 
-  const nextPageBtn = document.createElement('button');
-  nextPageBtn.type = 'button';
-  nextPageBtn.className = 'page-btn';
-  nextPageBtn.textContent = '›';
-  nextPageBtn.title = 'Следующая страница';
-  nextPageBtn.disabled = endPage >= totalPages;
-  nextPageBtn.onclick = () => goToPage(endPage + 1);
-  pageNumbers.appendChild(nextPageBtn);
+  const editBtn = card.querySelector('.btn-edit-card');
+  if (editBtn) editBtn.onclick = () => openEditModal(item);
+
+  const delBtn = card.querySelector('.btn-delete-card');
+  if (delBtn) {
+    delBtn.onclick = async () => {
+      if (!confirm('Удалить эту работу из портфолио?')) return;
+      await sb.storage.from('portfolio').remove([item.storage_path]);
+      await sb.from('portfolio_items').delete().eq('id', item.id);
+      await loadPortfolio();
+    };
+  }
+
+  return card;
 }
 
 function renderGallery() {
@@ -2139,113 +2199,7 @@ function renderGallery() {
 
   pageItems.forEach((item, localIdx) => {
     const globalIdx = startIndex + localIdx;
-    const card = document.createElement('article');
-    card.className = 'photo-card';
-    const isVid = isVideoItem(item);
-
-    const catsList = parseCategories(item.category);
-    const kickerHtml = catsList.join(' <span class="card-kicker-dot">•</span> ');
-
-    const mediaHtml = isVid
-      ? `<video src="${item.image_url}#t=0.1" preload="metadata" muted playsinline></video>
-         <div class="video-play-overlay"><div class="video-play-circle">▶</div></div>
-         <span class="video-pill">ВИДЕО</span>`
-      : `<img src="${item.image_url}" alt="${item.title}" loading="lazy">`;
-
-    let descHtml = '';
-    if (item.description && item.description.trim()) {
-      const isLong = item.description.length > 130 || item.description.split('\n').length > 3;
-      descHtml = `
-        <div class="photo-desc-box">
-          <div class="photo-desc-text ${isLong ? 'clamped' : ''}">${item.description}</div>
-          ${isLong ? '<button type="button" class="desc-more-btn">Читать полностью ↓</button>' : ''}
-        </div>
-      `;
-    }
-
-    const tags = item.hashtags || [];
-    const maxVisibleTags = 3;
-    const visibleTags = tags.slice(0, maxVisibleTags);
-    const hiddenTags = tags.slice(maxVisibleTags);
-
-    let tagsHtml = visibleTags
-      .map(t => `<span class="photo-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}">${t}</span>`)
-      .join('');
-
-    if (hiddenTags.length > 0) {
-      tagsHtml += hiddenTags
-        .map(t => `<span class="photo-tag hidden-tag ${activeTags.has(t) ? 'active-tag' : ''}" data-tag="${t}" style="display:none;">${t}</span>`)
-        .join('');
-      tagsHtml += `<button type="button" class="photo-tag-expand">+${hiddenTags.length} ещё</button>`;
-    }
-
-    const adminBtnsHtml = currentUser
-      ? `<div class="card-admin-actions">
-           <button type="button" class="btn-card-action btn-edit-card">✏️ Ред.</button>
-           <button type="button" class="btn-card-action btn-delete-card">✕</button>
-         </div>`
-      : '';
-
-    card.innerHTML = `
-      <div class="photo-wrap" data-idx="${globalIdx}">
-        ${adminBtnsHtml}
-        ${mediaHtml}
-      </div>
-      <div class="photo-body">
-        ${kickerHtml ? `<div class="card-kicker">${kickerHtml}</div>` : ''}
-        <div class="photo-title">${item.title}</div>
-        ${item.district ? `<div class="photo-district">📍 ${item.district}</div>` : ''}
-        ${descHtml}
-        ${tags.length ? `<div class="photo-tags">${tagsHtml}</div>` : ''}
-      </div>
-    `;
-
-    card.querySelector('.photo-wrap').onclick = (e) => {
-      if (e.target.closest('.card-admin-actions')) return;
-      openLightbox(globalIdx);
-    };
-
-    const descMoreBtn = card.querySelector('.desc-more-btn');
-    if (descMoreBtn) {
-      descMoreBtn.onclick = () => {
-        const textEl = card.querySelector('.photo-desc-text');
-        const isClamped = textEl.classList.toggle('clamped');
-        descMoreBtn.textContent = isClamped ? 'Читать полностью ↓' : 'Свернуть ↑';
-      };
-    }
-
-    const expandTagsBtn = card.querySelector('.photo-tag-expand');
-    if (expandTagsBtn) {
-      expandTagsBtn.onclick = () => {
-        const hiddenEls = card.querySelectorAll('.hidden-tag');
-        const isCollapsed = hiddenEls[0].style.display === 'none';
-        hiddenEls.forEach(el => { el.style.display = isCollapsed ? 'inline-block' : 'none'; });
-        expandTagsBtn.textContent = isCollapsed ? 'Свернуть' : `+${hiddenTags.length} ещё`;
-      };
-    }
-
-    card.querySelectorAll('.photo-tag').forEach(tagEl => {
-      tagEl.onclick = () => {
-        toggleTagFilter(tagEl.dataset.tag);
-        const filterBar = document.getElementById('filterBar');
-        if (filterBar) filterBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      };
-    });
-
-    const editBtn = card.querySelector('.btn-edit-card');
-    if (editBtn) editBtn.onclick = () => openEditModal(item);
-
-    const delBtn = card.querySelector('.btn-delete-card');
-    if (delBtn) {
-      delBtn.onclick = async () => {
-        if (!confirm('Удалить эту работу из портфолио?')) return;
-        await sb.storage.from('portfolio').remove([item.storage_path]);
-        await sb.from('portfolio_items').delete().eq('id', item.id);
-        await loadPortfolio();
-      };
-    }
-
-    galleryGrid.appendChild(card);
+    galleryGrid.appendChild(createPhotoCard(item, globalIdx));
   });
 
   renderPaginationControls(filteredItems.length, totalPages, startIndex, endIndex);
