@@ -25,7 +25,6 @@
       input[type="text"],
       input[type="number"],
       input[type="date"],
-      input[type="password"],
       select,
       textarea {
         font-size: 16px !important;
@@ -37,25 +36,24 @@
   <!-- Встроенные резервные данные для автономного HTML-файла -->
   <script id="embeddedBackupData" type="application/json">null</script>
 
-  <!-- Экран блокировки / Входа по ПИН-коду (пароль 2556 скрыт) -->
-  <div id="pinLockScreen" class="fixed inset-0 bg-[#1E3A5F] z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 shadow-2xl border border-slate-200 text-center">
-      <div class="w-14 h-14 bg-blue-50 text-[#1E3A5F] rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xs">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <!-- Экран блокировки по паролю / PIN-коду при входе -->
+  <div id="pinLockOverlay" class="no-print fixed inset-0 z-50 bg-[#0F1E33]/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-200 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-[#1E3A5F] text-white flex items-center justify-center mx-auto mb-4 shadow-md">
+        <svg class="w-7 h-7 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
         </svg>
       </div>
-      <h2 id="pinScreenTitle" class="text-xl font-bold text-slate-900 mb-1">Личный кабинет прораба</h2>
-      <p id="pinScreenDesc" class="text-xs sm:text-sm text-slate-500 mb-6">Введите пароль для доступа к объектам:</p>
+      <h2 class="text-xl font-bold text-slate-900">Шпаргалка прораба</h2>
+      <p class="text-xs text-slate-500 mt-1 mb-5">Введите пароль доступа к объектам и сметам</p>
 
-      <form onsubmit="handlePinSubmit(event)" class="space-y-4">
-        <div>
-          <input id="pinCodeInput" type="password" inputmode="numeric" maxlength="6"
-            placeholder="••••"
-            class="w-full px-4 py-3 text-center text-2xl tracking-widest rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none font-bold text-slate-900 bg-slate-50" />
-        </div>
-        <div id="pinErrorMsg" class="text-xs text-rose-600 font-medium hidden">Неверный пароль. Доступа нет.</div>
-        <button type="submit" class="w-full py-3.5 rounded-xl bg-[#1E3A5F] hover:bg-blue-800 text-white font-bold text-sm transition shadow-md active:scale-98">
+      <form onsubmit="submitPinCode(event)" class="space-y-3">
+        <input id="pinCodeInput" type="password" inputmode="numeric" autocomplete="current-password"
+          placeholder="•••••"
+          class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-blue-600/20 outline-none text-center text-xl font-bold tracking-[0.35em] text-slate-900" />
+        <p id="pinErrorMsg" class="hidden text-xs font-semibold text-rose-600">Неверный пароль. Попробуйте ещё раз.</p>
+        <button type="submit"
+          class="w-full py-3.5 rounded-2xl bg-[#1E3A5F] hover:bg-blue-800 active:scale-[0.99] text-white text-sm font-bold transition shadow-md">
           Войти
         </button>
       </form>
@@ -95,6 +93,62 @@
     </div>
   </div>
 
+  <!-- Модальное окно добавления своей работы в калькулятор -->
+  <div id="customWorkModalOverlay" class="no-print fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-900">Добавить свою позицию в смету</h3>
+        <button type="button" onclick="closeCustomWorkModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold px-1">✕</button>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Раздел сметы</label>
+        <select id="cwCategorySelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm text-slate-900 focus:border-blue-600 outline-none"></select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Наименование работы *</label>
+        <input id="cwNameInput" type="text" placeholder="Например: Монтаж теневого плинтуса"
+          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:border-blue-600 outline-none" />
+      </div>
+
+      <div class="grid grid-cols-3 gap-2.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Ед. изм. *</label>
+          <input id="cwUnitInput" type="text" list="cwUnitsList" value="м.п." placeholder="шт., м², м.п."
+            class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:border-blue-600 outline-none" />
+          <datalist id="cwUnitsList">
+            <option value="м²">
+            <option value="м.п.">
+            <option value="шт.">
+            <option value="точка">
+            <option value="комплект">
+            <option value="услуга">
+            <option value="час">
+            <option value="выезд">
+          </datalist>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Цена, ₽ *</label>
+          <input id="cwPriceInput" type="number" min="0" step="10" placeholder="1200"
+            class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:border-blue-600 outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Кол-во</label>
+          <input id="cwQtyInput" type="number" min="0" step="0.1" placeholder="1" value="1"
+            class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:border-blue-600 outline-none" />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" onclick="closeCustomWorkModal()" class="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition">Отмена</button>
+        <button type="button" onclick="saveCustomWorkItem()" class="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#1E3A5F] hover:bg-blue-700 transition">Добавить</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Верхняя шапка (на мобильных не перекрывает экран при скролле, на ПК прилипает) -->
   <header class="bg-[#1E3A5F] text-white shadow-md sm:sticky sm:top-0 z-30 no-print">
     <div class="max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-3.5">
@@ -114,11 +168,6 @@
 
         <!-- Индикатор автосохранения и явная кнопка сохранения -->
         <div class="flex items-center gap-1.5 sm:gap-2 ml-auto">
-          <button onclick="lockApp()" title="Заблокировать (выйти)" class="px-2.5 py-2 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            <span class="hidden sm:inline">Заблокировать</span>
-          </button>
-
           <div id="storageBadge" class="flex items-center gap-1.5 bg-slate-900/40 px-2.5 py-1.5 rounded-xl border border-white/10">
             <span id="saveDot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400"></span>
             <span id="saveStatus" class="text-[11px] sm:text-xs font-medium text-slate-200">Сохранено</span>
@@ -129,6 +178,19 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
             </svg>
             <span>Сохранить</span>
+          </button>
+          <button onclick="promptChangePin()" title="Сменить пароль входа"
+            class="p-2 sm:py-1.5 sm:px-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1 transition">
+            <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+            </svg>
+            <span class="hidden sm:inline">Пароль</span>
+          </button>
+          <button onclick="lockAppNow()" title="Заблокировать экран"
+            class="p-2 sm:py-1.5 sm:px-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1 transition">
+            <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
           </button>
         </div>
       </div>
@@ -167,6 +229,28 @@
 
   <!-- Основной контент -->
   <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-5 print-container">
+
+    <!-- Переключатель вкладок: Чек-лист / Калькулятор сметы -->
+    <div class="no-print mb-5 bg-white p-1.5 rounded-2xl shadow-xs border border-slate-200 grid grid-cols-2 gap-1.5">
+      <button id="tabBtnChecklist" type="button" onclick="switchMainTab('checklist')"
+        class="py-3 px-4 rounded-xl text-sm font-bold bg-[#1E3A5F] text-white shadow-xs flex items-center justify-center gap-2 transition">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+        </svg>
+        <span>Чек-лист объекта</span>
+      </button>
+      <button id="tabBtnCalculator" type="button" onclick="switchMainTab('calculator')"
+        class="py-3 px-4 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-2 transition">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        <span>Калькулятор сметы</span>
+      </button>
+    </div>
+
+    <!-- ВКЛАДКА 1: ЧЕК-ЛИСТ -->
+    <div id="checklistTabContent">
+
 
     <!-- Заголовок для печати -->
     <div class="hidden print-only mb-4 border-b-2 border-slate-800 pb-2">
@@ -294,6 +378,129 @@
         </div>
       </div>
     </section>
+
+    </div><!-- /checklistTabContent -->
+
+    <!-- ВКЛАДКА 2: КАЛЬКУЛЯТОР СМЕТЫ -->
+    <div id="calculatorTabContent" class="hidden space-y-5">
+      <!-- Параметры сметы и итоговая сводка -->
+      <section class="bg-white rounded-2xl shadow-xs border border-slate-200 p-4 sm:p-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">Калькулятор сметы ремонта (Екатеринбург)</h2>
+            <p class="text-xs text-slate-500">14 разделов • 142 вида работ по среднерыночным ценам Екб (2026) с авторасчётом доли мастера</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="openCustomWorkModal()" class="px-3 py-2 rounded-xl text-xs font-bold text-white bg-[#2563EB] hover:bg-blue-700 transition shadow-2xs">
+              + Своя позиция
+            </button>
+            <button type="button" onclick="resetCalcQuantities()" class="px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 transition">
+              Сбросить объёмы
+            </button>
+            <button type="button" onclick="resetCalcPricesToDefault()" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+              Сбросить цены
+            </button>
+          </div>
+        </div>
+
+        <!-- Поля из шапки Excel-калькулятора -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Площадь (м²)</label>
+            <input id="calcArea" type="number" step="0.1" min="0" placeholder="54" oninput="updateCalcMeta('area', this.value)"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm font-semibold text-slate-900" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Комнат</label>
+            <input id="calcRooms" type="text" placeholder="2-комн." oninput="updateCalcMeta('rooms', this.value)"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Тип ремонта</label>
+            <select id="calcRepairType" onchange="updateCalcMeta('repairType', this.value)"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm text-slate-800 bg-white">
+              <option value="Под ключ">Под ключ</option>
+              <option value="Черновой">Черновой</option>
+              <option value="Косметический">Косметический</option>
+              <option value="Дизайнерский">Дизайнерский</option>
+              <option value="Санузел">Санузел</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Скидка (₽)</label>
+            <input id="calcDiscount" type="number" step="100" min="0" placeholder="0" oninput="updateCalcMeta('discount', this.value)"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm font-semibold text-slate-900" />
+          </div>
+        </div>
+
+        <!-- Кнопки экспорта сметы -->
+        <div class="mt-4 pt-3.5 border-t border-slate-100 flex flex-wrap gap-2">
+          <button type="button" onclick="copyEstimateForClient()"
+            class="flex-1 sm:flex-none justify-center px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition shadow-xs">
+            <span>Скопировать смету заказчику</span>
+          </button>
+          <button type="button" onclick="copyTaskForMaster()"
+            class="flex-1 sm:flex-none justify-center px-3.5 py-2.5 rounded-xl bg-[#1E3A5F] hover:bg-blue-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition shadow-xs">
+            <span>Задание исполнителю (−35%)</span>
+          </button>
+          <button type="button" onclick="openEstimatePrintView()"
+            class="w-full sm:w-auto justify-center px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition">
+            <span>Печать / PDF сметы</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Липкая панель итогов + поиск и фильтр по разделам -->
+      <section class="bg-white/95 backdrop-blur-xs rounded-2xl shadow-md border border-slate-200 p-2.5 sm:p-3.5 sticky top-1 sm:top-[108px] z-20 space-y-2.5">
+        <!-- Карточки итогов (Заказчик / Мастер / Маржа) — двигаются вместе с меню -->
+        <div class="grid grid-cols-3 gap-1.5 sm:gap-3">
+          <div class="rounded-xl bg-[#1E3A5F] text-white p-2 sm:p-3">
+            <div class="text-[10px] sm:text-xs text-blue-200 font-medium leading-tight">Итого заказчику <span class="hidden sm:inline">(со скидкой)</span></div>
+            <div id="calcClientTotal" class="text-sm sm:text-xl font-bold mt-0.5 sm:mt-1 truncate">0 ₽</div>
+            <div id="calcSubTotalHint" class="text-[10px] sm:text-[11px] text-blue-200/80 mt-0.5 truncate">Позиций: 0</div>
+          </div>
+          <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-2 sm:p-3">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-[10px] sm:text-xs text-emerald-800 font-semibold leading-tight truncate">Исполнителю</span>
+              <span class="text-[9px] sm:text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-200/70 text-emerald-900 shrink-0">−35%</span>
+            </div>
+            <div id="calcMasterTotal" class="text-sm sm:text-xl font-bold text-emerald-900 mt-0.5 sm:mt-1 truncate">0 ₽</div>
+            <div class="hidden sm:block text-[11px] text-emerald-700 mt-0.5 truncate">65% от суммы работ без скидки</div>
+          </div>
+          <div class="rounded-xl bg-slate-50 border border-slate-200 p-2 sm:p-3">
+            <div class="text-[10px] sm:text-xs text-slate-600 font-semibold leading-tight truncate">Доля прораба</div>
+            <div id="calcForemanTotal" class="text-sm sm:text-xl font-bold text-slate-900 mt-0.5 sm:mt-1 truncate">0 ₽</div>
+            <div class="hidden sm:block text-[11px] text-slate-500 mt-0.5 truncate">35% минус скидка</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="relative flex-1">
+            <input id="calcSearchInput" type="text" placeholder="Поиск работы (например: штукатурка, керамогранит, розетки...)"
+              oninput="renderCalculatorSections()"
+              class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm text-slate-900" />
+            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <button type="button" onclick="document.getElementById('calcSearchInput').value=''; renderCalculatorSections();"
+              class="absolute right-2.5 top-2.5 text-xs text-slate-400 hover:text-slate-700 px-1">✕</button>
+          </div>
+
+          <select id="calcCategoryFilter" onchange="renderCalculatorSections()"
+            class="px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-800 focus:border-blue-600 outline-none">
+            <option value="all">Все 14 разделов</option>
+          </select>
+
+          <label class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 cursor-pointer text-xs sm:text-sm font-semibold text-slate-800 select-none shrink-0">
+            <input id="calcOnlySelectedCheckbox" type="checkbox" onchange="renderCalculatorSections()" class="w-4 h-4 rounded text-blue-600" />
+            <span>Только выбранные</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Контейнер разделов калькулятора -->
+      <div id="calculatorSectionsContainer" class="space-y-4"></div>
+    </div><!-- /calculatorTabContent -->
 
     <!-- Кнопка «Поднять страницу наверх» в самом низу -->
     <div class="no-print mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
@@ -681,8 +888,6 @@
 
     const STORAGE_KEY = 'prorab196_checklist_projects_v1';
     const ACTIVE_PROJECT_KEY = 'prorab196_active_project_v1';
-    const FIXED_PIN = '2556';
-    const SESSION_AUTH_KEY = 'prorab196_session_auth_v1';
 
     const GENERAL_NOTE_TAGS = [
       'Стесненные условия работы',
@@ -729,58 +934,6 @@
         }
       }
       return isLocalStorageAvailable;
-    }
-
-    /**
-     * Проверка авторизации по фиксированному паролю 2556
-     */
-    function checkPinAuthOnStart() {
-      checkStorageAvailability();
-      const isAuth = sessionStorage.getItem(SESSION_AUTH_KEY);
-      const lockScreen = document.getElementById('pinLockScreen');
-
-      if (isAuth === 'true') {
-        lockScreen.classList.add('hidden');
-        loadState();
-        renderAll();
-      } else {
-        lockScreen.classList.remove('hidden');
-        setTimeout(() => {
-          const inp = document.getElementById('pinCodeInput');
-          if (inp) inp.focus();
-        }, 100);
-      }
-    }
-
-    function handlePinSubmit(e) {
-      e.preventDefault();
-      const inputEl = document.getElementById('pinCodeInput');
-      const errEl = document.getElementById('pinErrorMsg');
-      const enteredPin = (inputEl.value || '').trim();
-
-      if (enteredPin === FIXED_PIN) {
-        sessionStorage.setItem(SESSION_AUTH_KEY, 'true');
-        document.getElementById('pinLockScreen').classList.add('hidden');
-        inputEl.value = '';
-        errEl.classList.add('hidden');
-        loadState();
-        renderAll();
-      } else {
-        errEl.textContent = 'Неверный пароль. Доступа нет.';
-        errEl.classList.remove('hidden');
-        inputEl.value = '';
-        inputEl.focus();
-      }
-    }
-
-    function lockApp() {
-      sessionStorage.removeItem(SESSION_AUTH_KEY);
-      const lockScreen = document.getElementById('pinLockScreen');
-      lockScreen.classList.remove('hidden');
-      setTimeout(() => {
-        const inp = document.getElementById('pinCodeInput');
-        if (inp) inp.focus();
-      }, 100);
     }
 
     /**
@@ -1842,6 +1995,1535 @@
       }
     }
 
+
+    /**
+     * Справочник работ и актуальных среднерыночных цен Екатеринбурга (2026)
+     */
+    const CALCULATOR_CATEGORIES = [
+  {
+    "id": "cat_1",
+    "title": "1. Демонтажные работы",
+    "items": [
+      {
+        "id": "w_1",
+        "name": "Демонтаж обоев",
+        "unit": "м²",
+        "price": 120
+      },
+      {
+        "id": "w_2",
+        "name": "Демонтаж штукатурки",
+        "unit": "м²",
+        "price": 300
+      },
+      {
+        "id": "w_3",
+        "name": "Демонтаж шпаклёвки",
+        "unit": "м²",
+        "price": 180
+      },
+      {
+        "id": "w_4",
+        "name": "Демонтаж стяжки",
+        "unit": "м²",
+        "price": 650
+      },
+      {
+        "id": "w_5",
+        "name": "Демонтаж плитки",
+        "unit": "м²",
+        "price": 300
+      },
+      {
+        "id": "w_6",
+        "name": "Демонтаж напольных покрытий",
+        "unit": "м²",
+        "price": 150
+      },
+      {
+        "id": "w_7",
+        "name": "Демонтаж перегородок",
+        "unit": "м²",
+        "price": 850
+      },
+      {
+        "id": "w_8",
+        "name": "Демонтаж стен",
+        "unit": "м²",
+        "price": 1200
+      },
+      {
+        "id": "w_9",
+        "name": "Демонтаж дверей",
+        "unit": "шт.",
+        "price": 900
+      },
+      {
+        "id": "w_10",
+        "name": "Демонтаж сантехники",
+        "unit": "шт.",
+        "price": 950
+      },
+      {
+        "id": "w_11",
+        "name": "Демонтаж радиаторов",
+        "unit": "шт.",
+        "price": 1200
+      },
+      {
+        "id": "w_12",
+        "name": "Демонтаж электрики",
+        "unit": "м.п.",
+        "price": 90
+      },
+      {
+        "id": "w_13",
+        "name": "Вывоз строительного мусора",
+        "unit": "выезд",
+        "price": 5500
+      }
+    ]
+  },
+  {
+    "id": "cat_2",
+    "title": "2. Подготовительные работы",
+    "items": [
+      {
+        "id": "w_14",
+        "name": "Грунтовка стен",
+        "unit": "м²",
+        "price": 75
+      },
+      {
+        "id": "w_15",
+        "name": "Грунтовка потолков",
+        "unit": "м²",
+        "price": 85
+      },
+      {
+        "id": "w_16",
+        "name": "Грунтовка пола",
+        "unit": "м²",
+        "price": 75
+      },
+      {
+        "id": "w_17",
+        "name": "Обеспыливание",
+        "unit": "м²",
+        "price": 60
+      },
+      {
+        "id": "w_18",
+        "name": "Устройство защитных покрытий",
+        "unit": "м²",
+        "price": 120
+      },
+      {
+        "id": "w_19",
+        "name": "Подготовка поверхностей",
+        "unit": "м²",
+        "price": 190
+      }
+    ]
+  },
+  {
+    "id": "cat_3",
+    "title": "3. Штукатурные работы",
+    "items": [
+      {
+        "id": "w_20",
+        "name": "Штукатурка стен по маякам",
+        "unit": "м²",
+        "price": 650
+      },
+      {
+        "id": "w_21",
+        "name": "Штукатурка стен без маяков",
+        "unit": "м²",
+        "price": 450
+      },
+      {
+        "id": "w_22",
+        "name": "Штукатурка откосов",
+        "unit": "м.п.",
+        "price": 750
+      },
+      {
+        "id": "w_23",
+        "name": "Штукатурка потолков",
+        "unit": "м²",
+        "price": 850
+      },
+      {
+        "id": "w_24",
+        "name": "Установка маяков",
+        "unit": "м.п.",
+        "price": 120
+      },
+      {
+        "id": "w_25",
+        "name": "Армирование стен сеткой",
+        "unit": "м²",
+        "price": 150
+      },
+      {
+        "id": "w_26",
+        "name": "Установка штукатурных уголков",
+        "unit": "м.п.",
+        "price": 200
+      }
+    ]
+  },
+  {
+    "id": "cat_4",
+    "title": "4. Шпаклёвочные работы",
+    "items": [
+      {
+        "id": "w_27",
+        "name": "Черновая шпаклёвка стен",
+        "unit": "м²",
+        "price": 280
+      },
+      {
+        "id": "w_28",
+        "name": "Финишная шпаклёвка стен",
+        "unit": "м²",
+        "price": 300
+      },
+      {
+        "id": "w_29",
+        "name": "Шпаклёвка потолков",
+        "unit": "м²",
+        "price": 420
+      },
+      {
+        "id": "w_30",
+        "name": "Шпаклёвка откосов",
+        "unit": "м.п.",
+        "price": 380
+      },
+      {
+        "id": "w_31",
+        "name": "Шлифовка стен",
+        "unit": "м²",
+        "price": 150
+      },
+      {
+        "id": "w_32",
+        "name": "Шлифовка потолков",
+        "unit": "м²",
+        "price": 180
+      },
+      {
+        "id": "w_33",
+        "name": "Подготовка под покраску",
+        "unit": "м²",
+        "price": 350
+      }
+    ]
+  },
+  {
+    "id": "cat_5",
+    "title": "5. Малярные работы",
+    "items": [
+      {
+        "id": "w_34",
+        "name": "Покраска стен",
+        "unit": "м²",
+        "price": 380
+      },
+      {
+        "id": "w_35",
+        "name": "Покраска потолков",
+        "unit": "м²",
+        "price": 450
+      },
+      {
+        "id": "w_36",
+        "name": "Покраска откосов",
+        "unit": "м.п.",
+        "price": 320
+      },
+      {
+        "id": "w_37",
+        "name": "Покраска труб",
+        "unit": "м.п.",
+        "price": 220
+      },
+      {
+        "id": "w_38",
+        "name": "Покраска радиаторов",
+        "unit": "шт.",
+        "price": 1200
+      },
+      {
+        "id": "w_39",
+        "name": "Поклейка обоев",
+        "unit": "м²",
+        "price": 400
+      },
+      {
+        "id": "w_40",
+        "name": "Поклейка стеклохолста",
+        "unit": "м²",
+        "price": 220
+      },
+      {
+        "id": "w_41",
+        "name": "Покраска стеклохолста",
+        "unit": "м²",
+        "price": 320
+      },
+      {
+        "id": "w_42",
+        "name": "Декоративная штукатурка",
+        "unit": "м²",
+        "price": 1200
+      },
+      {
+        "id": "w_43",
+        "name": "Декоративные покрытия",
+        "unit": "м²",
+        "price": 1400
+      }
+    ]
+  },
+  {
+    "id": "cat_6",
+    "title": "6. Гипсокартонные работы",
+    "items": [
+      {
+        "id": "w_44",
+        "name": "Монтаж перегородок из ГКЛ",
+        "unit": "м²",
+        "price": 1100
+      },
+      {
+        "id": "w_45",
+        "name": "Обшивка стен гипсокартоном",
+        "unit": "м²",
+        "price": 650
+      },
+      {
+        "id": "w_46",
+        "name": "Монтаж потолков из ГКЛ",
+        "unit": "м²",
+        "price": 1150
+      },
+      {
+        "id": "w_47",
+        "name": "Многоуровневые потолки",
+        "unit": "м²",
+        "price": 1750
+      },
+      {
+        "id": "w_48",
+        "name": "Короба из гипсокартона",
+        "unit": "м.п.",
+        "price": 950
+      },
+      {
+        "id": "w_49",
+        "name": "Ниши",
+        "unit": "шт.",
+        "price": 2500
+      },
+      {
+        "id": "w_50",
+        "name": "Арки",
+        "unit": "шт.",
+        "price": 3200
+      },
+      {
+        "id": "w_51",
+        "name": "Монтаж люков",
+        "unit": "шт.",
+        "price": 1800
+      },
+      {
+        "id": "w_52",
+        "name": "Устройство каркасов",
+        "unit": "м²",
+        "price": 480
+      }
+    ]
+  },
+  {
+    "id": "cat_7",
+    "title": "7. Стяжка и полы",
+    "items": [
+      {
+        "id": "w_53",
+        "name": "Устройство цементно-песчаной стяжки",
+        "unit": "м²",
+        "price": 750
+      },
+      {
+        "id": "w_54",
+        "name": "Полусухая стяжка",
+        "unit": "м²",
+        "price": 850
+      },
+      {
+        "id": "w_55",
+        "name": "Самовыравнивающаяся стяжка",
+        "unit": "м²",
+        "price": 450
+      },
+      {
+        "id": "w_56",
+        "name": "Наливной пол",
+        "unit": "м²",
+        "price": 400
+      },
+      {
+        "id": "w_57",
+        "name": "Гидроизоляция пола",
+        "unit": "м²",
+        "price": 300
+      },
+      {
+        "id": "w_58",
+        "name": "Укладка ламината",
+        "unit": "м²",
+        "price": 450
+      },
+      {
+        "id": "w_59",
+        "name": "Укладка кварцвинила",
+        "unit": "м²",
+        "price": 550
+      },
+      {
+        "id": "w_60",
+        "name": "Укладка линолеума",
+        "unit": "м²",
+        "price": 280
+      },
+      {
+        "id": "w_61",
+        "name": "Укладка паркетной доски",
+        "unit": "м²",
+        "price": 750
+      },
+      {
+        "id": "w_62",
+        "name": "Укладка паркета",
+        "unit": "м²",
+        "price": 1500
+      },
+      {
+        "id": "w_63",
+        "name": "Укладка плитки на пол",
+        "unit": "м²",
+        "price": 1500
+      },
+      {
+        "id": "w_64",
+        "name": "Монтаж плинтусов",
+        "unit": "м.п.",
+        "price": 300
+      },
+      {
+        "id": "w_65",
+        "name": "Монтаж порогов",
+        "unit": "шт.",
+        "price": 450
+      }
+    ]
+  },
+  {
+    "id": "cat_8",
+    "title": "8. Плиточные работы",
+    "items": [
+      {
+        "id": "w_66",
+        "name": "Укладка настенной плитки",
+        "unit": "м²",
+        "price": 1600
+      },
+      {
+        "id": "w_67",
+        "name": "Укладка напольной плитки",
+        "unit": "м²",
+        "price": 1500
+      },
+      {
+        "id": "w_68",
+        "name": "Укладка керамогранита",
+        "unit": "м²",
+        "price": 1800
+      },
+      {
+        "id": "w_69",
+        "name": "Укладка крупноформатного керамогранита",
+        "unit": "м²",
+        "price": 2800
+      },
+      {
+        "id": "w_70",
+        "name": "Резка плитки",
+        "unit": "м.п.",
+        "price": 350
+      },
+      {
+        "id": "w_71",
+        "name": "Запил под 45 градусов",
+        "unit": "м.п.",
+        "price": 1200
+      },
+      {
+        "id": "w_72",
+        "name": "Затирка швов",
+        "unit": "м²",
+        "price": 280
+      },
+      {
+        "id": "w_73",
+        "name": "Сверление отверстий",
+        "unit": "шт.",
+        "price": 350
+      },
+      {
+        "id": "w_74",
+        "name": "Установка декоративных профилей",
+        "unit": "м.п.",
+        "price": 400
+      },
+      {
+        "id": "w_75",
+        "name": "Облицовка коробов",
+        "unit": "м.п.",
+        "price": 1400
+      },
+      {
+        "id": "w_76",
+        "name": "Облицовка поддонов",
+        "unit": "шт.",
+        "price": 5500
+      },
+      {
+        "id": "w_77",
+        "name": "Устройство душевых зон",
+        "unit": "комплект",
+        "price": 14000
+      }
+    ]
+  },
+  {
+    "id": "cat_9",
+    "title": "9. Сантехнические работы",
+    "items": [
+      {
+        "id": "w_78",
+        "name": "Разводка водоснабжения",
+        "unit": "точка",
+        "price": 2400
+      },
+      {
+        "id": "w_79",
+        "name": "Монтаж канализации",
+        "unit": "точка",
+        "price": 1600
+      },
+      {
+        "id": "w_80",
+        "name": "Монтаж коллекторов",
+        "unit": "шт.",
+        "price": 4500
+      },
+      {
+        "id": "w_81",
+        "name": "Установка фильтров",
+        "unit": "шт.",
+        "price": 1800
+      },
+      {
+        "id": "w_82",
+        "name": "Монтаж счётчиков",
+        "unit": "шт.",
+        "price": 1200
+      },
+      {
+        "id": "w_83",
+        "name": "Установка смесителей",
+        "unit": "шт.",
+        "price": 1600
+      },
+      {
+        "id": "w_84",
+        "name": "Установка раковин",
+        "unit": "шт.",
+        "price": 2500
+      },
+      {
+        "id": "w_85",
+        "name": "Установка унитазов",
+        "unit": "шт.",
+        "price": 2800
+      },
+      {
+        "id": "w_86",
+        "name": "Установка инсталляций",
+        "unit": "шт.",
+        "price": 5000
+      },
+      {
+        "id": "w_87",
+        "name": "Установка ванн",
+        "unit": "шт.",
+        "price": 5500
+      },
+      {
+        "id": "w_88",
+        "name": "Установка душевых кабин",
+        "unit": "шт.",
+        "price": 7500
+      },
+      {
+        "id": "w_89",
+        "name": "Монтаж душевых трапов",
+        "unit": "шт.",
+        "price": 3800
+      },
+      {
+        "id": "w_90",
+        "name": "Монтаж полотенцесушителей",
+        "unit": "шт.",
+        "price": 2500
+      },
+      {
+        "id": "w_91",
+        "name": "Установка радиаторов",
+        "unit": "шт.",
+        "price": 4500
+      },
+      {
+        "id": "w_92",
+        "name": "Монтаж водонагревателей",
+        "unit": "шт.",
+        "price": 3200
+      },
+      {
+        "id": "w_93",
+        "name": "Установка стиральных машин",
+        "unit": "шт.",
+        "price": 2000
+      },
+      {
+        "id": "w_94",
+        "name": "Опрессовка системы",
+        "unit": "услуга",
+        "price": 3000
+      }
+    ]
+  },
+  {
+    "id": "cat_10",
+    "title": "10. Электромонтажные работы",
+    "items": [
+      {
+        "id": "w_95",
+        "name": "Штробление стен",
+        "unit": "м.п.",
+        "price": 350
+      },
+      {
+        "id": "w_96",
+        "name": "Прокладка кабеля",
+        "unit": "м.п.",
+        "price": 120
+      },
+      {
+        "id": "w_97",
+        "name": "Монтаж подрозетников",
+        "unit": "шт.",
+        "price": 350
+      },
+      {
+        "id": "w_98",
+        "name": "Монтаж розеток",
+        "unit": "шт.",
+        "price": 300
+      },
+      {
+        "id": "w_99",
+        "name": "Монтаж выключателей",
+        "unit": "шт.",
+        "price": 300
+      },
+      {
+        "id": "w_100",
+        "name": "Монтаж распределительных коробок",
+        "unit": "шт.",
+        "price": 650
+      },
+      {
+        "id": "w_101",
+        "name": "Сборка электрощита",
+        "unit": "шт.",
+        "price": 5500
+      },
+      {
+        "id": "w_102",
+        "name": "Монтаж автоматов",
+        "unit": "шт.",
+        "price": 450
+      },
+      {
+        "id": "w_103",
+        "name": "Монтаж УЗО",
+        "unit": "шт.",
+        "price": 750
+      },
+      {
+        "id": "w_104",
+        "name": "Монтаж освещения",
+        "unit": "точка",
+        "price": 650
+      },
+      {
+        "id": "w_105",
+        "name": "Установка люстр",
+        "unit": "шт.",
+        "price": 1500
+      },
+      {
+        "id": "w_106",
+        "name": "Установка точечных светильников",
+        "unit": "шт.",
+        "price": 500
+      },
+      {
+        "id": "w_107",
+        "name": "Монтаж LED-подсветки",
+        "unit": "м.п.",
+        "price": 400
+      },
+      {
+        "id": "w_108",
+        "name": "Прокладка слаботочных сетей",
+        "unit": "м.п.",
+        "price": 100
+      },
+      {
+        "id": "w_109",
+        "name": "Монтаж тёплого пола",
+        "unit": "м²",
+        "price": 650
+      }
+    ]
+  },
+  {
+    "id": "cat_11",
+    "title": "11. Двери и столярные работы",
+    "items": [
+      {
+        "id": "w_110",
+        "name": "Установка межкомнатных дверей",
+        "unit": "шт.",
+        "price": 4500
+      },
+      {
+        "id": "w_111",
+        "name": "Установка входных дверей",
+        "unit": "шт.",
+        "price": 6500
+      },
+      {
+        "id": "w_112",
+        "name": "Монтаж дверных коробок",
+        "unit": "шт.",
+        "price": 1200
+      },
+      {
+        "id": "w_113",
+        "name": "Установка наличников",
+        "unit": "м.п.",
+        "price": 200
+      },
+      {
+        "id": "w_114",
+        "name": "Установка доборов",
+        "unit": "м.п.",
+        "price": 350
+      },
+      {
+        "id": "w_115",
+        "name": "Монтаж скрытых дверей",
+        "unit": "шт.",
+        "price": 6500
+      },
+      {
+        "id": "w_116",
+        "name": "Монтаж раздвижных систем",
+        "unit": "шт.",
+        "price": 5000
+      },
+      {
+        "id": "w_117",
+        "name": "Установка подоконников",
+        "unit": "шт.",
+        "price": 1400
+      },
+      {
+        "id": "w_118",
+        "name": "Монтаж откосов",
+        "unit": "м.п.",
+        "price": 550
+      },
+      {
+        "id": "w_119",
+        "name": "Установка потолочных карнизов",
+        "unit": "м.п.",
+        "price": 380
+      }
+    ]
+  },
+  {
+    "id": "cat_12",
+    "title": "12. Потолочные работы",
+    "items": [
+      {
+        "id": "w_120",
+        "name": "Монтаж натяжных потолков",
+        "unit": "м²",
+        "price": 550
+      },
+      {
+        "id": "w_121",
+        "name": "Монтаж потолочных конструкций",
+        "unit": "м²",
+        "price": 950
+      },
+      {
+        "id": "w_122",
+        "name": "Устройство теневых профилей",
+        "unit": "м.п.",
+        "price": 850
+      },
+      {
+        "id": "w_123",
+        "name": "Монтаж ниш под шторы",
+        "unit": "м.п.",
+        "price": 1500
+      },
+      {
+        "id": "w_124",
+        "name": "Монтаж карнизов",
+        "unit": "м.п.",
+        "price": 450
+      },
+      {
+        "id": "w_125",
+        "name": "Монтаж потолочных плинтусов",
+        "unit": "м.п.",
+        "price": 350
+      }
+    ]
+  },
+  {
+    "id": "cat_13",
+    "title": "13. Балконы и лоджии",
+    "items": [
+      {
+        "id": "w_126",
+        "name": "Утепление стен",
+        "unit": "м²",
+        "price": 450
+      },
+      {
+        "id": "w_127",
+        "name": "Утепление пола",
+        "unit": "м²",
+        "price": 500
+      },
+      {
+        "id": "w_128",
+        "name": "Утепление потолка",
+        "unit": "м²",
+        "price": 450
+      },
+      {
+        "id": "w_129",
+        "name": "Обшивка стен",
+        "unit": "м²",
+        "price": 750
+      },
+      {
+        "id": "w_130",
+        "name": "Монтаж напольных покрытий",
+        "unit": "м²",
+        "price": 550
+      },
+      {
+        "id": "w_131",
+        "name": "Отделка откосов",
+        "unit": "м.п.",
+        "price": 600
+      },
+      {
+        "id": "w_132",
+        "name": "Монтаж освещения",
+        "unit": "точка",
+        "price": 650
+      }
+    ]
+  },
+  {
+    "id": "cat_14",
+    "title": "14. Дополнительные работы",
+    "items": [
+      {
+        "id": "w_133",
+        "name": "Перенос розеток",
+        "unit": "шт.",
+        "price": 900
+      },
+      {
+        "id": "w_134",
+        "name": "Перенос сантехнических точек",
+        "unit": "шт.",
+        "price": 2200
+      },
+      {
+        "id": "w_135",
+        "name": "Устройство шумоизоляции",
+        "unit": "м²",
+        "price": 750
+      },
+      {
+        "id": "w_136",
+        "name": "Гидроизоляция санузла",
+        "unit": "м²",
+        "price": 450
+      },
+      {
+        "id": "w_137",
+        "name": "Монтаж вентиляции",
+        "unit": "точка",
+        "price": 1800
+      },
+      {
+        "id": "w_138",
+        "name": "Устройство ниш",
+        "unit": "шт.",
+        "price": 2800
+      },
+      {
+        "id": "w_139",
+        "name": "Монтаж декоративных панелей",
+        "unit": "м²",
+        "price": 1300
+      },
+      {
+        "id": "w_140",
+        "name": "Уборка после ремонта",
+        "unit": "объект",
+        "price": 7500
+      },
+      {
+        "id": "w_141",
+        "name": "Подъём строительных материалов",
+        "unit": "час",
+        "price": 1500
+      },
+      {
+        "id": "w_142",
+        "name": "Погрузка и разгрузка",
+        "unit": "час",
+        "price": 1500
+      }
+    ]
+  }
+];
+
+    let activeMainTab = 'checklist';
+
+    function switchMainTab(tab) {
+      activeMainTab = tab;
+      const clTab = document.getElementById('checklistTabContent');
+      const calcTab = document.getElementById('calculatorTabContent');
+      const btnCl = document.getElementById('tabBtnChecklist');
+      const btnCalc = document.getElementById('tabBtnCalculator');
+
+      if (tab === 'calculator') {
+        clTab.classList.add('hidden');
+        calcTab.classList.remove('hidden');
+        btnCalc.className = 'py-3 px-4 rounded-xl text-sm font-bold bg-[#1E3A5F] text-white shadow-xs flex items-center justify-center gap-2 transition';
+        btnCl.className = 'py-3 px-4 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-2 transition';
+        renderCalculator();
+      } else {
+        calcTab.classList.add('hidden');
+        clTab.classList.remove('hidden');
+        btnCl.className = 'py-3 px-4 rounded-xl text-sm font-bold bg-[#1E3A5F] text-white shadow-xs flex items-center justify-center gap-2 transition';
+        btnCalc.className = 'py-3 px-4 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-2 transition';
+      }
+    }
+
+    function ensureCalcState(proj) {
+      if (!proj.calculator) {
+        proj.calculator = {
+          area: '',
+          rooms: '',
+          repairType: 'Под ключ',
+          discount: 0,
+          items: {},
+          customItems: []
+        };
+      }
+      if (!proj.calculator.items) proj.calculator.items = {};
+      if (!Array.isArray(proj.calculator.customItems)) proj.calculator.customItems = [];
+      return proj.calculator;
+    }
+
+    function getCategoryAllItems(proj, cat) {
+      const calc = ensureCalcState(proj);
+      const customForCat = calc.customItems.filter(ci => ci.catId === cat.id);
+      return [...cat.items, ...customForCat];
+    }
+
+    function getCalcItemState(proj, item) {
+      const calc = ensureCalcState(proj);
+      if (!calc.items[item.id]) {
+        calc.items[item.id] = { qty: '', price: item.price, note: '' };
+      }
+      if (calc.items[item.id].price === undefined || calc.items[item.id].price === null || calc.items[item.id].price === '') {
+        calc.items[item.id].price = item.price;
+      }
+      return calc.items[item.id];
+    }
+
+    function openCustomWorkModal(defaultCatId = null) {
+      const overlay = document.getElementById('customWorkModalOverlay');
+      const sel = document.getElementById('cwCategorySelect');
+      const nameInp = document.getElementById('cwNameInput');
+      const unitInp = document.getElementById('cwUnitInput');
+      const priceInp = document.getElementById('cwPriceInput');
+      const qtyInp = document.getElementById('cwQtyInput');
+
+      sel.innerHTML = '';
+      CALCULATOR_CATEGORIES.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = cat.title;
+        if (defaultCatId && cat.id === defaultCatId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      if (!defaultCatId) sel.value = 'cat_14';
+
+      nameInp.value = '';
+      unitInp.value = 'шт.';
+      priceInp.value = '';
+      qtyInp.value = '1';
+
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      setTimeout(() => nameInp.focus(), 50);
+    }
+
+    function closeCustomWorkModal() {
+      const overlay = document.getElementById('customWorkModalOverlay');
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+    }
+
+    function saveCustomWorkItem() {
+      const catId = document.getElementById('cwCategorySelect').value || 'cat_14';
+      const name = (document.getElementById('cwNameInput').value || '').trim();
+      const unit = (document.getElementById('cwUnitInput').value || '').trim() || 'шт.';
+      const price = Math.max(0, parseFloat(document.getElementById('cwPriceInput').value) || 0);
+      const qtyRaw = document.getElementById('cwQtyInput').value;
+      const qty = qtyRaw === '' ? '' : Math.max(0, parseFloat(qtyRaw) || 0);
+
+      if (!name) {
+        showToast('Укажите наименование работы');
+        document.getElementById('cwNameInput').focus();
+        return;
+      }
+
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      const newId = generateId('cw');
+      calc.customItems.push({
+        id: newId,
+        catId: catId,
+        name: name,
+        unit: unit,
+        price: price,
+        isCustom: true
+      });
+      calc.items[newId] = {
+        qty: qty === 0 ? '' : String(qty),
+        price: price,
+        note: ''
+      };
+
+      saveState(false);
+      closeCustomWorkModal();
+      renderCalculatorSections();
+      showToast('Своя позиция добавлена в смету');
+    }
+
+    function deleteCustomWorkItem(itemId) {
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      calc.customItems = calc.customItems.filter(ci => ci.id !== itemId);
+      delete calc.items[itemId];
+      saveState(false);
+      renderCalculatorSections();
+      showToast('Позиция удалена');
+    }
+
+    function formatRub(val) {
+      const num = Math.round(Number(val) || 0);
+      return num.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function initCalcCategoryFilter() {
+      const sel = document.getElementById('calcCategoryFilter');
+      if (!sel || sel.options.length > 1) return;
+      CALCULATOR_CATEGORIES.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = `${cat.title} (${cat.items.length})`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function updateCalcMeta(field, value) {
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      calc[field] = value;
+      saveState();
+      recalculateTotals();
+    }
+
+    function updateCalcItem(itemId, field, value) {
+      const proj = getActiveProject();
+      let baseItem = null;
+      for (const c of CALCULATOR_CATEGORIES) {
+        const found = getCategoryAllItems(proj, c).find(i => i.id === itemId);
+        if (found) { baseItem = found; break; }
+      }
+      if (!baseItem) return;
+      const st = getCalcItemState(proj, baseItem);
+      st[field] = value;
+
+      const qty = parseFloat(st.qty) || 0;
+      const price = parseFloat(st.price) || 0;
+      const rowTotal = qty * price;
+      const totalEl = document.getElementById(`calc_row_total_${itemId}`);
+      if (totalEl) {
+        totalEl.textContent = qty > 0 ? formatRub(rowTotal) : '0 ₽';
+        totalEl.className = qty > 0
+          ? 'text-sm font-bold text-[#1E3A5F]'
+          : 'text-sm font-medium text-slate-400';
+      }
+
+      const rowEl = document.getElementById(`calc_row_${itemId}`);
+      if (rowEl) {
+        if (qty > 0) {
+          rowEl.classList.add('bg-blue-50/60');
+        } else {
+          rowEl.classList.remove('bg-blue-50/60');
+        }
+      }
+
+      saveState();
+      recalculateTotals();
+    }
+
+    function stepCalcQty(itemId, delta) {
+      const input = document.getElementById(`calc_qty_${itemId}`);
+      if (!input) return;
+      const curr = parseFloat(input.value) || 0;
+      const next = Math.max(0, Math.round((curr + delta) * 100) / 100);
+      input.value = next === 0 ? '' : next;
+      updateCalcItem(itemId, 'qty', input.value);
+    }
+
+    function recalculateTotals() {
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      let subTotal = 0;
+      let selectedCount = 0;
+
+      CALCULATOR_CATEGORIES.forEach(cat => {
+        let catSum = 0;
+        let catCount = 0;
+        getCategoryAllItems(proj, cat).forEach(item => {
+          const st = getCalcItemState(proj, item);
+          const qty = parseFloat(st.qty) || 0;
+          const price = parseFloat(st.price) || 0;
+          if (qty > 0) {
+            const lineSum = qty * price;
+            subTotal += lineSum;
+            selectedCount++;
+            catSum += lineSum;
+            catCount++;
+          }
+        });
+        const badgeEl = document.getElementById(`calc_cat_badge_${cat.id}`);
+        if (badgeEl) {
+          badgeEl.textContent = catCount > 0 ? `${catCount} поз. • ${formatRub(catSum)}` : `${getCategoryAllItems(proj, cat).length} видов`;
+          badgeEl.className = catCount > 0
+            ? 'text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-100 text-[#1E3A5F]'
+            : 'text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-200/70 text-slate-600';
+        }
+      });
+
+      const discount = Math.max(0, parseFloat(calc.discount) || 0);
+      const clientTotal = Math.max(0, subTotal - discount);
+      const masterTotal = Math.round(subTotal * 0.65);
+      const foremanTotal = Math.max(0, clientTotal - masterTotal);
+
+      const elClient = document.getElementById('calcClientTotal');
+      const elHint = document.getElementById('calcSubTotalHint');
+      const elMaster = document.getElementById('calcMasterTotal');
+      const elForeman = document.getElementById('calcForemanTotal');
+
+      if (elClient) elClient.textContent = formatRub(clientTotal);
+      if (elHint) elHint.textContent = `Выбрано позиций: ${selectedCount} • Без скидки: ${formatRub(subTotal)}`;
+      if (elMaster) elMaster.textContent = formatRub(masterTotal);
+      if (elForeman) elForeman.textContent = formatRub(foremanTotal);
+    }
+
+    function resetCalcQuantities() {
+      openModal({
+        title: 'Сбросить объёмы работ?',
+        desc: 'Количество по всем 142 позициям для текущего объекта будет очищено. Цены сохранятся.',
+        confirmText: 'Сбросить',
+        onConfirm: () => {
+          const proj = getActiveProject();
+          const calc = ensureCalcState(proj);
+          Object.keys(calc.items).forEach(k => {
+            calc.items[k].qty = '';
+            calc.items[k].note = '';
+          });
+          calc.discount = 0;
+          saveState(false);
+          renderCalculator();
+          showToast('Объёмы в калькуляторе очищены');
+        }
+      });
+    }
+
+    function resetCalcPricesToDefault() {
+      openModal({
+        title: 'Вернуть базовые цены Екб (2026)?',
+        desc: 'Все изменённые вручную расценки вернутся к актуальным среднерыночным ценам Екатеринбурга.',
+        confirmText: 'Восстановить цены',
+        onConfirm: () => {
+          const proj = getActiveProject();
+          const calc = ensureCalcState(proj);
+          CALCULATOR_CATEGORIES.forEach(cat => {
+            cat.items.forEach(it => {
+              const st = getCalcItemState(proj, it);
+              st.price = it.price;
+            });
+          });
+          saveState(false);
+          renderCalculator();
+          showToast('Расценки восстановлены до рыночных Екб');
+        }
+      });
+    }
+
+    function renderCalculatorSections() {
+      const container = document.getElementById('calculatorSectionsContainer');
+      if (!container) return;
+      const proj = getActiveProject();
+      const searchQ = (document.getElementById('calcSearchInput')?.value || '').trim().toLowerCase();
+      const catFilter = document.getElementById('calcCategoryFilter')?.value || 'all';
+      const onlySelected = Boolean(document.getElementById('calcOnlySelectedCheckbox')?.checked);
+
+      let html = '';
+      CALCULATOR_CATEGORIES.forEach(cat => {
+        if (catFilter !== 'all' && catFilter !== cat.id) return;
+
+        const filteredItems = getCategoryAllItems(proj, cat).filter(item => {
+          const st = getCalcItemState(proj, item);
+          const qty = parseFloat(st.qty) || 0;
+          if (onlySelected && qty <= 0) return false;
+          if (searchQ && !item.name.toLowerCase().includes(searchQ) && !cat.title.toLowerCase().includes(searchQ)) return false;
+          return true;
+        });
+
+        if (filteredItems.length === 0) return;
+
+        let rowsHtml = '';
+        filteredItems.forEach((item, idx) => {
+          const st = getCalcItemState(proj, item);
+          const qty = parseFloat(st.qty) || 0;
+          const price = parseFloat(st.price) || 0;
+          const rowTotal = qty * price;
+          const workNum = item.id.replace('w_', '');
+
+          rowsHtml += `
+            <div id="calc_row_${item.id}" class="p-3 sm:px-5 sm:py-3 border-b border-slate-100 last:border-b-0 transition ${qty > 0 ? 'bg-blue-50/60' : 'hover:bg-slate-50/70'}">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-baseline gap-2">
+                    <span class="text-xs font-mono text-slate-400 shrink-0">${item.isCustom ? '★' : '#' + workNum}</span>
+                    <span class="text-sm font-semibold text-slate-900 leading-snug">${item.name}</span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md shrink-0">${item.unit}</span>
+                    ${item.isCustom ? `<button type="button" onclick="deleteCustomWorkItem('${item.id}')" class="text-[11px] text-rose-500 hover:text-rose-700 font-medium px-1.5 py-0.5 rounded hover:bg-rose-50">Удалить</button>` : ''}
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-12 sm:flex items-center gap-2 shrink-0">
+                  <!-- Цена за ед. -->
+                  <div class="col-span-4 sm:w-28">
+                    <label class="block sm:hidden text-[10px] text-slate-400 mb-0.5">Цена (₽)</label>
+                    <div class="relative">
+                      <input type="number" min="0" step="10" value="${st.price}"
+                        oninput="updateCalcItem('${item.id}', 'price', this.value)"
+                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 focus:border-blue-600 outline-none text-xs sm:text-sm font-medium text-right text-slate-800 bg-white" />
+                    </div>
+                  </div>
+
+                  <!-- Количество с кнопками - / + -->
+                  <div class="col-span-5 sm:w-36">
+                    <label class="block sm:hidden text-[10px] text-slate-400 mb-0.5">Кол-во (${item.unit})</label>
+                    <div class="flex items-center border border-slate-300 rounded-lg bg-white overflow-hidden">
+                      <button type="button" onclick="stepCalcQty('${item.id}', -1)"
+                        class="px-2.5 py-1.5 text-slate-600 hover:bg-slate-100 font-bold text-sm select-none">−</button>
+                      <input id="calc_qty_${item.id}" type="number" min="0" step="0.1" placeholder="0" value="${st.qty}"
+                        oninput="updateCalcItem('${item.id}', 'qty', this.value)"
+                        class="w-full py-1.5 text-center text-xs sm:text-sm font-bold text-slate-900 outline-none" />
+                      <button type="button" onclick="stepCalcQty('${item.id}', 1)"
+                        class="px-2.5 py-1.5 text-slate-600 hover:bg-slate-100 font-bold text-sm select-none">+</button>
+                    </div>
+                  </div>
+
+                  <!-- Сумма по строке -->
+                  <div class="col-span-3 sm:w-28 text-right">
+                    <label class="block sm:hidden text-[10px] text-slate-400 mb-0.5">Сумма</label>
+                    <span id="calc_row_total_${item.id}" class="${qty > 0 ? 'text-sm font-bold text-[#1E3A5F]' : 'text-sm font-medium text-slate-400'}">
+                      ${qty > 0 ? formatRub(rowTotal) : '0 ₽'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+          <details open class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+            <summary class="bg-slate-50 border-b border-slate-200 px-4 sm:px-5 py-3.5 cursor-pointer flex items-center justify-between gap-2 select-none list-none">
+              <span class="text-sm sm:text-base font-bold text-slate-900">${cat.title}</span>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="event.preventDefault(); event.stopPropagation(); openCustomWorkModal('${cat.id}')"
+                  class="text-xs font-semibold text-[#2563EB] hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition">
+                  + Своя работа
+                </button>
+                <span id="calc_cat_badge_${cat.id}" class="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-200/70 text-slate-600">${getCategoryAllItems(proj, cat).length} видов</span>
+              </div>
+            </summary>
+            <div>${rowsHtml}</div>
+          </details>
+        `;
+      });
+
+      if (!html) {
+        html = `<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-sm text-slate-500">По выбранному фильтру работ не найдено.</div>`;
+      }
+
+      container.innerHTML = html;
+      recalculateTotals();
+    }
+
+    function renderCalculator() {
+      initCalcCategoryFilter();
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      const elArea = document.getElementById('calcArea');
+      const elRooms = document.getElementById('calcRooms');
+      const elType = document.getElementById('calcRepairType');
+      const elDisc = document.getElementById('calcDiscount');
+
+      if (elArea) elArea.value = calc.area || '';
+      if (elRooms) elRooms.value = calc.rooms || '';
+      if (elType) elType.value = calc.repairType || 'Под ключ';
+      if (elDisc) elDisc.value = calc.discount || '';
+
+      renderCalculatorSections();
+    }
+
+    function copyEstimateForClient() {
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      const lines = [
+        `📋 *СМЕТА НА РЕМОНТНЫЕ РАБОТЫ*`,
+        `Объект: *${proj.title || 'Без названия'}*`
+      ];
+      if (proj.client) lines.push(`Заказчик: ${proj.client}`);
+      if (calc.area) lines.push(`Площадь: ${calc.area} м² (${calc.rooms || '—'}) • Тип: ${calc.repairType || 'Под ключ'}`);
+      lines.push(`——————————————`);
+
+      let subTotal = 0;
+      let count = 0;
+      CALCULATOR_CATEGORIES.forEach(cat => {
+        const secLines = [];
+        getCategoryAllItems(proj, cat).forEach(item => {
+          const st = getCalcItemState(proj, item);
+          const qty = parseFloat(st.qty) || 0;
+          const price = parseFloat(st.price) || 0;
+          if (qty > 0) {
+            const sum = qty * price;
+            subTotal += sum;
+            count++;
+            secLines.push(`• ${item.name}: ${qty} ${item.unit} × ${price} ₽ = *${formatRub(sum)}*`);
+          }
+        });
+        if (secLines.length > 0) {
+          lines.push(`\n*${cat.title.toUpperCase()}*`);
+          lines.push(...secLines);
+        }
+      });
+
+      if (count === 0) {
+        showToast('Сначала укажите объёмы хотя бы по одной работе');
+        return;
+      }
+
+      const discount = Math.max(0, parseFloat(calc.discount) || 0);
+      const total = Math.max(0, subTotal - discount);
+      lines.push(`\n——————————————`);
+      if (discount > 0) {
+        lines.push(`Сумма работ: ${formatRub(subTotal)}`);
+        lines.push(`Скидка: −${formatRub(discount)}`);
+      }
+      lines.push(`💰 *ИТОГО К ОПЛАТЕ: ${formatRub(total)}*`);
+      lines.push(`Расчёт выполнен: prorab196.ru (Екатеринбург)`);
+
+      const helper = document.getElementById('clipboardHelper');
+      helper.value = lines.join('\n');
+      helper.select();
+      helper.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      showToast('Смета для заказчика скопирована в буфер');
+    }
+
+    function copyTaskForMaster() {
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      const lines = [
+        `🛠 *ЗАДАНИЕ ИСПОЛНИТЕЛЮ (БЕЗ ЦЕН ЗАКАЗЧИКА)*`,
+        `Объект: *${proj.title || 'Без названия'}*`
+      ];
+      if (calc.area) lines.push(`Площадь: ${calc.area} м² • Тип: ${calc.repairType || 'Под ключ'}`);
+      lines.push(`——————————————`);
+
+      let subTotal = 0;
+      let count = 0;
+      CALCULATOR_CATEGORIES.forEach(cat => {
+        const secLines = [];
+        getCategoryAllItems(proj, cat).forEach(item => {
+          const st = getCalcItemState(proj, item);
+          const qty = parseFloat(st.qty) || 0;
+          const price = parseFloat(st.price) || 0;
+          if (qty > 0) {
+            const masterRate = Math.round(price * 0.65);
+            const masterSum = Math.round(qty * price * 0.65);
+            subTotal += qty * price;
+            count++;
+            secLines.push(`• ${item.name} — *${qty} ${item.unit}* (ставка ${masterRate} ₽ → ${formatRub(masterSum)})`);
+          }
+        });
+        if (secLines.length > 0) {
+          lines.push(`\n*${cat.title.toUpperCase()}*`);
+          lines.push(...secLines);
+        }
+      });
+
+      if (count === 0) {
+        showToast('Сначала укажите объёмы работ');
+        return;
+      }
+
+      lines.push(`\n——————————————`);
+      lines.push(`💵 *ИТОГО ВЫПЛАТА МАСТЕРУ: ${formatRub(Math.round(subTotal * 0.65))}*`);
+
+      const helper = document.getElementById('clipboardHelper');
+      helper.value = lines.join('\n');
+      helper.select();
+      helper.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      showToast('Задание исполнителю скопировано');
+    }
+
+    function openEstimatePrintView() {
+      const proj = getActiveProject();
+      const calc = ensureCalcState(proj);
+      let rows = '';
+      let subTotal = 0;
+      let idx = 1;
+
+      CALCULATOR_CATEGORIES.forEach(cat => {
+        let catRows = '';
+        getCategoryAllItems(proj, cat).forEach(item => {
+          const st = getCalcItemState(proj, item);
+          const qty = parseFloat(st.qty) || 0;
+          const price = parseFloat(st.price) || 0;
+          if (qty > 0) {
+            const sum = qty * price;
+            subTotal += sum;
+            catRows += `<tr>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:center;">${idx++}</td>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;">${item.name}</td>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:center;">${item.unit}</td>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">${qty}</td>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">${price.toLocaleString('ru-RU')}</td>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;font-weight:700;">${Math.round(sum).toLocaleString('ru-RU')}</td>
+            </tr>`;
+          }
+        });
+        if (catRows) {
+          rows += `<tr><td colspan="6" style="padding:7px 8px;border:1px solid #cbd5e1;background:#f1f5f9;font-weight:700;">${cat.title}</td></tr>` + catRows;
+        }
+      });
+
+      if (!rows) {
+        showToast('Добавьте объёмы работ для формирования сметы');
+        return;
+      }
+
+      const discount = Math.max(0, parseFloat(calc.discount) || 0);
+      const total = Math.max(0, subTotal - discount);
+      const win = window.open('', '_blank', 'width=900,height=800');
+      if (!win) {
+        showToast('Разрешите всплывающие окна в браузере');
+        return;
+      }
+      win.document.write(`<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Смета — ${proj.title}</title>
+        <style>body{font-family:Arial,sans-serif;color:#0f172a;padding:24px;font-size:13px;} table{width:100%;border-collapse:collapse;margin-top:14px;} th{background:#1e3a5f;color:#fff;padding:8px;border:1px solid #1e3a5f;}</style>
+        </head><body>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1e3a5f;padding-bottom:10px;">
+          <div><h1 style="margin:0;font-size:18px;">СМЕТА НА РЕМОНТНО-ОТДЕЛОЧНЫЕ РАБОТЫ</h1><div style="color:#475569;font-size:12px;">Екатеринбург • prorab196.ru</div></div>
+          <div style="text-align:right;font-size:12px;">Дата: <strong>${proj.date || ''}</strong></div>
+        </div>
+        <div style="margin-top:12px;line-height:1.6;">
+          <div><strong>Объект:</strong> ${proj.title || '—'} | <strong>Заказчик:</strong> ${proj.client || '—'}</div>
+          <div><strong>Площадь:</strong> ${calc.area || '—'} м² | <strong>Комнат:</strong> ${calc.rooms || '—'} | <strong>Тип ремонта:</strong> ${calc.repairType || 'Под ключ'}</div>
+        </div>
+        <table><thead><tr><th>№</th><th>Наименование работы</th><th>Ед.</th><th>Кол-во</th><th>Цена, ₽</th><th>Сумма, ₽</th></tr></thead><tbody>${rows}</tbody></table>
+        <div style="margin-top:14px;text-align:right;font-size:14px;line-height:1.7;">
+          <div>Итого за работы: <strong>${formatRub(subTotal)}</strong></div>
+          ${discount > 0 ? `<div>Скидка: <strong>−${formatRub(discount)}</strong></div>` : ''}
+          <div style="font-size:17px;color:#1e3a5f;">ИТОГО К ОПЛАТЕ: <strong>${formatRub(total)}</strong></div>
+        </div>
+        <div style="margin-top:36px;display:flex;justify-content:space-between;font-size:12px;">
+          <div>Заказчик: _____________________ / _______________</div>
+          <div>Исполнитель: _____________________ / _______________</div>
+        </div>
+        <script>window.onload=function(){window.print();}<\/script>
+        </body></html>`);
+      win.document.close();
+    }
+
     // Инициализация приложения при загрузке страницы
     function renderAll() {
       renderProjectSelect();
@@ -1849,6 +3531,7 @@
       renderSections();
       renderGeneralNotes();
       updateProgress();
+      renderCalculator();
     }
 
     window.addEventListener('scroll', () => {
@@ -1861,8 +3544,100 @@
       }
     });
 
+    const PIN_STORAGE_KEY = 'prorab196_access_pin_v1';
+    const PIN_SESSION_KEY = 'prorab196_unlocked_session_v1';
+    const DEFAULT_PIN = '25565';
+
+    function getStoredPin() {
+      try {
+        return localStorage.getItem(PIN_STORAGE_KEY) || DEFAULT_PIN;
+      } catch (e) {
+        return DEFAULT_PIN;
+      }
+    }
+
+    function initPinLock() {
+      let unlocked = false;
+      try {
+        unlocked = sessionStorage.getItem(PIN_SESSION_KEY) === '1';
+      } catch (e) {
+        unlocked = false;
+      }
+      const overlay = document.getElementById('pinLockOverlay');
+      const input = document.getElementById('pinCodeInput');
+      if (!overlay) return;
+      if (unlocked) {
+        overlay.classList.add('hidden');
+      } else {
+        overlay.classList.remove('hidden');
+        if (input) setTimeout(() => input.focus(), 80);
+      }
+    }
+
+    function submitPinCode(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('pinCodeInput');
+      const err = document.getElementById('pinErrorMsg');
+      const overlay = document.getElementById('pinLockOverlay');
+      const entered = (input.value || '').trim();
+      const expected = getStoredPin();
+
+      if (entered === expected) {
+        err.classList.add('hidden');
+        input.value = '';
+        overlay.classList.add('hidden');
+        try {
+          sessionStorage.setItem(PIN_SESSION_KEY, '1');
+        } catch (errStore) {}
+      } else {
+        err.classList.remove('hidden');
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function lockAppNow() {
+      try {
+        sessionStorage.removeItem(PIN_SESSION_KEY);
+      } catch (e) {}
+      const overlay = document.getElementById('pinLockOverlay');
+      const input = document.getElementById('pinCodeInput');
+      const err = document.getElementById('pinErrorMsg');
+      if (err) err.classList.add('hidden');
+      if (input) input.value = '';
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        if (input) setTimeout(() => input.focus(), 80);
+      }
+    }
+
+    function promptChangePin() {
+      openModal({
+        title: 'Сменить пароль входа',
+        desc: 'Введите новый пароль доступа (цифры или буквы):',
+        showInput: true,
+        defaultValue: '',
+        placeholder: 'Введите новый пароль',
+        confirmText: 'Сохранить пароль',
+        onConfirm: (val) => {
+          if (!val) {
+            showToast('Пароль не может быть пустым');
+            return;
+          }
+          try {
+            localStorage.setItem(PIN_STORAGE_KEY, val);
+            showToast('Новый пароль сохранён');
+          } catch (e) {
+            showToast('Не удалось сохранить пароль в память браузера');
+          }
+        }
+      });
+    }
+
     window.onload = function () {
-      checkPinAuthOnStart();
+      initPinLock();
+      loadState();
+      renderAll();
     };
   </script>
 </body>
