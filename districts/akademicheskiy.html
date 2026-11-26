@@ -1742,6 +1742,870 @@
   color: var(--dark);
 }
 
+/* ===== НОВЫЙ БЛОК ЦЕН (В СТИЛЕ САЙТА И С ФОНОМ КАК У ПОРТФОЛИО) ===== */
+.prices-section {
+  padding: 70px 0;
+  background: var(--bg-alt);
+  position: relative;
+}
+.prices-section::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: var(--maxw);
+  height: 1px;
+  background: rgba(0, 0, 0, 0.10);
+}
+@media (max-width: 600px) {
+  .prices-section::after {
+    width: calc(100% - 32px);
+    background: rgba(0, 0, 0, 0.08);
+  }
+}
+
+.prices-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.prices-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-dark);
+  margin-bottom: 8px;
+}
+.prices-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--dark);
+}
+.prices-title span {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* Переключатель БЕЗ МАТЕРИАЛОВ / С МАТЕРИАЛАМИ */
+.materials-switch-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 22px;
+  background: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0,0,0,.05);
+  user-select: none;
+}
+.switch-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .2s;
+}
+.switch-label.active {
+  color: var(--dark);
+}
+.toggle-pill {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border-radius: 99px;
+  background: var(--border);
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  transition: background .25s ease;
+  flex-shrink: 0;
+}
+.toggle-pill[aria-checked="true"] {
+  background: var(--accent);
+}
+.toggle-knob {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+  transform: translateX(0);
+  transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+.toggle-pill[aria-checked="true"] .toggle-knob {
+  transform: translateX(24px);
+}
+
+/* Сетка 4 карточек тарифов */
+.tariffs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+@media (max-width: 1120px) {
+  .tariffs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+@media (max-width: 640px) {
+  .prices-section { padding: 50px 0; }
+  .prices-title { font-size: 26px; }
+}
+@media (max-width: 600px) {
+  .prices-section { padding: 40px 0; }
+  .materials-switch-wrap {
+    padding: 7px 12px;
+    gap: 8px;
+  }
+  .switch-label { font-size: 10.5px; }
+}
+
+.tariff-card {
+  position: relative;
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0,0,0,.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.tariff-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(28, 35, 49, .10);
+  border-color: rgba(245, 166, 35, 0.65);
+}
+.tariff-card.popular {
+  border: 2px solid var(--accent);
+}
+
+/* Бейдж "Популярный выбор" */
+.tariff-fire-badge {
+  position: absolute;
+  top: -13px;
+  right: 14px;
+  background: var(--accent);
+  color: var(--dark);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 99px;
+  box-shadow: 0 6px 16px rgba(245, 166, 35, .35);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.tariff-head {
+  padding: 20px 16px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 148px;
+}
+.tariff-name {
+  font-size: 19px;
+  line-height: 1.2;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+.tariff-desc {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.tariff-photo {
+  width: 100%;
+  height: 156px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--dark);
+}
+.tariff-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .4s ease;
+}
+.tariff-card:hover .tariff-photo img {
+  transform: scale(1.04);
+}
+
+.tariff-body {
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: center;
+}
+
+.tariff-discount-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 22px;
+  font-size: 12.5px;
+  margin-bottom: 4px;
+}
+.discount-badge {
+  font-weight: 700;
+  background: #fff8ec;
+  color: var(--accent-dark);
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.old-price {
+  color: var(--muted);
+  text-decoration: line-through;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tariff-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--dark);
+  line-height: 1.15;
+  height: 36px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+.tariff-price small {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.tariff-note {
+  height: 24px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tariff-note-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 5px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.tariff-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-tariff-outline,
+.btn-tariff-solid {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: .2s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.btn-tariff-outline {
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--dark);
+}
+.btn-tariff-outline:hover {
+  border-color: var(--accent);
+  background: #fff8ec;
+}
+
+.btn-tariff-solid {
+  border: none;
+  background: var(--accent);
+  color: var(--dark);
+  box-shadow: 0 4px 12px rgba(245, 166, 35, .28);
+}
+.btn-tariff-solid:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+/* Нижние мета-параметры: Срок и Команда */
+.tariff-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.meta-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #fff8ec;
+  color: var(--accent-dark);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+.meta-text {
+  min-width: 0;
+}
+.meta-text span {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  color: var(--muted);
+  line-height: 1.1;
+}
+.meta-text strong {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.tariff-fast-start {
+  margin-top: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.25;
+}
+
+@media (max-width: 600px) {
+  .tariffs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .tariff-card {
+    border-radius: 12px;
+  }
+  .tariff-fire-badge {
+    top: -10px;
+    right: 8px;
+    font-size: 9px;
+    padding: 2px 7px;
+  }
+.tariff-head {
+    padding: 12px 8px 12px;
+    min-height: 118px;
+  }
+  .tariff-name {
+    font-size: 13.5px;
+    margin-bottom: 4px;
+  }
+  .tariff-desc {
+    font-size: 10px;
+    line-height: 1.35;
+  }
+  .tariff-photo {
+    height: 96px;
+  }
+  .tariff-body {
+    padding: 10px 8px 11px;
+  }
+  .tariff-discount-row {
+    gap: 4px;
+    height: 18px;
+    font-size: 10px;
+  }
+  .discount-badge {
+    font-size: 9.5px;
+    padding: 1px 5px;
+  }
+  .tariff-price {
+    font-size: 20px;
+    height: 26px;
+    gap: 3px;
+    margin-bottom: 4px;
+  }
+  .tariff-price small {
+    font-size: 11px;
+  }
+  .tariff-note {
+    height: 20px;
+    margin-bottom: 8px;
+  }
+  .tariff-note-badge {
+    height: 18px;
+    padding: 0 5px;
+    font-size: 9px;
+  }
+  .tariff-actions {
+    gap: 6px;
+  }
+  .btn-tariff-outline,
+  .btn-tariff-solid {
+    height: 34px;
+    padding: 0 6px;
+    font-size: 10px;
+    border-radius: 8px;
+  }
+  .tariff-meta {
+    gap: 4px;
+    margin-top: 10px;
+    padding-top: 8px;
+  }
+  .meta-item {
+    gap: 4px;
+  }
+  .meta-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    border-radius: 5px;
+  }
+  .meta-text span {
+    font-size: 7.5px;
+  }
+  .meta-text strong {
+    font-size: 9.5px;
+  }
+  .tariff-fast-start {
+    margin-top: 6px;
+    font-size: 9px;
+  }
+}
+
+/* ===== МОДАЛКА "ЧТО ВХОДИТ В ТАРИФ" ===== */
+.tariff-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 35, 49, 0.78);
+  backdrop-filter: blur(6px);
+  z-index: 2500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.tariff-modal-backdrop.open {
+  display: flex;
+}
+.tariff-modal-card {
+  background: #fff;
+  border-radius: var(--radius);
+  max-width: 680px;
+  width: 100%;
+  padding: 26px 26px 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
+  position: relative;
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+.tariff-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--dark);
+  font-size: 16px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: .2s;
+}
+.tariff-modal-close:hover {
+  background: var(--accent);
+  color: var(--dark);
+  border-color: var(--accent);
+}
+.tariff-modal-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: #fff8ec;
+  color: var(--accent-dark);
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  padding: 3px 10px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.tariff-modal-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--dark);
+  line-height: 1.2;
+  margin-bottom: 4px;
+  padding-right: 36px;
+}
+.tariff-modal-sub {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+/* Сетка разделов: Пол, Стены, Потолок, Другое */
+.tariff-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.tariff-group-box {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 14px;
+}
+.tariff-group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 9px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+.tariff-group-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.tariff-checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tariff-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12.5px;
+  line-height: 1.38;
+  color: var(--text);
+}
+.tariff-checklist li::before {
+  content: '✓';
+  color: var(--accent-dark);
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Блок телефона и кнопки расчёта внизу модалки */
+.tariff-modal-cta-box {
+  background: #1c2331;
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.tariff-modal-cta-title {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+.tariff-modal-cta-desc {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 12px;
+}
+.tariff-modal-form {
+  display: flex;
+  gap: 10px;
+}
+.tariff-modal-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s, background .2s;
+}
+.tariff-modal-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.tariff-modal-input:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.14);
+}
+.tariff-modal-submit {
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--dark);
+  font-size: 13.5px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: .2s;
+}
+.tariff-modal-submit:hover {
+  background: var(--accent-dark);
+}
+.tariff-modal-success {
+  display: none;
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  color: #bbf7d0;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.tariff-modal-success.show {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .tariff-modal-card {
+    padding: 20px 14px 16px;
+  }
+  .tariff-modal-title {
+    font-size: 20px;
+  }
+  .tariff-groups-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .tariff-modal-form {
+    flex-direction: column;
+  }
+  .tariff-modal-submit {
+    width: 100%;
+  }
+}
+
+/* ===== ПОПАП ВЫБОРА ВРЕМЕНИ ЗВОНКА ===== */
+.calltime-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 35, 49, 0.82);
+  backdrop-filter: blur(6px);
+  z-index: 2600;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.calltime-backdrop.open {
+  display: flex;
+}
+.calltime-card {
+  background: #fff;
+  border-radius: var(--radius);
+  max-width: 440px;
+  width: 100%;
+  padding: 26px 24px 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .4);
+  position: relative;
+  text-align: center;
+  animation: popIn .22s ease;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.calltime-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--dark);
+  font-size: 15px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: .2s;
+}
+.calltime-close:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.calltime-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #fff8ec;
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  color: var(--accent-dark);
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+}
+.calltime-title {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+.calltime-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+.calltime-label {
+  display: block;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.calltime-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.calltime-chips.intervals {
+  grid-template-columns: repeat(2, 1fr);
+}
+.calltime-chip {
+  padding: 10px 8px;
+  border-radius: 9px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--dark);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: .18s;
+}
+.calltime-chip:hover {
+  border-color: var(--accent);
+  background: #fff8ec;
+}
+.calltime-chip.active {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: #fff;
+}
+.calltime-chip.full-row {
+  grid-column: 1 / -1;
+}
+.calltime-submit {
+  width: 100%;
+  height: 46px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--dark);
+  font-size: 14.5px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(245, 166, 35, .32);
+  transition: .2s;
+  margin-top: 4px;
+}
+.calltime-submit:hover {
+  background: var(--accent-dark);
+}
+.calltime-submit:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.calltime-done {
+  display: none;
+  padding: 14px 10px 4px;
+}
+.calltime-done.show {
+  display: block;
+}
+.calltime-done-badge {
+  display: inline-block;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.calltime-done p {
+  font-size: 13.5px;
+  color: var(--muted);
+}
 </style>
 
 <script type="application/ld+json">
@@ -1855,7 +2719,7 @@
 
     <nav class="nav-links">
       <a href="#about">Обо мне</a>
-      <a href="#how">Как работаю</a>
+      <a href="#tariffs">Цены</a>
 
 <div class="nav-item-dropdown" id="districtsNav">
         <a href="districts.html" aria-haspopup="true" aria-expanded="false">Районы</a>
@@ -1883,7 +2747,7 @@
         <a href="portfolio.html" aria-haspopup="true" aria-expanded="false">Примеры работ</a>
         <div class="portfolio-dropdown" role="menu">
           <a href="#portfolio" role="menuitem">Избранное на странице</a>
-          <a href="/portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
+          <a href="portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
         </div>
       </div>
       <a href="#reviews">Отзывы</a>
@@ -1924,7 +2788,7 @@
     ПРОРАБ<span class="logo-dot">.</span><span class="logo-ekb">ЕКБ</span>
   </a>
   <a href="#about" class="mobile-link">Обо мне</a>
-  <a href="#how" class="mobile-link">Как работаю</a>
+  <a href="#tariffs" class="mobile-link">Цены</a>
 
 <details class="mobile-districts">
     <summary>Районы Екатеринбурга</summary>
@@ -1952,7 +2816,7 @@
     <summary>Примеры работ</summary>
     <div class="mobile-districts-list">
       <a href="#portfolio" class="mobile-link">На странице</a>
-      <a href="/portfolio.html" class="mobile-link" style="background: rgba(245,166,35,0.14); color: var(--accent); border-color: rgba(245,166,35,0.4);">Всё портфолио →</a>
+      <a href="portfolio.html" class="mobile-link" style="background: rgba(245,166,35,0.14); color: var(--accent); border-color: rgba(245,166,35,0.4);">Всё портфолио →</a>
     </div>
   </details>
   <a href="#reviews" class="mobile-link">Отзывы</a>
@@ -2105,7 +2969,7 @@
         <h2 class="section-title">Примеры работ</h2>
         <p class="section-sub">Свайпните большое фото, чтобы пролистать галерею. Клик по нему откроет фото на весь экран.</p>
       </div>
-      <a href="/portfolio.html" class="btn-all-portfolio">
+      <a href="portfolio.html" class="btn-all-portfolio">
         Всё портфолио <span>→</span>
       </a>
     </div>
@@ -2290,6 +3154,285 @@
   <button class="lightbox-nav prev" onclick="navLightbox(-1, event)">‹</button>
   <img id="lightboxImg" src="" alt="Увеличенное фото">
   <button class="lightbox-nav next" onclick="navLightbox(1, event)">›</button>
+</div>
+
+<!-- ===== БЛОК ЦЕН ===== -->
+<section class="prices-section" id="tariffs">
+  <div class="wrap">
+
+    <div class="prices-header">
+      <span class="prices-eyebrow">Прозрачная смета по договору</span>
+      <h2 class="prices-title">Сколько <span>это стоит?</span></h2>
+
+      <div class="materials-switch-wrap">
+        <span class="switch-label active" id="labelNoMat">БЕЗ МАТЕРИАЛОВ</span>
+        <button
+          type="button"
+          class="toggle-pill"
+          id="materialsToggle"
+          role="switch"
+          aria-checked="false"
+          aria-label="Переключить расчёт с черновыми материалами">
+          <span class="toggle-knob"></span>
+        </button>
+        <span class="switch-label" id="labelWithMat">С МАТЕРИАЛАМИ</span>
+      </div>
+    </div>
+
+    <div class="tariffs-grid">
+
+      <!-- 1. ЧЕРНОВОЙ -->
+      <article class="tariff-card">
+        <div class="tariff-head">
+          <h3 class="tariff-name">Черновой</h3>
+          <p class="tariff-desc">Подготовим стены, полы и потолок к чистовой отделке. Разведём электрику и сантехнику, смонтируем перегородки.</p>
+        </div>
+        <div class="tariff-photo">
+          <img src="/images/chernovoy-1.webp" alt="Черновой ремонт квартиры в Екатеринбурге" loading="lazy">
+        </div>
+        <div class="tariff-body">
+          <div class="tariff-discount-row">
+            <span class="discount-badge">Скидка 15%</span>
+            <span class="old-price" id="roughOldPrice">3 235 ₽/м²</span>
+          </div>
+          <div class="tariff-price" id="roughPrice">
+            <small>от</small> 2 750 <small>₽/м²</small>
+          </div>
+          <div class="tariff-note">
+            <span class="tariff-note-badge" id="roughMatBadge">Работа без материалов</span>
+          </div>
+
+          <div class="tariff-actions">
+            <button type="button" class="btn-tariff-outline" data-tariff="rough">Что входит в тариф</button>
+            <a href="#form" class="btn-tariff-solid" data-select-tariff="Черновой ремонт">Рассчитать стоимость</a>
+          </div>
+
+          <div class="tariff-meta">
+            <div class="meta-item">
+              <div class="meta-icon">📅</div>
+              <div class="meta-text">
+                <span>Срок</span>
+                <strong>от 3 дней</strong>
+              </div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-icon">👷</div>
+              <div class="meta-text">
+                <span>Команда</span>
+                <strong>3+ человек</strong>
+              </div>
+            </div>
+          </div>
+          <div class="tariff-fast-start">Быстрый старт работ · Екб</div>
+        </div>
+      </article>
+
+      <!-- 2. КОСМЕТИЧЕСКИЙ -->
+      <article class="tariff-card">
+        <div class="tariff-head">
+          <h3 class="tariff-name">Косметический</h3>
+          <p class="tariff-desc">Устраним поверхностные дефекты и освежим внешний вид квартиры. Проведём чистовую отделку стен, полов и потолков.</p>
+        </div>
+        <div class="tariff-photo">
+          <img src="/images/kosmetik-1.webp" alt="Косметический ремонт квартиры" loading="lazy">
+        </div>
+        <div class="tariff-body">
+          <div class="tariff-discount-row">
+            <span class="discount-badge">Скидка 15%</span>
+            <span class="old-price">5 294 ₽/м²</span>
+          </div>
+          <div class="tariff-price">
+            <small>от</small> 4 500 <small>₽/м²</small>
+          </div>
+          <div class="tariff-note">
+            <span class="tariff-note-badge">Поэтапная оплата по факту</span>
+          </div>
+
+          <div class="tariff-actions">
+            <button type="button" class="btn-tariff-outline" data-tariff="cosmetic">Что входит в тариф</button>
+            <a href="#form" class="btn-tariff-solid" data-select-tariff="Косметический ремонт">Рассчитать стоимость</a>
+          </div>
+
+          <div class="tariff-meta">
+            <div class="meta-item">
+              <div class="meta-icon">📅</div>
+              <div class="meta-text">
+                <span>Срок</span>
+                <strong>от 14 дней</strong>
+              </div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-icon">👷</div>
+              <div class="meta-text">
+                <span>Команда</span>
+                <strong>5+ человек</strong>
+              </div>
+            </div>
+          </div>
+          <div class="tariff-fast-start">Быстрый старт работ · Екб</div>
+        </div>
+      </article>
+
+      <!-- 3. ПОД КЛЮЧ -->
+      <article class="tariff-card popular">
+        <div class="tariff-fire-badge">🔥 Популярный выбор</div>
+        <div class="tariff-head">
+          <h3 class="tariff-name">Под ключ</h3>
+          <p class="tariff-desc">Комплексный ремонт всех помещений от пола до потолка. Организуем закупку, доставку и подъём материалов.</p>
+        </div>
+        <div class="tariff-photo">
+          <img src="/images/podcluch-1.webp" alt="Ремонт квартиры под ключ в Екатеринбурге" loading="lazy">
+        </div>
+        <div class="tariff-body">
+          <div class="tariff-discount-row">
+            <span class="discount-badge">Скидка 15%</span>
+            <span class="old-price">11 900 ₽/м²</span>
+          </div>
+          <div class="tariff-price">
+            <small>от</small> 8 900 <small>₽/м²</small>
+          </div>
+          <div class="tariff-note">
+            <span class="tariff-note-badge">Фиксируем смету в договоре</span>
+          </div>
+
+          <div class="tariff-actions">
+            <button type="button" class="btn-tariff-outline" data-tariff="turnkey">Что входит в тариф</button>
+            <a href="#form" class="btn-tariff-solid" data-select-tariff="Ремонт под ключ">Рассчитать стоимость</a>
+          </div>
+
+          <div class="tariff-meta">
+            <div class="meta-item">
+              <div class="meta-icon">📅</div>
+              <div class="meta-text">
+                <span>Срок</span>
+                <strong>от 25 дней</strong>
+              </div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-icon">👷</div>
+              <div class="meta-text">
+                <span>Команда</span>
+                <strong>8+ человек</strong>
+              </div>
+            </div>
+          </div>
+          <div class="tariff-fast-start">Быстрый старт работ · Екб</div>
+        </div>
+      </article>
+
+      <!-- 4. ДИЗАЙНЕРСКИЙ -->
+      <article class="tariff-card">
+        <div class="tariff-head">
+          <h3 class="tariff-name">Дизайнерский</h3>
+          <p class="tariff-desc">Отремонтируем квартиру по дизайн-проекту со сложными узлами, скрытыми дверями, теневыми профилями и керамогранитом.</p>
+        </div>
+        <div class="tariff-photo">
+          <img src="/images/dizain-1.webp" alt="Дизайнерский ремонт квартиры" loading="lazy">
+        </div>
+        <div class="tariff-body">
+          <div class="tariff-discount-row">
+            <span class="discount-badge">Скидка 15%</span>
+            <span class="old-price">17 352 ₽/м²</span>
+          </div>
+          <div class="tariff-price">
+            <small>от</small> 14 300 <small>₽/м²</small>
+          </div>
+          <div class="tariff-note">
+            <span class="tariff-note-badge">Технадзор и фотоотчёты</span>
+          </div>
+
+          <div class="tariff-actions">
+            <button type="button" class="btn-tariff-outline" data-tariff="designer">Что входит в тариф</button>
+            <a href="#form" class="btn-tariff-solid" data-select-tariff="Дизайнерский ремонт">Рассчитать стоимость</a>
+          </div>
+
+          <div class="tariff-meta">
+            <div class="meta-item">
+              <div class="meta-icon">📅</div>
+              <div class="meta-text">
+                <span>Срок</span>
+                <strong>от 30 дней</strong>
+              </div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-icon">👷</div>
+              <div class="meta-text">
+                <span>Команда</span>
+                <strong>8+ человек</strong>
+              </div>
+            </div>
+          </div>
+          <div class="tariff-fast-start">Быстрый старт работ · Екб</div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- МОДАЛКА СОСТАВА ТАРИФА -->
+<div class="tariff-modal-backdrop" id="tariffModal">
+  <div class="tariff-modal-card">
+    <button type="button" class="tariff-modal-close" id="tariffModalClose" aria-label="Закрыть">✕</button>
+    <span class="tariff-modal-badge" id="tariffModalPriceBadge">от 2 750 ₽/м²</span>
+    <h3 class="tariff-modal-title" id="tariffModalTitle">Тариф «Черновой»</h3>
+    <p class="tariff-modal-sub" id="tariffModalSub">Точный перечень работ фиксируется в смете после бесплатного замера</p>
+
+    <div class="tariff-groups-grid" id="tariffGroupsGrid"></div>
+
+    <div class="tariff-modal-cta-box">
+      <div class="tariff-modal-cta-title">Оставьте номер телефона для связи и расчёта</div>
+      <div class="tariff-modal-cta-desc">Александр перезвонит в указанное вами время, ответит на вопросы </div>
+      <form class="tariff-modal-form" id="tariffModalForm">
+        <input
+          type="tel"
+          class="tariff-modal-input"
+          id="tariffModalPhone"
+          placeholder="+7 (___) ___-__-__"
+          required>
+        <button type="submit" class="tariff-modal-submit">Оставить номер для расчёта</button>
+      </form>
+      <div class="tariff-modal-success" id="tariffModalSuccess">
+        ✓ Заявка принята! Александр свяжется с вами в указанное вами время.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ПОПАП ВЫБОРА ВРЕМЕНИ ЗВОНКА -->
+<div class="calltime-backdrop" id="calltimeModal">
+  <div class="calltime-card">
+    <button type="button" class="calltime-close" id="calltimeClose" aria-label="Закрыть">✕</button>
+
+    <div id="calltimeFormWrap">
+      <div class="calltime-icon">📞</div>
+      <h3 class="calltime-title">Когда вам позвонить?</h3>
+      <p class="calltime-sub">Выберите удобный день и интервал времени для расчёта</p>
+
+      <span class="calltime-label">День звонка</span>
+      <div class="calltime-chips" id="callDayChips">
+        <button type="button" class="calltime-chip active" data-day="Сегодня">Сегодня</button>
+        <button type="button" class="calltime-chip" data-day="Завтра">Завтра</button>
+        <button type="button" class="calltime-chip" data-day="В выходные">В выходные</button>
+      </div>
+
+      <span class="calltime-label">Интервал времени (Екб)</span>
+      <div class="calltime-chips intervals" id="callIntervalChips">
+        <button type="button" class="calltime-chip active" data-interval="Как можно скорее">⚡ Как можно скорее</button>
+        <button type="button" class="calltime-chip" data-interval="09:00 – 12:00">09:00 – 12:00</button>
+        <button type="button" class="calltime-chip" data-interval="12:00 – 15:00">12:00 – 15:00</button>
+        <button type="button" class="calltime-chip" data-interval="15:00 – 18:00">15:00 – 18:00</button>
+        <button type="button" class="calltime-chip full-row" data-interval="18:00 – 21:00">18:00 – 21:00</button>
+      </div>
+
+      <button type="button" class="calltime-submit" id="calltimeSubmitBtn">Жду звонка</button>
+    </div>
+
+    <div class="calltime-done" id="calltimeDone">
+      <div class="calltime-done-badge">✓ Заявка отправлена Александру!</div>
+      <p id="calltimeDoneText">Позвоним в выбранное время и сделаем точный расчёт.</p>
+    </div>
+  </div>
 </div>
 
 <!-- ===== QUIZ-ЧАТ ===== -->
@@ -2534,12 +3677,13 @@
 
       <div class="form-grid-2">
         <div>
-          <select id="type" aria-label="Тип ремонта">
-            <option value="cosmetic">Косметический</option>
-            <option value="capital" selected>Капитальный</option>
-            <option value="design">Дизайнерский</option>
-            <option value="unknown">Пока не знаю</option>
-          </select>
+<select id="type" aria-label="Тип ремонта">
+  <option value="rough">Черновой</option>
+  <option value="cosmetic">Косметический</option>
+  <option value="turnkey" selected>Под ключ</option>
+  <option value="designer">Дизайнерский</option>
+  <option value="unknown">Пока не знаю</option>
+</select>
         </div>
         <div>
           <select id="district" aria-label="Район Екатеринбурга">
@@ -2884,7 +4028,7 @@
         <a href="portfolio.html" aria-haspopup="true" aria-expanded="false">Примеры работ</a>
         <div class="portfolio-dropdown" role="menu">
           <a href="#portfolio" role="menuitem">Избранное на странице</a>
-          <a href="/portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
+          <a href="portfolio.html" class="all-portfolio-item" role="menuitem">Смотреть всё портфолио →</a>
         </div>
       </div>
           <a href="#reviews">Отзывы</a><br>
@@ -2978,6 +4122,13 @@ document.addEventListener('DOMContentLoaded', function() {
     var area = document.getElementById('area').value.trim();
     var district = document.getElementById('district').value;
     var comment = document.getElementById('comment').value.trim();
+	var TYPE_NAMES = {
+    rough: 'Черновой',
+    cosmetic: 'Косметический',
+    turnkey: 'Под ключ',
+    designer: 'Дизайнерский',
+    unknown: 'Пока не знаю'
+  };
 
     if (!name || !phone || phone.replace(/\D/g, '').length < 11) {
       alert('Пожалуйста, укажите имя и корректный телефон.');
@@ -2989,7 +4140,7 @@ document.addEventListener('DOMContentLoaded', function() {
       '— — — — — — — — — —',
       'Имя: ' + name,
       'Телефон: ' + phone,
-      'Тип ремонта: ' + type
+      'Тип ремонта: ' + (TYPE_NAMES[type] || type),
     ];
     if (district) lines.push('Район: ' + district);
     if (area) lines.push('Площадь: ' + area + ' м²');
@@ -3472,9 +4623,10 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ===== КАЛЬКУЛЯТОР ОРИЕНТИРОВОЧНОЙ СТОИМОСТИ ===== */
 (function() {
   var PRICES = {
-    cosmetic: 5500,
-    capital:  8500,
-    design:   13000,
+    rough:    2750,
+    cosmetic: 4500,
+    turnkey:  8900,
+    designer: 14300,
     unknown:  0
   };
 
@@ -3635,9 +4787,20 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 /* ===== КВИЗ-ЧАТ ===== */
+/* ===== КВИЗ-ЧАТ ===== */
 (function(){
-  var QUIZ_PRICES = { cosmetic: 5500, capital: 8500, design: 13000 };
-  var QUIZ_TYPE_LABELS = { cosmetic: 'Косметический', capital: 'Капитальный', design: 'Дизайнерский' };
+  var QUIZ_PRICES = {
+    rough: 2750,
+    cosmetic: 4500,
+    turnkey: 8900,
+    designer: 14300
+  };
+  var QUIZ_TYPE_LABELS = {
+    rough: 'Черновой',
+    cosmetic: 'Косметический',
+    turnkey: 'Под ключ',
+    designer: 'Дизайнерский'
+  };
 
   var chat = document.getElementById('quizChat');
   if (!chat) return;
@@ -3654,9 +4817,10 @@ document.addEventListener('DOMContentLoaded', function() {
       question: 'Здравствуйте! Я Александр, частный прораб в Екатеринбурге. Помогу прикинуть стоимость ремонта. Какой ремонт планируете?',
       field: 'type',
       options: [
+        { label: 'Черновой',      value: 'rough' },
         { label: 'Косметический', value: 'cosmetic' },
-        { label: 'Капитальный',   value: 'capital' },
-        { label: 'Дизайнерский',  value: 'design' }
+        { label: 'Под ключ',      value: 'turnkey' },
+        { label: 'Дизайнерский',  value: 'designer' }
       ]
     },
     {
@@ -4747,6 +5911,480 @@ document.addEventListener('copy', function(e) {
   e.clipboardData.setData('text/html', htmlText);
   e.preventDefault();
 });
+</script>
+	
+<script>
+(function() {
+  // ===== НАСТРОЙКИ TELEGRAM БОТА =====
+  const TG_BOT_TOKEN = '9179995907:AAGMLaRHfKCTnvZfUOfCzmRJR4_4rC--rG4';
+  const TG_CHAT_ID   = '1044366963';
+
+  async function sendLeadToTelegram({ tariff, materials, phone, callDay, callInterval }) {
+    const text = [
+      '🔥 <b>Новая заявка с сайта prorab196.ru (Тарифы)</b>',
+      '',
+      `📋 <b>Тариф:</b> ${tariff}`,
+      `🧱 <b>Материалы:</b> ${materials}`,
+      `📞 <b>Телефон:</b> ${phone}`,
+      `📅 <b>Когда позвонить:</b> ${callDay}`,
+      `⏰ <b>Интервал:</b> ${callInterval}`
+    ].join('\n');
+
+    const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TG_CHAT_ID,
+        text: text,
+        parse_mode: 'HTML'
+      })
+    });
+    if (!res.ok) throw new Error('Telegram API error');
+    return res.json();
+  }
+
+  // ===== ПЕРЕКЛЮЧАТЕЛЬ МАТЕРИАЛОВ =====
+  const toggleBtn = document.getElementById('materialsToggle');
+  const labelNoMat = document.getElementById('labelNoMat');
+  const labelWithMat = document.getElementById('labelWithMat');
+  const roughPriceEl = document.getElementById('roughPrice');
+  const roughOldPriceEl = document.getElementById('roughOldPrice');
+  const roughMatBadgeEl = document.getElementById('roughMatBadge');
+
+  let withMaterials = false;
+
+  function updateMaterialsState() {
+    if (!toggleBtn) return;
+    toggleBtn.setAttribute('aria-checked', String(withMaterials));
+    if (labelNoMat) labelNoMat.classList.toggle('active', !withMaterials);
+    if (labelWithMat) labelWithMat.classList.toggle('active', withMaterials);
+
+    if (roughOldPriceEl && roughPriceEl && roughMatBadgeEl) {
+      if (withMaterials) {
+        roughOldPriceEl.textContent = '3 940 ₽/м²';
+        roughPriceEl.innerHTML = '<small>от</small> 3 350 <small>₽/м²</small>';
+        roughMatBadgeEl.textContent = 'С черновыми материалами';
+      } else {
+        roughOldPriceEl.textContent = '3 235 ₽/м²';
+        roughPriceEl.innerHTML = '<small>от</small> 2 750 <small>₽/м²</small>';
+        roughMatBadgeEl.textContent = 'Работа без материалов';
+      }
+    }
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      withMaterials = !withMaterials;
+      updateMaterialsState();
+    });
+  }
+  if (labelNoMat) {
+    labelNoMat.addEventListener('click', () => {
+      if (withMaterials) { withMaterials = false; updateMaterialsState(); }
+    });
+  }
+  if (labelWithMat) {
+    labelWithMat.addEventListener('click', () => {
+      if (!withMaterials) { withMaterials = true; updateMaterialsState(); }
+    });
+  }
+
+  // ===== ДАННЫЕ ТАРИФОВ =====
+  const TARIFF_DETAILS = {
+    rough: {
+      title: 'Тариф «Черновой»',
+      priceText: 'от 2 750 ₽/м²',
+      sub: 'Подготовка основания и коммуникаций под дальнейшую чистовую отделку',
+      groups: [
+        {
+          name: 'Пол',
+          icon: '📐',
+          items: [
+            'загрунтуем полы',
+            'сделаем стяжку или наливной пол',
+            'обустроим теплый пол'
+          ]
+        },
+        {
+          name: 'Стены',
+          icon: '🧱',
+          items: [
+            'загрунтуем, зашпатлюем и оштукатурим стены',
+            'обустроим тепло- и звукоизоляцию',
+            'установим перегородки',
+            'произведем перепланировку'
+          ]
+        },
+        {
+          name: 'Потолок',
+          icon: '⬆️',
+          items: [
+            'загрунтуем, зашпатлюем и оштукатурим потолок'
+          ]
+        },
+        {
+          name: 'Другое',
+          icon: '🛠️',
+          items: [
+            'установим двери и окна',
+            'установим перегородки',
+            'уберем после ремонта и вывезем мусор'
+          ]
+        }
+      ]
+    },
+    cosmetic: {
+      title: 'Тариф «Косметический»',
+      priceText: 'от 4 500 ₽/м²',
+      sub: 'Быстрое обновление отделки без глобальной перепланировки',
+      groups: [
+        {
+          name: 'Пол',
+          icon: '📐',
+          items: [
+            'загрунтуем полы',
+            'постелим требуемое покрытие',
+            'установим наличники и плинтуса'
+          ]
+        },
+        {
+          name: 'Стены',
+          icon: '🧱',
+          items: [
+            'загрунтуем и зашпатлюем стены',
+            'поклеим обои',
+            'поклеим плитку ПВХ',
+            'установим оконные откосы'
+          ]
+        },
+        {
+          name: 'Потолок',
+          icon: '⬆️',
+          items: [
+            'загрунтуем потолок',
+            'покрасим потолок или установим натяжной потолок'
+          ]
+        },
+        {
+          name: 'Другое',
+          icon: '🛠️',
+          items: [
+            'зачистим и демонтируем старые покрытия',
+            'заменим розетки, выключатели',
+            'заменим сантехнику, смесители',
+            'уберем после ремонта и вывезем мусор'
+          ]
+        }
+      ]
+    },
+    turnkey: {
+      title: 'Тариф «Под ключ»',
+      priceText: 'от 8 900 ₽/м²',
+      sub: 'Полный цикл черновых, инженерных и чистовых работ во всех помещениях',
+      groups: [
+        {
+          name: 'Пол',
+          icon: '📐',
+          items: [
+            'загрунтуем полы',
+            'сделаем стяжку или наливной пол',
+            'обустроим теплый пол',
+            'постелим требуемое покрытие',
+            'установим наличники и плинтуса'
+          ]
+        },
+        {
+          name: 'Стены',
+          icon: '🧱',
+          items: [
+            'загрунтуем, зашпатлюем и оштукатурим стены',
+            'сделаем фактурную штукатурку',
+            'обустроим тепло- и звукоизоляцию',
+            'покрасим стены или поклеим обои',
+            'поклеим плитку',
+            'сделаем фартук на кухне',
+            'положим плитку в санузле',
+            'установим оконные откосы'
+          ]
+        },
+        {
+          name: 'Потолок',
+          icon: '⬆️',
+          items: [
+            'загрунтуем, зашпатлюем и оштукатурим потолок',
+            'покрасим потолок или установим натяжной потолок любой сложности'
+          ]
+        },
+        {
+          name: 'Другое',
+          icon: '🛠️',
+          items: [
+            'зачистим и демонтируем старые покрытия',
+            'установим межкомнатные двери',
+            'заменим щиток, электропроводку, розетки, выключатели',
+            'заменим трубопровод, сантехнику, смесители',
+            'установим фильтры для очистки воды',
+            'уберем после ремонта и вывезем мусор'
+          ]
+        }
+      ]
+    },
+    designer: {
+      title: 'Тариф «Дизайнерский»',
+      priceText: 'от 14 300 ₽/м²',
+      sub: 'Реализация сложных интерьерных решений и инженерии по дизайн-проекту',
+      groups: [
+        {
+          name: 'Пол',
+          icon: '📐',
+          items: [
+            'загрунтуем полы',
+            'сделаем стяжку или наливной пол',
+            'обустроим теплый пол',
+            'постелим паркет или керамогранит',
+            'установим наличники и плинтуса'
+          ]
+        },
+        {
+          name: 'Стены',
+          icon: '🧱',
+          items: [
+            'загрунтуем, зашпатлюем и оштукатурим стены',
+            'сделаем фактурную штукатурку',
+            'обустроим тепло- и звукоизоляцию',
+            'покрасим стены или поклеим обои',
+            'установим декоративное панно',
+            'положим плитку в санузле',
+            'смонтируем молдинги и карнизы'
+          ]
+        },
+        {
+          name: 'Потолок',
+          icon: '⬆️',
+          items: [
+            'загрунтуем, зашпатлюем и оштукатурим потолок',
+            'установим потолок любой сложности',
+            'смонтируем свет под ваш проект'
+          ]
+        },
+        {
+          name: 'Другое',
+          icon: '🛠️',
+          items: [
+            'купим и доставим материалы',
+            'зачистим и демонтируем старые покрытия',
+            'установим межкомнатные двери',
+            'установим видеодомофон',
+            'заменим щиток, электропроводку, розетки, выключатели',
+            'заменим трубопровод, сантехнику, смесители',
+            'установим фильтры для очистки воды',
+            'уберем после ремонта и вывезем мусор'
+          ]
+        }
+      ]
+    }
+  };
+
+  // ===== ЭЛЕМЕНТЫ МОДАЛКИ ТАРИФА И ПОПАПА ВРЕМЕНИ =====
+  const tariffModal = document.getElementById('tariffModal');
+  const tariffModalTitle = document.getElementById('tariffModalTitle');
+  const tariffModalPriceBadge = document.getElementById('tariffModalPriceBadge');
+  const tariffModalSub = document.getElementById('tariffModalSub');
+  const tariffGroupsGrid = document.getElementById('tariffGroupsGrid');
+  const tariffModalClose = document.getElementById('tariffModalClose');
+  const tariffModalForm = document.getElementById('tariffModalForm');
+  const tariffModalPhone = document.getElementById('tariffModalPhone');
+
+  const calltimeModal = document.getElementById('calltimeModal');
+  const calltimeClose = document.getElementById('calltimeClose');
+  const calltimeFormWrap = document.getElementById('calltimeFormWrap');
+  const calltimeDone = document.getElementById('calltimeDone');
+  const calltimeDoneText = document.getElementById('calltimeDoneText');
+  const calltimeSubmitBtn = document.getElementById('calltimeSubmitBtn');
+
+  let leadState = {
+    tariff: '',
+    phone: '',
+    callDay: 'Сегодня',
+    callInterval: 'Как можно скорее',
+    sent: false
+  };
+
+  // Открытие модалки состава тарифа
+  document.querySelectorAll('[data-tariff]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-tariff');
+      const data = TARIFF_DETAILS[key];
+      if (!data || !tariffModal) return;
+
+      leadState.tariff = data.title;
+      tariffModalTitle.textContent = data.title;
+      tariffModalPriceBadge.textContent = (key === 'rough' && withMaterials) ? 'от 3 350 ₽/м²' : data.priceText;
+      tariffModalSub.textContent = data.sub;
+
+      tariffGroupsGrid.innerHTML = data.groups.map(group => `
+        <div class="tariff-group-box">
+          <div class="tariff-group-head">
+            <span class="tariff-group-icon">${group.icon}</span>
+            <span>${group.name}</span>
+          </div>
+          <ul class="tariff-checklist">
+            ${group.items.map(item => `<li>${item}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+
+      tariffModal.classList.add('open');
+    });
+  });
+
+  function closeTariffModal() {
+    if (tariffModal) tariffModal.classList.remove('open');
+  }
+  if (tariffModalClose) tariffModalClose.addEventListener('click', closeTariffModal);
+  if (tariffModal) {
+    tariffModal.addEventListener('click', (e) => {
+      if (e.target === tariffModal) closeTariffModal();
+    });
+  }
+
+  // Маска телефона +7
+  if (tariffModalPhone) {
+    tariffModalPhone.addEventListener('input', (e) => {
+      let digits = e.target.value.replace(/\D/g, '');
+      if (!digits) { e.target.value = ''; return; }
+      if (digits[0] === '8' || digits[0] === '7') digits = '7' + digits.slice(1);
+      else digits = '7' + digits;
+      digits = digits.slice(0, 11);
+
+      let res = '+7';
+      if (digits.length > 1) res += ' (' + digits.slice(1, 4);
+      if (digits.length >= 4) res += ') ' + digits.slice(4, 7);
+      if (digits.length >= 7) res += '-' + digits.slice(7, 9);
+      if (digits.length >= 9) res += '-' + digits.slice(9, 11);
+      e.target.value = res;
+    });
+  }
+
+  // Шаг 1: Ввели номер -> закрываем модалку тарифа и открываем попап выбора времени
+  if (tariffModalForm) {
+    tariffModalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const phoneVal = tariffModalPhone.value.trim();
+      if (phoneVal.replace(/\D/g, '').length < 11) {
+        tariffModalPhone.focus();
+        return;
+      }
+
+      leadState.phone = phoneVal;
+      leadState.sent = false;
+      tariffModalPhone.value = '';
+
+      closeTariffModal();
+
+      if (calltimeModal && calltimeFormWrap && calltimeDone && calltimeSubmitBtn) {
+        calltimeFormWrap.style.display = 'block';
+        calltimeDone.classList.remove('show');
+        calltimeSubmitBtn.disabled = false;
+        calltimeSubmitBtn.textContent = 'Жду звонка';
+        calltimeModal.classList.add('open');
+      }
+    });
+  }
+
+  // Выбор дня звонка
+  document.querySelectorAll('#callDayChips .calltime-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#callDayChips .calltime-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      leadState.callDay = chip.getAttribute('data-day');
+    });
+  });
+
+  // Выбор интервала времени
+  document.querySelectorAll('#callIntervalChips .calltime-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#callIntervalChips .calltime-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      leadState.callInterval = chip.getAttribute('data-interval');
+    });
+  });
+
+  // Шаг 2: Нажали "Жду звонка" -> отправляем всё в Telegram
+  if (calltimeSubmitBtn) {
+    calltimeSubmitBtn.addEventListener('click', async () => {
+      if (leadState.sent) return;
+      calltimeSubmitBtn.disabled = true;
+      calltimeSubmitBtn.textContent = 'Отправляем...';
+
+      try {
+        await sendLeadToTelegram({
+          tariff: leadState.tariff,
+          materials: withMaterials ? 'С материалами' : 'Без материалов',
+          phone: leadState.phone,
+          callDay: leadState.callDay,
+          callInterval: leadState.callInterval
+        });
+        leadState.sent = true;
+      } catch (err) {
+        console.error('Ошибка отправки в Telegram:', err);
+      }
+
+      calltimeFormWrap.style.display = 'none';
+      calltimeDoneText.textContent = `Позвоним ${leadState.callDay.toLowerCase()} (${leadState.callInterval}) по номеру ${leadState.phone}.`;
+      calltimeDone.classList.add('show');
+
+      setTimeout(() => {
+        if (calltimeModal) calltimeModal.classList.remove('open');
+      }, 3200);
+    });
+  }
+
+  function closeCalltimeModal() {
+    if (leadState.phone && !leadState.sent) {
+      leadState.sent = true;
+      sendLeadToTelegram({
+        tariff: leadState.tariff,
+        materials: withMaterials ? 'С материалами' : 'Без материалов',
+        phone: leadState.phone,
+        callDay: 'Не уточнил (закрыл окно времени)',
+        callInterval: 'Как можно скорее'
+      }).catch(() => {});
+    }
+    if (calltimeModal) calltimeModal.classList.remove('open');
+  }
+
+  if (calltimeClose) calltimeClose.addEventListener('click', closeCalltimeModal);
+  if (calltimeModal) {
+    calltimeModal.addEventListener('click', (e) => {
+      if (e.target === calltimeModal) closeCalltimeModal();
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (calltimeModal && calltimeModal.classList.contains('open')) closeCalltimeModal();
+      else if (tariffModal && tariffModal.classList.contains('open')) closeTariffModal();
+    }
+  });
+
+  // Автоподстановка при клике на "Рассчитать стоимость" на карточке
+  document.querySelectorAll('[data-select-tariff]').forEach(link => {
+    link.addEventListener('click', () => {
+      const tariffName = link.getAttribute('data-select-tariff');
+      const typeSelect = document.getElementById('type');
+      const commentField = document.getElementById('comment');
+
+      if (typeSelect) {
+        if (tariffName.includes('Черновой')) typeSelect.value = 'rough';
+        else if (tariffName.includes('Косметический')) typeSelect.value = 'cosmetic';
+        else if (tariffName.includes('Дизайнерский')) typeSelect.value = 'designer';
+        else typeSelect.value = 'turnkey';
+        typeSelect.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+})();
 </script>
 	
 </body>
